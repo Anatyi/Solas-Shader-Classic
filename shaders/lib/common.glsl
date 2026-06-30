@@ -843,7 +843,7 @@ vec3 pow8(vec3 x) {return x*x*x*x*x*x*x*x;}
 #define VX_SUPPORT
 #endif
 
-#if defined MC_GL_VENDOR_INTEL || defined MC_GL_RENDERER_INTEL
+#if (defined MC_GL_VENDOR_INTEL || defined MC_GL_RENDERER_INTEL) && MC_OS_WINDOWS
 #undef VX_SUPPORT
 #endif
 
