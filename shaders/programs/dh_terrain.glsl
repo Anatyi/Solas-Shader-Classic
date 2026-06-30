@@ -175,7 +175,7 @@ void main() {
 
 	/* DRAWBUFFERS:03 */
 	gl_FragData[0] = albedo;
-	gl_FragData[1].a = 1.0;
+	gl_FragData[1] = vec4(0.0, lightmap.y * 0.5, 0.0, 1.0);
 }
 
 #endif

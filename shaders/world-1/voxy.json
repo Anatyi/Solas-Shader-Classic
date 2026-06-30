@@ -46,7 +46,9 @@
     "isJungle", 
     "isLushCaves", 
     "isDeepDark",
+    #if MC_VERSION >= 12104
     "isPaleGarden",
+    #endif
     "lightningBoltPosition", 
     "nightVision",
     "blindFactor",

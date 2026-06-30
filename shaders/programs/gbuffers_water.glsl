@@ -147,15 +147,15 @@ void main() {
 	vec4 albedoTexture = texture2D(tex, texCoord);
 	vec4 albedo = albedoTexture;
  
-	#ifndef GBUFFERS_TERRAIN_COLORWHEEL
+	#ifndef GBUFFERS_WATER_COLORWHEEL
     	albedo *= color;
 		vec2 lightmap = clamp(lmCoord, vec2(0.0), vec2(1.0));
 	#else
-		float ao;
+		float clrwlAo;
 		vec2 lmCoordColorwheel;
 		vec4 overlayColor;
 
-		clrwl_computeFragment(albedoTexture, albedo, lmCoordColorwheel, ao, overlayColor);
+		clrwl_computeFragment(albedoTexture, albedo, lmCoordColorwheel, clrwlAo, overlayColor);
 		albedo.rgb = fmix(albedo.rgb, overlayColor.rgb, overlayColor.a);
 		vec2 lightmap = clamp((lmCoordColorwheel - 1.0 / 32.0) * 32.0 / 30.0, vec2(0.0), vec2(1.0));
 	#endif

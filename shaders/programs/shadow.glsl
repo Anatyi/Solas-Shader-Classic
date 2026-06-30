@@ -44,11 +44,11 @@ void main() {
     	albedo *= color;
 		float skyLightMap = lmCoord.y;
 	#else
-		float ao;
+		float clrwlAo;
 		vec2 lmCoordColorwheel;
 		vec4 overlayColor;
 
-		clrwl_computeFragment(albedoTexture, albedo, lmCoordColorwheel, ao, overlayColor);
+		clrwl_computeFragment(albedoTexture, albedo, lmCoordColorwheel, clrwlAo, overlayColor);
 		albedo.rgb = fmix(albedo.rgb, overlayColor.rgb, overlayColor.a);
 		float skyLightMap = clamp((lmCoordColorwheel - 1.0 / 32.0) * 32.0 / 30.0, vec2(0.0), vec2(1.0)).y;
 	#endif

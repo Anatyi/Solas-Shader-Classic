@@ -355,7 +355,6 @@ void main() {
 
 	#if defined VOXY && defined OVERWORLD
 		voxyTransparentColor = texture2D(colortex7, texCoord);
-		voxyTransparentColor.rgb /= max(voxyTransparentColor.a, 0.00001);
 
 		float vxZ1 = texture2D(vxDepthTexTrans, texCoord).r;
 		vec4 vxScreenPos1 = vec4(texCoord, vxZ1, 1.0);
@@ -363,7 +362,7 @@ void main() {
 		vxViewPos1 /= vxViewPos1.w;
 
 		voxyTransparentColor.a *= step(-vxViewPos1.z, -viewPos.z);
-		color.rgb = mix(color.rgb, pow(voxyTransparentColor.rgb, vec3(2.2 - wetness * 1.2)) * (2.2 - wetness * 1.2), voxyTransparentColor.a * (0.5 + wetness * 0.25));
+		color.rgb = mix(color.rgb, voxyTransparentColor.rgb, clamp(voxyTransparentColor.a, 0.0, 1.0));
 	#endif
 
 	//Apply fog before the clouds in Overworld
