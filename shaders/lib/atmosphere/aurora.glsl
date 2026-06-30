@@ -1,4 +1,4 @@
-float getAuroraSample(vec2 coord, float kpIndex, float pulse, float longPulse, float auroraAltitudeMult) {
+float getAuroraSample(vec2 coord, float kpIndex, float pulse, float longPulse, float auroraAltitudeMult, float auroraCameraY) {
 	float t = frameTimeCounter * 0.125;
 
 	vec2 distortedCoord = coord;
@@ -38,7 +38,7 @@ float getAuroraSample(vec2 coord, float kpIndex, float pulse, float longPulse, f
     float arc = exp(-3.0 * zenithDist * zenithDist);
           arc *= 0.65 + 0.35 * f;
           arc += kpIndex * kpIndex * 0.125;
-          arc = fmix(arc, 1.0, cameraPosition.y * auroraAltitudeMult);
+          arc = fmix(arc, 1.0, auroraCameraY * auroraAltitudeMult);
 
 	//Blurry background noise "folds"
 	float sheet = texture2D(noisetex, vec2(distortedCoord.x * 1.25, distortedCoord.y * 0.5 + frameTimeCounter * 0.0025)).r;
@@ -86,7 +86,7 @@ void computeVolumetricAurora(inout vec3 aurora, float z, float dither, in float 
 	      kpIndex = kpIndex - int(kpIndex == 1) + int(kpIndex > 7 && worldDay % 10 == 0);
 	      kpIndex = min(max(kpIndex, 0) + isSnowy * 3, 9);
 	#ifdef AURORA_ALWAYS_VISIBLE
-		  kpIndex = 9;
+		  kpIndex = 7;
 	#endif
 
 	//Aurora tends to get brighter and dimmer when plasma arrives or fades away
@@ -100,6 +100,8 @@ void computeVolumetricAurora(inout vec3 aurora, float z, float dither, in float 
 	kpIndex /= 9.0;
 
     float spaceFactor = min(max(cameraPosition.y, 0.0) / KARMAN_LINE, 1.0);
+    float auroraCameraY = min(cameraPosition.y, float(KARMAN_LINE));
+    vec3 auroraCameraPos = vec3(cameraPosition.x, auroraCameraY, cameraPosition.z);
 
 	//Keep the aurora volume fixed in world space like clouds, so it can be flown through.
 	float auroraHeight = 100.0 - kpIndex * 25.0 * (1.0 - spaceFactor);
@@ -112,8 +114,8 @@ void computeVolumetricAurora(inout vec3 aurora, float z, float dither, in float 
 	float verticalView = nWorldPos.y;
 	if (abs(verticalView) < 0.0001) verticalView = verticalView < 0.0 ? -0.0001 : 0.0001;
 
-	float lowerPlane = (auroraBottom - cameraPosition.y * auroraAltitudeMult) / verticalView;
-	float upperPlane = (auroraTop - cameraPosition.y * auroraAltitudeMult) / verticalView;
+	float lowerPlane = (auroraBottom - auroraCameraY * auroraAltitudeMult) / verticalView;
+	float upperPlane = (auroraTop - auroraCameraY * auroraAltitudeMult) / verticalView;
 	float nearestPlane = max(min(lowerPlane, upperPlane), 0.0);
 	float farthestPlane = max(lowerPlane, upperPlane);
 
@@ -133,14 +135,14 @@ void computeVolumetricAurora(inout vec3 aurora, float z, float dither, in float 
 		float tiltFactor = 0.15 + kpIndex * 0.15;
 
 		float planeDifference = farthestPlane - nearestPlane;
-		float lengthScaling = abs(cameraPosition.y * auroraAltitudeMult - auroraMiddle) / (auroraThickness * 0.5);
+		float lengthScaling = abs(auroraCameraY * auroraAltitudeMult - auroraMiddle) / (auroraThickness * 0.5);
 		      lengthScaling = clamp((lengthScaling - 1.0) * 0.5, 0.0, 1.0);
 
 		float rayLength = auroraThickness * 0.5;
 		      rayLength /= (4.0 * nWorldPos.y * nWorldPos.y) * lengthScaling + 1.0;
 
 		vec3 rayIncrement = nWorldPos * rayLength;
-		vec3 startPos = cameraPosition * auroraAltitudeMult + nearestPlane * nWorldPos;
+		vec3 startPos = auroraCameraPos * auroraAltitudeMult + nearestPlane * nWorldPos;
 		vec3 rayPos = startPos + rayIncrement * dither;
 		float sampleTotalLength = nearestPlane + rayLength * dither;
 		int sampleCount = int(min(planeDifference / rayLength, float(samples * 4)) + 4.0);
@@ -148,21 +150,26 @@ void computeVolumetricAurora(inout vec3 aurora, float z, float dither, in float 
 		//When aurora turns red
 		float redPhase = pow3(kpIndex) * (1.0 - pulse);
 
+		float sceneAuroraDepth = 1e20;
+
+		if (z < 1.0) sceneAuroraDepth = lViewPos * auroraAltitudeMult;
+
+		#if defined DISTANT_HORIZONS
+			if (dhZ < 1.0) sceneAuroraDepth = min(sceneAuroraDepth, lDhViewPos * auroraAltitudeMult);
+		#elif defined VOXY
+			if (vxZ < 1.0) sceneAuroraDepth = min(sceneAuroraDepth, lVxViewPos * auroraAltitudeMult);
+		#endif
+
 		vec3 auroraVolume = vec3(0.0);
 
 		for (int i = 0; i < sampleCount; i++, rayPos += rayIncrement, sampleTotalLength += rayLength) {
-			if (lViewPos * 0.1 < sampleTotalLength && z < 1.0) break;
-
-			#if defined DISTANT_HORIZONS
-				if (lDhViewPos < sampleTotalLength && dhZ < 1.0) break;
-			#elif defined VOXY
-				if (lVxViewPos < sampleTotalLength && vxZ < 1.0) break;
-			#endif
+			float sceneDepthBias = max(0.005, sampleTotalLength * 0.001);
+			if (sceneAuroraDepth + sceneDepthBias < sampleTotalLength) break;
 
 			float heightStep = AuroraInvLerp(rayPos.y, auroraBottom, auroraTop);
 			float attenuation = step(auroraBottom, rayPos.y) * step(rayPos.y, auroraTop);
 
-			vec3 localPos = rayPos - cameraPosition * auroraAltitudeMult;
+			vec3 localPos = rayPos - auroraCameraPos * auroraAltitudeMult;
 			vec3 planeCoord = localPos;
 			     planeCoord.xz -= (rayPos.y - auroraMiddle) * vec2(tiltFactor, tiltFactor * 2.0);
 			     planeCoord *= 0.05;
@@ -181,7 +188,7 @@ void computeVolumetricAurora(inout vec3 aurora, float z, float dither, in float 
 			float auroraDistribution = distanceFactor * westEast * fmix(north, poles, spaceFactor);
 
 			if (auroraDistribution > 0.0) {
-				float auroraSample = getAuroraSample(coord * 0.025, kpIndex, pulse, longPulse, auroraAltitudeMult);
+				float auroraSample = getAuroraSample(coord * 0.025, kpIndex, pulse, longPulse, auroraAltitudeMult, auroraCameraY);
 				float colorMixer = pow(heightStep, 0.65 + pow3(kpIndex) * pulse * 0.1);
 				float verticalFade = smoothstep(0.0, sampleStep + 0.001, heightStep) * (1.0 - smoothstep(1.0 - sampleStep - 0.001, 1.0, heightStep));
 

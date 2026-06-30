@@ -188,7 +188,7 @@ void computeVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, float z, fl
               kpIndex = kpIndex - int(kpIndex == 1) + int(kpIndex > 7 && worldDay % 10 == 0);
               kpIndex = min(max(kpIndex, 0) + isSnowy * 4, 9);
         #ifdef AURORA_ALWAYS_VISIBLE
-              kpIndex = 9;
+              kpIndex = 7;
         #endif
 
         //Total visibility of aurora based on multiple factors

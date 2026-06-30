@@ -253,7 +253,7 @@ void gbuffersLighting(in vec4 color, inout vec4 albedo, in vec3 screenPos, in ve
             kpIndex = kpIndex - int(kpIndex == 1) + int(kpIndex > 7 && worldDay % 10 == 0);
             kpIndex = min(max(kpIndex, 0) + isSnowy * 3, 9);
     #ifdef AURORA_ALWAYS_VISIBLE
-            kpIndex = 9;
+            kpIndex = 7;
     #endif
 
     //Total visibility of aurora based on multiple factors

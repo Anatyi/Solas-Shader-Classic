@@ -74,7 +74,7 @@ void drawPlanarClouds(inout vec4 pc, in vec3 atmosphereColor, in vec3 worldPos, 
               kpIndex = kpIndex - int(kpIndex == 1) + int(kpIndex > 7 && worldDay % 10 == 0);
               kpIndex = min(max(kpIndex, 0) + isSnowy * 3, 9);
         #ifdef AURORA_ALWAYS_VISIBLE
-              kpIndex = 9;
+              kpIndex = 7;
         #endif
 
         //Total visibility of aurora based on multiple factors
