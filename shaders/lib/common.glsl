@@ -2070,10 +2070,6 @@ vec3 pow8(vec3 x) {return x*x*x*x*x*x*x*x;}
 #ifdef WAVING_SPEED
 #endif
 
-#ifndef VX_SUPPORT
-#undef LPV_FOG
-#endif
-
 #ifdef VANILLA_WATER
 #undef REFRACTION
 #endif
@@ -2093,4 +2089,8 @@ vec3 pow8(vec3 x) {return x*x*x*x*x*x*x*x;}
 
 #ifdef GBUFFERS_ENTITIES
 #undef VANILLA_AO
+#endif
+
+#ifndef VX_SUPPORT
+#undef LPV_FOG
 #endif
