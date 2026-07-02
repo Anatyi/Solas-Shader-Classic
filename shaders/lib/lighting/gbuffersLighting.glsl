@@ -312,7 +312,7 @@ void gbuffersLighting(in vec4 color, inout vec4 albedo, in vec3 screenPos, in ve
 
     //Vanilla AO
     #ifdef VANILLA_AO
-    float aoMixer = (1.0 - vanillaAo) * (1.0 - blockLightMap) * (1.0 - emission);
+    float aoMixer = (1.0 - vanillaAo) * (1.0 - blockLightMap) * (1.0 - float(emission > 0.0));
     #if defined OVERWORLD || defined END
             aoMixer *= 1.0 - float(length(shadow) > 0.0) * 0.5;
     #endif
