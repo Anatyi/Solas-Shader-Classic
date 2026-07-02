@@ -10,11 +10,11 @@ in vec4 color;
 in vec2 texCoord;
 
 // Uniforms //
-uniform sampler2D tex;
+uniform sampler2D gtexture;
 
 // Main //
 void main() {
-	vec4 albedo = texture2D(tex, texCoord) * color;
+	vec4 albedo = texture2D(gtexture, texCoord) * color;
 
 	/* DRAWBUFFERS:0 */
 	gl_FragData[0] = albedo;

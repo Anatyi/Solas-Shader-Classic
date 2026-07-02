@@ -11,11 +11,11 @@ in vec2 texCoord, lmCoord;
 //Uniforms//
 uniform float rainStrength;
 uniform vec3 cameraPosition;
-uniform sampler2D tex;
+uniform sampler2D gtexture;
 
 //Program//
 void main() {
-	vec4 albedo = texture2D(tex, texCoord) * rainStrength * 0.5;
+	vec4 albedo = texture2D(gtexture, texCoord) * rainStrength * 0.5;
     float altitudeFactor10k = min(max(cameraPosition.y, 0.0) * 0.0001, 1.0);
     albedo.a *= 1.0 - altitudeFactor10k;
 	albedo.a *= 0.5 * length(albedo.rgb * 0.5);

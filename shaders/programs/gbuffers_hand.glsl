@@ -60,7 +60,7 @@ uniform vec3 fogColor;
 
 uniform vec4 lightningBoltPosition;
 
-uniform sampler2D tex, noisetex;
+uniform sampler2D gtexture, noisetex;
 
 #ifdef PBR
 uniform sampler2D specular;
@@ -151,7 +151,7 @@ vec2 dcdy = dFdy(texCoord);
 
 // Main //
 void main() {
-    vec4 albedo = texture2D(tex, texCoord) * color;
+    vec4 albedo = texture2D(gtexture, texCoord) * color;
     vec2 lightmap = clamp(lmCoord, vec2(0.0), vec2(1.0));
     vec3 newNormal = normal;
     vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z + 0.38);

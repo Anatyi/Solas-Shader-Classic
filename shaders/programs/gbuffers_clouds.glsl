@@ -25,7 +25,7 @@ uniform float darknessFactor;
 
 uniform vec3 cameraPosition, skyColor;
 
-uniform sampler2D tex;
+uniform sampler2D gtexture;
 
 uniform mat4 gbufferProjectionInverse;
 uniform mat4 gbufferModelView;
@@ -61,7 +61,7 @@ vec3 lightVec = sunVec * ((timeAngle < 0.5325 || timeAngle > 0.9675) ? 1.0 : -1.
 // Main //
 void main() {
 	#ifdef VANILLA_CLOUDS
-		vec4 albedo = texture2D(tex, texCoord);
+		vec4 albedo = texture2D(gtexture, texCoord);
 
 		if (albedo.a > 0.0) {
 			albedo.a = VANILLA_CLOUD_OPACITY;

@@ -62,7 +62,7 @@ uniform vec3 fogColor;
 uniform vec4 lightningBoltPosition;
 uniform vec4 entityColor;
 
-uniform sampler2D tex, noisetex;
+uniform sampler2D gtexture, noisetex;
 
 #ifdef PBR
 uniform sampler2D specular;
@@ -154,7 +154,7 @@ vec2 dcdy = dFdy(texCoord);
 
 // Main //
 void main() {
-	vec4 albedo = texture2D(tex, texCoord);
+	vec4 albedo = texture2D(gtexture, texCoord);
 	if (albedo.a < 0.00001) discard;
 	albedo *= color;
 	albedo.rgb = fmix(albedo.rgb, entityColor.rgb * entityColor.rgb * 2.0, entityColor.a);

@@ -59,7 +59,7 @@ uniform vec3 fogColor;
 
 uniform vec4 lightningBoltPosition;
 
-uniform sampler2D tex, noisetex;
+uniform sampler2D gtexture, noisetex;
 
 #ifdef PBR
 uniform sampler2D specular;
@@ -155,7 +155,7 @@ void sampleNebulaNoise(vec2 coord, inout float colorMixer, inout float noise) {
 
 // Main //
 void main() {
-    vec4 albedo = texture2D(tex, texCoord) * color;
+    vec4 albedo = texture2D(gtexture, texCoord) * color;
 
     vec2 lightmap = clamp(lmCoord, vec2(0.0), vec2(1.0));
     vec3 newNormal = normal;
@@ -249,7 +249,7 @@ void main() {
 
                 albedo.rgb += nebula * colormult;
             }
-            vec3 portalSample = pow(texture2D(tex, coord * 2.0).rgb * portalColors[i-1], vec3(0.75));
+            vec3 portalSample = pow(texture2D(gtexture, coord * 2.0).rgb * portalColors[i-1], vec3(0.75));
             albedo.rgb += portalSample * length(portalSample) * colormult * 12.0;
         }
     } else {

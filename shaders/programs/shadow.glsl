@@ -23,7 +23,7 @@ uniform vec3 cameraPosition;
 uniform sampler2D noisetex;
 #endif
 
-uniform sampler2D tex;
+uniform sampler2D gtexture;
 
 // Global Variables //
 #ifdef WATER_CAUSTICS
@@ -37,7 +37,7 @@ float eBS = eyeBrightnessSmooth.y / 240.0;
 
 // Main //
 void main() {
-	vec4 albedoTexture = texture2D(tex, texCoord);
+	vec4 albedoTexture = texture2D(gtexture, texCoord);
 	vec4 albedo = albedoTexture;
  
 	#ifndef SHADOW_COLORWHEEL

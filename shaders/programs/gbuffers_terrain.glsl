@@ -61,7 +61,7 @@ uniform vec3 fogColor;
 
 uniform vec4 lightningBoltPosition;
 
-uniform sampler2D tex, noisetex;
+uniform sampler2D gtexture, noisetex;
 #ifdef PBR
 uniform sampler2D specular;
 uniform sampler2D normals;
@@ -162,7 +162,7 @@ vec2 dcdy = dFdy(texCoord);
 
 // Main //
 void main() {
-	vec4 albedoTexture = texture2D(tex, texCoord);
+	vec4 albedoTexture = texture2D(gtexture, texCoord);
 	vec4 albedo = albedoTexture;
  
 	#ifndef GBUFFERS_TERRAIN_COLORWHEEL
@@ -200,7 +200,7 @@ void main() {
 	
 	#ifdef PARALLAX
 	newCoord = getParallaxCoord(texCoord, parallaxFade, surfaceDepth);
-	albedo = texture2DGradARB(tex, newCoord, dcdx, dcdy) * vec4(color.rgb, 1.0);
+	albedo = texture2DGradARB(gtexture, newCoord, dcdx, dcdy) * vec4(color.rgb, 1.0);
 	#endif
 	#endif
 
