@@ -839,12 +839,8 @@ vec3 pow8(vec3 x) {return x*x*x*x*x*x*x*x;}
 #undef SELF_SHADOW
 #endif
 
-#if !defined MC_OS_MAC && MC_VERSION >= 11902
+#if !defined MC_OS_MAC && MC_VERSION >= 11902 && !((defined MC_GL_VENDOR_INTEL || defined MC_GL_RENDERER_INTEL) && defined MC_OS_WINDOWS)
 #define VX_SUPPORT
-#endif
-
-#if (defined MC_GL_VENDOR_INTEL || defined MC_GL_RENDERER_INTEL) && MC_OS_WINDOWS
-#undef VX_SUPPORT
 #endif
 
 #ifdef ADVANCED_MATERIALS

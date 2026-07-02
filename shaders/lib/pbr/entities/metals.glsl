@@ -11,13 +11,13 @@ if (currentRenderedItemId == 1502) { // Iron tools, armor and ingots
 } else if (currentRenderedItemId == 1506) { // Copper tools, armor and ingots
     smoothness = max(smoothness, 0.58 * generatedMetalPixel);
 } else if (currentRenderedItemId == 1507) { // Iron blocks and utility metals
-    smoothness = max(smoothness, min(0.78, 0.10 + lAlbedo * 0.50) * generatedMetalPixel);
+    smoothness = max(smoothness, min(0.68, 0.10 + lAlbedo * 0.40) * generatedMetalPixel);
 } else if (currentRenderedItemId == 1508) { // Gold blocks and gold-like metal items
-    smoothness = max(smoothness, min(0.88, 0.16 + lAlbedo * 0.56) * generatedMetalPixel);
+    smoothness = max(smoothness, min(0.68, 0.16 + lAlbedo * 0.46) * generatedMetalPixel);
 } else if (currentRenderedItemId == 1509) { // Diamond and emerald blocks
-    smoothness = max(smoothness, min(0.84, 0.12 + lAlbedo * 0.54) * generatedMetalPixel);
+    smoothness = max(smoothness, min(0.65, 0.12 + lAlbedo * 0.44) * generatedMetalPixel);
 } else if (currentRenderedItemId == 1510) { // Copper blocks
-    smoothness = max(smoothness, min(0.86, 0.08 + lAlbedo * 0.58) * generatedMetalPixel);
+    smoothness = max(smoothness, min(0.66, 0.08 + lAlbedo * 0.48) * generatedMetalPixel);
 } else if (currentRenderedItemId == 1511) { // Raw metal blocks
     smoothness = max(smoothness, min(0.62, 0.05 + lAlbedo * 0.30) * generatedMetalPixel);
 } else if (currentRenderedItemId == 1512) { // Netherite
