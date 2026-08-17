@@ -1,43 +1,70 @@
-### **About**
-+ Solas is a fantasy stylized shaderpack aiming to provide stunning visuals at a moderate performance cost. Screenshots showcasing the shader can be found in the **Gallery** section.
+# Solas-Shader-Classic
 
-------------------------------------
+A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Minecraft 1.21+ (26.x) with backported enhancements from later versions.
 
-### **Main features**
-+ **Advanced lighting**
-  - Colored block lighting
-  - Realtime shadows without light leaking in caves
-  - Cloud shadows
-  - Subsurface scattering on certain blocks
-+ **High quality volumetrics**
-  - 3D Clouds, crepuscular rays, fireflies, Nether smoke, Ender protoplanetary disk
-+ **Beautiful sky effects**
-  - Aurora, Milky Way, Ender Nebula and Black Hole, rainbows
-+ **Customizable post-processing**
-  - Fine-tuned tonemapping, bloom, lens flare, chromatic aberration, depth of field, motion blur, tilt-shift
-+ **Realistic water**
-  - Procedural waves, caustics, light absorption and refraction
-+ **Integrated PBR resourcepack**
-  - Emissive textures, reflective materials and procedurally generated normals
-+ **PBR resourcepacks support**
-  - Both **LabPBR** and **OldPBR/SeusPBR** formats are supported
-  - Turn on "**PBR Resourcepack**" in shader settings!
-+ **Mod compatibility**
-  - Distant Horizons
-  - Iris Shaders (Preferred)
-  - OptiFine (Custom skyboxes and colored block lighting are **not supported**)
+> **⚠️ Important Notice**  
+> This is an **unofficial fork** and is **not affiliated with the original author Septonious**.  
+> Please **do not report any issues** encountered with this fork to the original Solas Shader repository or its author.  
+> All bug reports should be directed to this repository's issue tracker. Fixes are provided by the maintainer on a best-effort basis – no guaranteed timeline.
 
-------------------------------------
+---
 
-### **Important links**
-+ **Discord**: [[Clickable]](https://discord.gg/HEw9DbQwuM)
-+ **GitHub**: [[Clickable]](https://github.com/Septonious/Solas-Shader)
-+ **Boosty** (analogous to **Patreon**): [[Clickable]](https://boosty.to/septonious)
+## ✨ Features at a Glance
 
-------------------------------------
+### Ported from v3.7
+- Lens Flare
+- DOF (Depth of Field) with manual focus
+- Vanilla Water
+- Double-layer Blocky Clouds
+- 3D End Portal
 
-### **Credits**
-+ **EminGT** and **gri573** for improved shadow sampling.
-+ **SixthSurge** for voxelization & light propagation algorithm.
-+ **Capt Tatsu** for antialiasing and a few other pieces of BSL's code.
-+ **Community members** for contributing to Solas in different ways.
+### Enhanced
+- Vanilla Sun & Moon
+- Stars
+- Volumetric Light
+- Flare Style Presets
+- End Flare
+
+### Fixed
+- SSR (Screen Space Reflections)
+- Redstone puddle reflections
+- Fast Leaves rendering issues
+
+---
+
+## 📦 Installation
+
+1. Download the latest release from the [Releases](../../releases) page.
+2. Place the `.zip` file into your Minecraft `shaderpacks` folder.
+3. Launch Minecraft, go to **Options → Video Settings → Shaders**, and select `Solas-Shader-Classic`.
+4. Enjoy the classic look with modern compatibility!
+
+---
+
+## 📜 License & Credits
+
+- **Original Solas Shader** – all rights and credits belong to **Septonious**.
+- This fork is **non‑commercial** and provided “as is”.
+
+---
+
+## 🙏 Acknowledgements
+
+Huge thanks to **Septonious** for creating the original Solas Shader and for granting permission to host this fork.  
+If you enjoy this shader pack, please consider supporting the original project.
+
+---
+
+## 🐛 Bug Reports
+
+If you find a bug specific to this fork, please [open an issue](../../issues) with:
+- Minecraft version
+- GPU and driver version
+- Steps to reproduce
+- Any relevant logs or screenshots
+
+I will try to address them as time permits, but **please be patient** – this is a hobby project maintained in my free time.
+
+---
+
+**Happy shading!** 🎨✨
