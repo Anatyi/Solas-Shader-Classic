@@ -1,6 +1,6 @@
 #version 130
 
-#define VSH
 #define END
+#define VSH
 
-#include "/programs/composite14.glsl"
+#include "/program/composite14.glsl"

@@ -3,4 +3,4 @@
 #define OVERWORLD
 #define FSH
 
-#include "/programs/gbuffers_beaconbeam.glsl"
+#include "/program/gbuffers_beaconbeam.glsl"

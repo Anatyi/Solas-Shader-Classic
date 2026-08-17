@@ -3,4 +3,4 @@
 #define OVERWORLD
 #define VSH
 
-#include "/programs/gbuffers_armor_glint.glsl"
+#include "/program/gbuffers_armor_glint.glsl"

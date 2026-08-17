@@ -1,6 +1,6 @@
 #version 130
 
-#define VSH
 #define OVERWORLD
+#define VSH
 
-#include "/programs/gbuffers_terrain.glsl"
+#include "/program/gbuffers_terrain.glsl"

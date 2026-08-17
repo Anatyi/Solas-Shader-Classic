@@ -1,6 +1,6 @@
-#version 130
+#version 130 
 
 #define END
 #define VSH
 
-#include "/programs/gbuffers_spidereyes.glsl"
+#include "/program/gbuffers_spidereyes.glsl"

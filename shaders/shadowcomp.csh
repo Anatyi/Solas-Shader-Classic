@@ -2,4 +2,4 @@
 
 #define OVERWORLD
 
-#include "/programs/shadowcomp.glsl"
+#include "/program/shadowcomp.glsl"

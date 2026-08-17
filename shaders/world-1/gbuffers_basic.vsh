@@ -1,6 +1,6 @@
 #version 130
 
-#define VSH
 #define NETHER
+#define VSH
 
-#include "/programs/gbuffers_basic.glsl"
+#include "/program/gbuffers_basic.glsl"

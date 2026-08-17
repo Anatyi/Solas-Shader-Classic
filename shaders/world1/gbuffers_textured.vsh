@@ -1,6 +1,6 @@
-#version 130
+#version 130 
 
-#define VSH
 #define END
+#define VSH
 
-#include "/programs/gbuffers_textured.glsl"
+#include "/program/gbuffers_textured.glsl"

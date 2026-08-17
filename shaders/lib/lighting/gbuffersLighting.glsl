@@ -1,332 +1,234 @@
-#if defined END_FLASHES && (!defined VOXY_OPAQUE && !defined VOXY_TRANSLUCENT)
-uniform vec3 endFlashPosition;
-uniform float endFlashIntensity;
+#ifdef DYNAMIC_HANDLIGHT
+uniform vec3 relativeEyePosition;
+
+#include "/lib/lighting/handlight.glsl"
 #endif
 
-void gbuffersLighting(in vec4 color, inout vec4 albedo, in vec3 screenPos, in vec3 viewPos, in vec3 worldPos, in vec3 newNormal, inout vec3 shadow, in vec2 lightmap, 
+void gbuffersLighting(inout vec4 albedo, in vec3 screenPos, in vec3 viewPos, in vec3 worldPos, inout vec3 shadow, in vec2 lightmap, 
                       in float NoU, in float NoL, in float NoE,
-                      in float subsurface, in float emission, in float smoothness, in float metalness, in float f0, in float parallaxShadow) {
-    //Metalness hotfix
-    metalness = clamp(metalness, 0.0, 0.85);
-
+                      in float subsurface, in float smoothness, in float emission, in float parallaxShadow) {
     //Variables
     float originalNoL = NoL;
     float lViewPos = length(viewPos.xz);
-    float lAlbedo = length(albedo.rgb);
-    float vanillaAo = color.a * color.a;
-    vec3 worldNormal = normalize(ToWorld(newNormal * 100000000.0));
+    float ao = color.a * color.a;
+    vec3 worldNormal = normalize(ToWorld(normal * 100000000.0));
 
     //Vanilla Directional Lighting
     float vanillaDiffuse = (0.25 * NoU + 0.75) + (0.667 - abs(NoE)) * (1.0 - abs(NoU)) * 0.15;
-            vanillaDiffuse *= vanillaDiffuse;
-            vanillaDiffuse = fmix(1.0, vanillaDiffuse, lightmap.y);
+          vanillaDiffuse *= vanillaDiffuse;
+
+    #ifdef OVERWORLD
+    vanillaDiffuse = mix(1.0, vanillaDiffuse, eBS);
+    #endif
 
     //Block Lighting
-    float blockLightMap = pow6(lightmap.x * lightmap.x) * 2.0 + max(lightmap.x - 0.05, 0.0);
-            blockLightMap *= blockLightMap * 0.5;
+    float blockLightMap = pow6(lightmap.x * lightmap.x) * 3.0 + max(lightmap.x - 0.05, 0.0);
+          blockLightMap *= blockLightMap * 0.5;
 
-    vec3 blockLighting = blockLightCol * blockLightMap * (1.0 - emission);
+    vec3 blockLighting = blockLightCol * blockLightMap * (1.0 - min(emission, 1.0));
 
-    //Floodfill Lighting. Works only on Iris
-    #if !defined GBUFFERS_BASIC && !defined GBUFFERS_WATER && !defined GBUFFERS_TEXTURED && !defined DH_TERRAIN && !defined DH_WATER && defined VX_SUPPORT
-    vec3 voxelPos = worldToVoxel(worldPos);
+    //Floodfill lighting
+    #if !defined GBUFFERS_BASIC && !defined GBUFFERS_WATER && !defined GBUFFERS_TEXTURED && defined IS_IRIS
+    vec3 voxelPos = ToVoxel(worldPos);
 
-    float floodfillFade = maxOf(abs(worldPos) / (voxelVolumeSize * 0.5));
-          floodfillFade = clamp(floodfillFade, 0.0, 1.0);
+    #ifdef GBUFFERS_TERRAIN
+    float floodfillDisable = float(mat == 10012);
+    #else
+    float floodfillDisable = 0.0;
+    #endif
+
+    float floodfillFade = maxOf(abs(worldPos));
+            floodfillFade /= voxelVolumeSize * 0.5;
+            floodfillFade = clamp(floodfillFade, 0.0, 1.0);
 
     vec3 voxelLighting = vec3(0.0);
 
-    if (floodfillFade > 0 && emission == 0.0) {
+    if (isInsideVoxelVolume(voxelPos) && floodfillDisable < 0.5) {
         vec3 voxelSamplePos = voxelPos + worldNormal;
              voxelSamplePos /= voxelVolumeSize;
              voxelSamplePos = clamp(voxelSamplePos, 0.0, 1.0);
 
-        vec3 lightVolume = vec3(0.0);
-        if ((frameCounter & 1) == 0) {
-            lightVolume = texture3D(floodfillSamplerCopy, voxelSamplePos).rgb;
-        } else {
-            lightVolume = texture3D(floodfillSampler, voxelSamplePos).rgb;
-        }
-        voxelLighting = pow(lightVolume, vec3(1.0 / FLOODFILL_RADIUS));
-        //voxelLighting *= sqrt(length(max(vec3(0.0), voxelLighting - vec3(0.02)))) * 2.0;
+        vec3 lighting = texture3D(floodfillSampler, voxelSamplePos).rgb;
+        voxelLighting = pow(lighting, vec3(1.0 / FLOODFILL_RADIUS));
+        voxelLighting *= 0.5 + 0.5 * length(voxelLighting);
 
         #ifdef GBUFFERS_ENTITIES
         voxelLighting += pow16(lightmap.x) * blockLightCol;
         #endif
 
-        float mixFactor = 1.0 - floodfillFade * floodfillFade;
+        float mixFactor = 1.0 - floodfillFade;
 
-        blockLighting = fmix(blockLighting, voxelLighting * FLOODFILL_BRIGHTNESS, mixFactor * 0.95);
+        blockLighting = mix(blockLighting, voxelLighting * FLOODFILL_BRIGHTNESS, mixFactor * 0.9);
     }
     #endif
 
     //Dynamic Hand Lighting
     #ifdef DYNAMIC_HANDLIGHT
-    blockLighting += getHandLightColor(blockLighting, worldPos + relativeEyePosition);
+    getHandLightColor(blockLighting, length(viewPos + normalize(relativeEyePosition * 1000.0)));
     #endif
 
-    //Dim blocklight in sunlight
     #ifdef OVERWORLD
-    blockLighting *= 1.0 - lightmap.y * lightmap.y * 0.5 * sunVisibility;
+    blockLighting *= 1.0 - pow4(lightmap.y) * timeBrightness * 0.75;
     #endif
 
     //Shadow Calculations
     //Some code made by Emin and gri573
-    float shadowVisibility = maxOf(abs(worldPos) / (vec3(min(shadowDistance, far))));
-            shadowVisibility = clamp(shadowVisibility, 0.0, 1.0);
-            shadowVisibility = 1.0 - pow6(shadowVisibility);
+    float shadowLength = shadowDistance * 0.9166667 - length(worldPos.xz);
+    float shadow0 = 0.0;
 
-            #ifdef OVERWORLD
-            shadowVisibility *= caveFactor;
-            #endif
-
-    //Subsurface scattering
-    #if defined OVERWORLD
-    float VoL = clamp(dot(normalize(viewPos), lightVec), 0.0, 1.0);
-    #elif defined END
-    float VoL = clamp(dot(normalize(viewPos), sunVec), 0.0, 1.0);
+    #ifdef GBUFFERS_WATER
+    shadowLength = 1.0;
     #endif
 
-    float VoUPositive = dot(normalize(viewPos), upVec) * 0.5 + 0.5;
-
-    float sss = 0.0;
-    #if defined OVERWORLD || defined END
+    //Subsurface scattering
+    float scattering = 0.0;
+    
+    #if defined OVERWORLD && (defined GBUFFERS_TERRAIN || defined GBUFFERS_TEXTURED)
     if (subsurface > 0.0) {
-        float wrap = subsurface * 0.8;
-        float wrapNoL = clamp((NoL + wrap) / (1.0 + wrap), 0.0, 1.0);
-        float wrapTerm = wrapNoL * wrapNoL;
-
-        float scatter = pow6(clamp(VoL * 0.5 + 0.5, 0.0, 1.0));
-                scatter *= subsurface * subsurface;
-
-        sss = fmix(wrapTerm, 1.0, scatter);
-
-        #ifdef OVERWORLD
-        sss *= shadowFade * (1.0 - wetness * 0.4);
-        #endif
-
-        NoL = fmix(NoL, sss * (0.25 + VoUPositive * 0.75), subsurface * shadowVisibility * 0.65);
+        float distFactor = clamp(shadowLength, 0.0, 1.0);
+        float VoL = clamp(dot(normalize(viewPos), lightVec), 0.0, 1.0);
+        scattering = pow8(VoL) * shadowFade * (1.0 - wetness * 0.5);
+        if (subsurface > 0.49 && subsurface < 0.51) { //Leaves
+            NoL += 0.5 * distFactor * (0.75 + scattering * 0.75);
+        } else if (subsurface > 0.39 && subsurface < 0.41) {
+            NoL += 0.1;
+        } else if (subsurface > 0.09 && subsurface < 0.11) {
+            NoL += 0.25;
+        } else {
+            NoL += distFactor * (0.35 + scattering);
+        }
     }
     #endif
 
-    //Scene Lighting
-    float fade = clamp(length(worldPos) * 0.01, 0.0, 1.0);
-    vec3 worldPosM = worldPos;
+    if (NoL > 0.0001 && shadowLength > 0.0) {
+        vec3 worldPosM = worldPos;
 
-    #ifndef NETHER
-    #ifdef REALTIME_SHADOWS
-    if (NoL > 0.0001 && shadowVisibility > 0.0) {
-        float lightmapS = lightmap.y * lightmap.y * (3.0 - 2.0 * lightmap.y);
-
-        #ifdef GBUFFERS_TEXTURED
-            vec3 centerWorldPos = floor(worldPos + cameraPosition) - cameraPosition + 0.5;
-            worldPosM = fmix(centerWorldPos, worldPosM + vec3(0.0, 0.02, 0.0), lightmapS);
-        #else
-            //Shadow bias without peter-panning
-            float distanceBias = pow(dot(worldPos, worldPos), 0.75);
-                    distanceBias = 0.1 + 0.0004 * distanceBias * (1.0 - float(subsurface > 0.01));
-            vec3 bias = worldNormal * distanceBias;
-
-            //Fix light leaking in caves
-            if (lightmapS < 0.999) {
-                #ifdef GBUFFERS_HAND
-                    worldPosM = fmix(vec3(0.0), worldPosM, 0.2 + 0.8 * lightmapS);
-                #else
-                    vec3 edgeFactor = 0.2 * (0.5 - fract(worldPosM + cameraPosition + worldNormal * 0.01));
-
-                    #ifdef GBUFFERS_WATER
-                        bias *= 0.7;
-                        worldPosM += (1.0 - lightmapS) * edgeFactor;
-                    #endif
-
-                    worldPosM += (1.0 - pow2(pow2(max(color.a, lightmapS)))) * edgeFactor;
-                #endif
-            }
-
+        #ifndef GBUFFERS_TEXTURED
+            vec3 bias = worldNormal * min(0.1 + length(worldPos) / 250.0, 0.75);
+            vec3 edgeFactor = 0.25 * (0.5 - fract(worldPosM + cameraPosition + worldNormal * 0.01));
+            worldPosM += (1.0 - pow2(pow2(max(color.a, lightmap.y * lightmap.y)))) * edgeFactor;
             worldPosM += bias;
-        #endif
-
-        #if SHADOW_PIXEL > 0
-        worldPosM = (floor((worldPosM + cameraPosition) * SHADOW_PIXEL + 0.01) + 0.5) / SHADOW_PIXEL - cameraPosition;
+        #else
+            vec3 centerWorldPos = floor(worldPosM + cameraPosition) - cameraPosition + 0.5;
+            worldPosM = mix(centerWorldPos, worldPosM + vec3(0.0, 0.02, 0.0), lightmap.y);
         #endif
 
         vec3 shadowPos = ToShadow(worldPosM);
+
+        float viewDistance = 1.0 - clamp(lViewPos * 0.01, 0.0, 1.0);
+
         float offset = 0.001;
+        #if defined GBUFFERS_TERRAIN
+              offset *= 1.0 + viewDistance * (float(subsurface > 0.3) * 3.0 + float(subsurface == 0.5) * 2.0);
+              offset *= 1.0 - viewDistance * float(subsurface == 0.3) * 0.4;
+        #elif defined GBUFFERS_TEXTURED
+              offset *= 0.25;
+        #endif
 
-        computeShadow(shadow, shadowPos, offset, subsurface, lightmap.y);
+        #ifndef GBUFFERS_TERRAIN
+        float subsurface = 0.0;
+        #endif
+
+        shadow = computeShadow(shadowPos, offset, lightmap.y, subsurface, viewDistance, shadow0);
+    } else {
+        shadow = getFakeShadow(lightmap.y);
+        if (subsurface > 0.0) shadow *= originalNoL;
     }
-    #else
-    shadowVisibility = 0.0;
-    #endif
 
-    NoL = clamp(NoL * 1.01 - 0.01, 0.0, 1.0);
-
-    #if defined PBR && defined PARALLAX && defined GBUFFERS_TERRAIN
+    #if defined PBR && defined GBUFFERS_TERRAIN
     shadow *= parallaxShadow;
     #endif
 
-    vec3 realShadow = shadow * NoL;
-    vec3 fakeShadow = getFakeShadow(lightmap.y) * NoL;
+    shadow *= clamp(NoL * 1.01 - 0.01, 0.0, 1.0);
 
-    shadow = fmix(fakeShadow, realShadow, vec3(shadowVisibility));
-    #endif
+    //Scene Lighting
+    #ifdef OVERWORLD
+    float rainFactor = 1.0 - wetness * 0.75;
+    vec3 sceneLighting = mix(ambientCol * lightmap.y * lightmap.y, lightCol, shadow * rainFactor * shadowFade);
+         sceneLighting *= 1.0 + scattering * shadow;
 
-    //Cloud Shadows
-    float cloudShadow = 1.0;
-
-    #ifdef VC_SHADOWS
-    float speed = VC_SPEED;
-    float amount = VC_AMOUNT;
-    float thickness = VC_THICKNESS;
-    float density = VC_DENSITY;
-    float height = VC_HEIGHT;
-    float scale = VC_SCALE;
-
-    getDynamicWeather(speed, amount, thickness, density, height, scale);
-
-    float cloudTop = height + thickness * scale * 1.18;
-
-    if (worldPos.y + cameraPosition.y < cloudTop) {
-        float time = (timeAngle + float(worldDay % 100 + 5)) * 1200.0;
-        vec2 wind = vec2(time * speed * 0.005, sin(time * speed * 0.1) * 0.01) * speed * 0.05;
-
-        vec3 worldLightVec = mat3(gbufferModelViewInverse) * lightVec;
-        vec3 cloudShadowPos = worldPos + cameraPosition + (worldLightVec / max(abs(worldLightVec.y), 0.05)) * max(cloudTop - worldPos.y - cameraPosition.y, 0.0);
-
-        float noise = 0.0;
-        getCloudShadow(cloudShadowPos.xz / scale, wind, amount, density, noise);
-
-        cloudShadow = noise;
-    }
-    shadow *= cloudShadow;
+    #elif defined END
+    vec3 sceneLighting = mix(endAmbientCol, endLightCol, shadow) * 0.25;
+    #elif defined NETHER
+    vec3 sceneLighting = pow(netherColSqrt, vec3(0.75)) * 0.03;
     #endif
 
     //Specular Highlight
     vec3 specularHighlight = vec3(0.0);
 
-    #if (defined GBUFFERS_TERRAIN || defined GBUFFERS_ENTITIES || defined GBUFFERS_BLOCK || defined VOXY_OPAQUE) && !defined NETHER && defined SPECULAR_HIGHLIGHTS
-    if (emission < 0.01) {
-        float smoothnessF = 0.10 + lAlbedo * 0.15;
-        #ifdef END
-              smoothness -= 0.10;
-        #endif
-              smoothnessF = fmix(smoothnessF, 1.0, smoothness);
+    #if defined GBUFFERS_TERRAIN && !defined NETHER
+	vec3 baseReflectance = vec3(0.1);
 
-        float effectiveF0 = (f0 > 0.0) ? f0 : (metalness > 0.5 ? 1.0 : 0.5);
+    float smoothnessF = 0.15 + length(albedo.rgb) * 0.25 + NoL * 0.15 + float(subsurface > 0.0) * 0.05;
+          smoothnessF = mix(smoothnessF, 0.95, smoothness);
 
+    //Thin/transparent blocks (redstone wire, rails, pressure plates, carpets, glass, etc., material == 2)
+    //don't get the sun specular highlight — it looks like an unnatural full-surface reflection on them
+    if (mat != 10002) {
         #ifdef OVERWORLD
-        specularHighlight = getSpecularHighlight(
-            newNormal, viewPos, smoothnessF, metalness, albedo.rgb,
-            effectiveF0, lightColSqrt, shadow / max(NoL + 0.001, 0.001), color.a
-        );
+        specularHighlight = getSpecularHighlight(normal, viewPos, smoothnessF, baseReflectance, lightCol, shadow * vanillaDiffuse, color.a);
         #else
-        specularHighlight = getSpecularHighlight(
-            newNormal, viewPos, smoothnessF, metalness, albedo.rgb,
-            effectiveF0, endLightColSqrt * 0.125, shadow / max(NoL + 0.001, 0.001), color.a
-        );
+        specularHighlight = getSpecularHighlight(normal, viewPos, smoothnessF, baseReflectance, endLightCol, shadow * vanillaDiffuse, color.a);
         #endif
-
-        // Metalness hotfix
-        if (metalness > 0.5) {
-            specularHighlight = max(specularHighlight * 0.5, vec3(0.0));
-        } else {
-            specularHighlight = max(specularHighlight * 1.1, vec3(0.0));
-            specularHighlight *= albedo.rgb;
-        }
     }
-    #endif
 
-    //Main color mixing
-    #ifdef OVERWORLD
-    ambientCol *= 0.05 + lightmap.y * lightmap.y * 0.95;
-    ambientCol *= 1.0 - VoL * VoL * (0.35 - wetness * 0.35) * sunVisibility;
-
-    float rainFactor = 1.0 - wetness * 0.75;
-
-    vec3 sceneLighting = fmix(ambientCol, lightCol, shadow * rainFactor * shadowFade) * (0.25 + lightmap.y * 0.75);
-            sceneLighting *= 1.0 + sss * shadow * 2.0;
-
-    //Aurora influence
-    #ifdef AURORA_LIGHTING_INFLUENCE
-    //The index of geomagnetic activity. Determines the brightness of Aurora, its widespreadness across the sky and tilt factor
-    float kpIndex = abs(worldDay % 9 - worldDay % 4);
-            kpIndex = kpIndex - int(kpIndex == 1) + int(kpIndex > 7 && worldDay % 10 == 0);
-            kpIndex = min(max(kpIndex, 0) + isSnowy * 3, 9);
-    #ifdef AURORA_ALWAYS_VISIBLE
-            kpIndex = 7;
-    #endif
-
-    //Total visibility of aurora based on multiple factors
-    float auroraVisibility = pow6(moonVisibility) * (1.0 - wetness) * caveFactor;
-
-    //Aurora tends to get brighter and dimmer when plasma arrives or fades away
-    float pulse = 0.5 + 0.5 * sin(frameTimeCounter * 0.08 + sin(frameTimeCounter * 0.013) * 0.6);
-          pulse = smoothstep(0.15, 0.85, pulse);
-
-    float longPulse = sin(frameTimeCounter * 0.025 + sin(frameTimeCounter * 0.004) * 0.8);
-          longPulse = longPulse * (1.0 - 0.15 * abs(longPulse));
-
-    kpIndex *= 1.0 + longPulse * 0.25;
-    kpIndex /= 9.0;
-
-    //When aurora turns red
-	float redPhase = pow3(kpIndex) * (1.0 - pulse);
-
-    auroraVisibility *= kpIndex * (1.0 + max(longPulse * 0.5, 0.0));
-    auroraVisibility = min(auroraVisibility, 2.0) * AURORA_BRIGHTNESS;
-
-    float colorMixer = 0.65 + pow3(kpIndex) * pulse * 0.1;
-    vec3 lowColor = vec3(0.45, 1.55 - redPhase * 0.5, 0.0);
-    vec3 upColor = vec3(0.95 + redPhase * 5.0, 0.10, 0.0);
-    vec3 auroraColor = fmix(lowColor, upColor, colorMixer);
-
-    sceneLighting *= (1.0 - auroraVisibility) + auroraVisibility * auroraColor;
-    #endif
-    #elif defined END
-    vec3 sceneLighting = fmix(endAmbientCol, endLightCol, shadow) * 0.25;
-    #ifdef END_FLASHES
-    vec3 worldEndFlashPosition = mat3(gbufferModelViewInverse) * endFlashPosition;
-    float endFlashDirection = clamp(dot(normalize(ToWorld(endFlashPosition * 100000000.0)), worldNormal), 0.0, 1.0);
-    sceneLighting = fmix(sceneLighting, endFlashCol, 0.125 * endFlashDirection * endFlashDirection * endFlashIntensity);
-    #endif
-    #elif defined NETHER
-    vec3 sceneLighting = pow(netherColSqrt, vec3(0.75)) * 0.025;
-    #endif
-
-    //Lightning Flash
-    float lightningFlash = 0.0;
-
-    #ifdef IS_IRIS
-    if (lightningBoltPosition.w > 0) {
-        lightningFlash = lightningFlashEffect(lightningBoltPosition, worldPos, lightmap.y, 256.0);
-    }
+    specularHighlight = clamp(specularHighlight, vec3(0.0), vec3(3.0));
     #endif
 
     //Minimal Lighting
-    #ifdef OVERWORLD
-    sceneLighting += minLightCol * (1.0 - lightmap.y) * (1.0 - eBS);
+    #if defined OVERWORLD || defined END
+    sceneLighting += minLightCol * (1.0 - lightmap.y);
     #endif
 
     //Night vision
-    sceneLighting += nightVision * vec3(0.075, 0.15, 0.1);
+    sceneLighting += nightVision * vec3(0.2, 0.3, 0.2);
+
+    //Aurora Lighting
+    vec3 auroraLighting = vec3(0.0);
+
+    #if defined AURORA && !defined GBUFFERS_TEXTURED && !defined GBUFFERS_WATER && !defined GBUFFERS_BASIC
+	float visibilityMultiplier = pow8(1.0 - sunVisibility) * (1.0 - wetness) * pow4(lightmap.y) * AURORA_BRIGHTNESS;
+	float auroraVisibility = 0.0;
+
+	#ifdef AURORA_FULL_MOON_VISIBILITY
+	auroraVisibility = mix(auroraVisibility, 1.0, float(moonPhase == 0));
+	#endif
+
+	#ifdef AURORA_COLD_BIOME_VISIBILITY
+	auroraVisibility = mix(auroraVisibility, 1.0, isSnowy);
+	#endif
+
+    #ifdef AURORA_ALWAYS_VISIBLE
+    auroraVisibility = 1.0;
+    #endif
+
+	auroraVisibility *= visibilityMultiplier;
+    auroraLighting = vec3(0.4, 2.5, 0.9) * 0.01 * auroraVisibility * (0.5 + NoU * 0.5);
+    #endif
 
     //Vanilla AO
     #ifdef VANILLA_AO
-    float aoMixer = (1.0 - vanillaAo) * (1.0 - blockLightMap) * (1.0 - float(emission > 0.0));
-    #if defined OVERWORLD || defined END
-            aoMixer *= 1.0 - float(length(shadow) > 0.0) * 0.5;
+    float aoMixer = (1.0 - ao) * (1.0 - pow6(lightmap.x));
+    albedo.rgb = mix(albedo.rgb, albedo.rgb * ao * ao, aoMixer * AO_STRENGTH);
     #endif
 
-    albedo.rgb = fmix(albedo.rgb, albedo.rgb * pow(vanillaAo, 1.0 + lightmap.y), aoMixer);
+    //RSM GI//
+    vec3 gi = vec3(0.0);
+
+    #if defined GI && defined GBUFFERS_TERRAIN
+    vec2 prevScreenPos = Reprojection(screenPos);
+    gi = texture2D(gaux1, prevScreenPos).rgb;
+    gi = pow4(gi) * 32.0 * lightmap.y;
+
+    #if defined OVERWORLD
+    gi *= lightCol;
+    #elif defined NETHER
+    gi *= endLightCol;
+    #endif
     #endif
 
     albedo.rgb = pow(albedo.rgb, vec3(2.2));
-
-    vec3 diffuseAlbedo = albedo.rgb * (1.0 - metalness);
-            diffuseAlbedo *= sceneLighting + blockLighting + emission * EMISSION_STRENGTH + lightningFlash;
-            diffuseAlbedo *= vanillaDiffuse;
-
-    vec3 finalColor = diffuseAlbedo + specularHighlight * vanillaDiffuse;
-
-    albedo.rgb = pow(max(finalColor, vec3(0.0)), vec3(1.0 / 2.2));
+    albedo.rgb *= (sceneLighting + auroraLighting) * vanillaDiffuse + blockLighting + gi + emission;
+    albedo.rgb += specularHighlight;
+    albedo.rgb = pow(albedo.rgb, vec3(1.0 / 2.2));
 }

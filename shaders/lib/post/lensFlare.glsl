@@ -1,4 +1,4 @@
-//Lens flare from BSL & Prismarine Shader, highly modified
+//Lens flare from BSL & Prismarine Shader, highly modified (ported from V3.7)
 float fovmult = gbufferProjection[1][1] / 1.37373871;
 
 float getLuminance(vec3 color) {
@@ -6,7 +6,7 @@ float getLuminance(vec3 color) {
 }
 
 vec2 getLightPos() {
-	vec4 tpos = gbufferProjection * vec4(sunPosition, 1.0);
+	vec4 tpos = gbufferProjection * vec4(sunVec * 100.0, 1.0);
 	tpos.xyz /= tpos.w;
 	return tpos.xy / tpos.z * 0.5;
 }
@@ -32,7 +32,7 @@ float RingLensTransform(float lensFlare) {
 float RingLens(vec2 lightPos, float size, float distA, float distB) {
 	float lensFlare1 = RingLensTransform(BaseLens(lightPos, size, distA, 1.0));
 	float lensFlare2 = RingLensTransform(BaseLens(lightPos, size, distB, 1.0));
-	
+
 	float lensFlare = clamp(lensFlare2 - lensFlare1, 0.0, 1.0);
 	lensFlare *= sqrt(lensFlare);
 	return lensFlare;
@@ -48,14 +48,37 @@ float AnamorphicLens(vec2 lightPos, float size, float dist) {
 vec3 RainbowLens(vec2 lightPos, float size, float dist, float rad) {
 	vec2 lensCoord = (texCoord + (lightPos * dist - 0.5)) * vec2(aspectRatio,1.0);
 	float lens = clamp(1.0 - length(lensCoord) / (size * fovmult), 0.0, 1.0);
-	
-	vec3 rainbowLens = 
+
+	vec3 rainbowLens =
 		(smoothstep(0.0, rad, lens) - smoothstep(rad, rad * 2.0, lens)) * vec3(1.0, 0.0, 0.0) +
 		(smoothstep(rad * 0.5, rad * 1.5, lens) - smoothstep(rad * 1.5, rad * 2.5, lens)) * vec3(0.0, 1.0, 0.0) +
 		(smoothstep(rad, rad * 2.0, lens) - smoothstep(rad * 2.0, rad * 3.0, lens)) * vec3(0.0, 0.0, 1.0)
 	;
 
 	return rainbowLens;
+}
+
+//Lens flare coating style presets (cinema lens simulation)
+vec3 getLensFlareCoating() {
+	#if LENS_FLARE_STYLE == 1
+	return vec3(0.65, 0.85, 1.55); //Blue coating
+	#elif LENS_FLARE_STYLE == 2
+	return vec3(1.6, 0.75, 0.7); //Red coating
+	#elif LENS_FLARE_STYLE == 3
+	return vec3(0.7, 1.55, 0.8); //Green coating
+	#elif LENS_FLARE_STYLE == 4
+	return vec3(1.35, 0.7, 1.5); //Mixed cinema coating (magenta/teal)
+	#elif LENS_FLARE_STYLE == 5
+	return vec3(0.8, 0.55, 1.5); //End Purple
+	#elif LENS_FLARE_STYLE == 6
+	return vec3(1.45, 0.55, 1.5); //End Magenta (Chorus)
+	#elif LENS_FLARE_STYLE == 7
+	return vec3(0.5, 1.0, 1.3); //Void Cyan
+	#elif LENS_FLARE_STYLE == 8
+	return vec3(1.4, 1.15, 0.8); //End Stone
+	#else
+	return vec3(1.0); //Original
+	#endif
 }
 
 vec3 LensTint(vec3 lens, float truePos) {
@@ -91,7 +114,7 @@ void LensFlare(inout vec3 color, vec2 lightPos, float truePos, float multiplier)
 			#ifdef BASELENS6
 			BaseLens(lightPos, 0.3,  0.95, 1.0) * vec3(0.1, 0.2, 2.5) * 0.10 +
 			#endif
-			
+
 			#ifdef OVERLAPLENS1
 			OverlapLens(lightPos, 0.18, -0.30, -0.41) * vec3(2.5, 1.2, 0.1) * 0.110 +
 			#endif
@@ -107,8 +130,8 @@ void LensFlare(inout vec3 color, vec2 lightPos, float truePos, float multiplier)
 			#ifdef OVERLAPLENS5
 			OverlapLens(lightPos, 0.16,  0.24,  0.37) * vec3(1.0, 0.1, 2.5) * 0.115 +
 			#endif
-			
-			#ifdef POINT1	
+
+			#ifdef POINT1
 			PointLens(lightPos, 0.03, -0.55) * vec3(2.5, 1.6, 0.0) * 0.20 +
 			#endif
 			#ifdef POINT2
@@ -141,7 +164,7 @@ void LensFlare(inout vec3 color, vec2 lightPos, float truePos, float multiplier)
 			#ifdef POINT11
 			PointLens(lightPos, 0.04,  1.04) * vec3(13.2, 5.8, 1.5) * 0.25 +
 			#endif
-				
+
 			#ifdef RING1
 			RingLens(lightPos, 0.25, 0.43, 0.45) * vec3(0.10, 0.35, 2.50) * 1.5 +
 			#endif
@@ -205,6 +228,7 @@ void LensFlare(inout vec3 color, vec2 lightPos, float truePos, float multiplier)
 			RainbowLens(lightPos, 2.0, 4.0, 0.1) * 0.00
 		) * (1.0 - falloffOut);
 
+		lensFlare *= getLensFlareCoating();
 		lensFlare = LensTint(lensFlare, truePos);
 
 		#ifdef END

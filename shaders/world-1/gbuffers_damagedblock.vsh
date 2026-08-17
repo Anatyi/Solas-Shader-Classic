@@ -3,4 +3,4 @@
 #define NETHER
 #define VSH
 
-#include "/programs/gbuffers_damagedblock.glsl"
+#include "/program/gbuffers_damagedblock.glsl"

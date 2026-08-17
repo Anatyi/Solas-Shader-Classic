@@ -1,6 +1,6 @@
 #version 130
 
-#define FSH
 #define NETHER
+#define FSH
 
-#include "/programs/composite13.glsl"
+#include "/program/composite13.glsl"

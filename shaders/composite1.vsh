@@ -1,6 +1,6 @@
 #version 130
 
-#define VSH
 #define OVERWORLD
+#define VSH
 
-#include "/programs/composite1.glsl"
+#include "/program/composite1.glsl"

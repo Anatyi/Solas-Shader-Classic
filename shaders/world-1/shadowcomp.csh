@@ -2,4 +2,4 @@
 
 #define NETHER
 
-#include "/programs/shadowcomp.glsl"
+#include "/program/shadowcomp.glsl"

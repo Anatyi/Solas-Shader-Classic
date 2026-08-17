@@ -1,6 +1,6 @@
 #version 130
 
-#define VSH
 #define END
+#define VSH
 
-#include "/programs/deferred.glsl"
+#include "/program/deferred.glsl"

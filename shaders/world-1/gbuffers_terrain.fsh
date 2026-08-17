@@ -1,6 +1,8 @@
 #version 130
 
-#define FSH
-#define NETHER
+#extension GL_ARB_shader_texture_lod : enable
 
-#include "/programs/gbuffers_terrain.glsl"
+#define NETHER
+#define FSH
+
+#include "/program/gbuffers_terrain.glsl"

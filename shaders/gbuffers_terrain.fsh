@@ -1,6 +1,8 @@
 #version 130
 
-#define FSH
-#define OVERWORLD
+#extension GL_ARB_shader_texture_lod : enable
 
-#include "/programs/gbuffers_terrain.glsl"
+#define OVERWORLD
+#define FSH
+
+#include "/program/gbuffers_terrain.glsl"

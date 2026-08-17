@@ -1,5 +1,5 @@
 #version 430 compatibility
 
-#define END
+#define OVERWORLD
 
-#include "/programs/shadowcomp.glsl"
+#include "/program/shadowcomp.glsl"

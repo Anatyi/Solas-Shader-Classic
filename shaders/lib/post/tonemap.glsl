@@ -1,6 +1,6 @@
 vec3 Uncharted2Tonemap(vec3 x) {
     const float A = TONEMAP_HIGHLIGHTS;
-    const float B = 0.20;
+    const float B = 0.290;
     const float C = TONEMAP_SHADOWS;
     const float D = 0.15;
     float E = 0.01 * TONEMAP_CONTRAST;

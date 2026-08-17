@@ -3,4 +3,4 @@
 #define OVERWORLD
 #define FSH
 
-#include "/programs/dh_terrain.glsl"
+#include "/program/dh_terrain.glsl"

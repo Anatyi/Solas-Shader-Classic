@@ -3,4 +3,4 @@
 #define OVERWORLD
 #define VSH
 
-#include "/programs/dh_terrain.glsl"
+#include "/program/dh_terrain.glsl"

@@ -9,7 +9,7 @@ float gaussian2D(vec2 offset) {
 
 vec3 denoiseSSPT(sampler2D colortex, vec2 coord) {
     vec3 blur = vec3(0.0);
-    vec3 normal = normalize(decodeNormal(texture2D(colortex6, coord).rg));
+    vec3 normal = normalize(decodeNormal(texture2D(colortex3, coord).rg));
     vec2 viewResolution = 1.0 / vec2(viewWidth, viewHeight);
 
 	float centerDepth = texture2D(depthtex0, coord.xy).r;
@@ -21,7 +21,7 @@ vec3 denoiseSSPT(sampler2D colortex, vec2 coord) {
         for (int j = -4; j < 4; j++) {
             vec2 offset = vec2(i, j) * viewResolution * 4.0 * float(centerDepth > 0.56);
 
-            vec3 currentNormal = normalize(decodeNormal(texture2D(colortex6, coord + offset).xy));
+            vec3 currentNormal = normalize(decodeNormal(texture2D(colortex3, coord + offset).xy));
             float currentDepth = getLinearDepth(texture2D(depthtex0, coord + offset).r);
             float depthWeight = clamp(1.0 - abs(linearDepth1 - currentDepth), 0.0001, 1.0);
                   depthWeight = pow8(depthWeight);

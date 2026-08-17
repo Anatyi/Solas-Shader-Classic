@@ -3,4 +3,4 @@
 #define NETHER
 #define VSH
 
-#include "/programs/gbuffers_beaconbeam.glsl"
+#include "/program/gbuffers_beaconbeam.glsl"

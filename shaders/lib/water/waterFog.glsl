@@ -1,35 +1,28 @@
-vec4 getWaterFog(inout vec3 colorMult, vec3 viewPos) {
-	float absorption = length(viewPos) * 0.01 * WATER_FOG_DENSITY;
-		  absorption = 1.0 - exp(WATER_FOG_EXPONENT * 2.0 * absorption);
-	colorMult.r *= 1.0 - absorption;
-	colorMult.g *= 1.0 - absorption * absorption * 0.5;
-	colorMult *= 1.0 - absorption * absorption * absorption * 0.5;
-
-	float fog = length(viewPos) * 0.005 * WATER_FOG_DENSITY;
-		  fog = 1.0 - exp(WATER_FOG_EXPONENT * fog);
-
-	vec3 waterFogColor = waterColor;
+vec4 getWaterFog(vec3 viewPos, float densityMultiplier) {
+	float fog = length(viewPos) * 0.01;
+		  fog = 1.0 - exp(WATER_FOG_EXPONENT * fog * densityMultiplier);
 
 	#ifdef OVERWORLD
-		 waterFogColor = mix(waterFogColor, weatherCol.rgb * 0.25, wetness * 0.25);
+	vec3 waterFogColor = mix(mix(waterColor, normalize(fogColor + 0.00001) * 0.5, 0.25), weatherCol.rgb * 0.25, wetness * 0.25);
 
 	if (isEyeInWater == 1) {
-		waterFogColor *= 0.05 + sunVisibility * 0.35;
+		waterFogColor *= 0.1 + sunVisibility * 0.4;
+		vec3 lightVec = sunVec * ((timeAngle < 0.5325 || timeAngle > 0.9675) ? 1.0 : -1.0);
 
-		if (caveFactor > 0.0) {
-			vec3 lightVec = sunVec * ((timeAngle < 0.5325 || timeAngle > 0.9675) ? 1.0 : -1.0);
-
-			float VoL = dot(normalize(viewPos), lightVec);
-			float glare = clamp(VoL * 0.5 + 0.5, 0.0, 1.0) * shadowFade; 
-				glare = 0.03 / (1.0 - 0.97 * glare) - 0.03;
-			waterFogColor *= 1.0 + (0.5 + glare * 32.0 * timeBrightness * eBS) * caveFactor;
-		}
-
-		waterFogColor *= 0.25 + eBS * 0.75;
+		float VoL = dot(normalize(viewPos), lightVec) * shadowFade;
+		float glare = clamp(VoL * 0.5 + 0.5, 0.0, 1.0);
+				glare = 0.01 / (1.0 - 0.99 * glare) - 0.01;
+		waterFogColor *= (0.5 + 0.5 * eBS) + glare * 16.0 * timeBrightness * eBS;
 	}
+	#else
+	vec3 waterFogColor = mix(waterColor, normalize(fogColor + 0.00001) * 0.5, 0.25);
 	#endif
 
-	waterFogColor *= 1.0 - min(pow(fog, 0.2), 1.0) * (0.75 - float(isEyeInWater == 1) * 0.25);
+    //Dynamic Hand Lighting
+    #ifdef DYNAMIC_HANDLIGHT
+    getHandLightColor(waterFogColor, length(viewPos));
+    #endif
+
 	waterFogColor *= 1.0 - blindFactor;
 
 	#if MC_VERSION >= 11900

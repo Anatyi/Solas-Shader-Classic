@@ -1,6 +1,6 @@
-#version 130
+#version 130 
 
-#define VSH
 #define END
+#define VSH
 
-#include "/programs/gbuffers_water.glsl"
+#include "/program/gbuffers_water.glsl"

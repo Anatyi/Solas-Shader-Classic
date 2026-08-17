@@ -3,4 +3,4 @@
 #define END
 #define VSH
 
-#include "/programs/shadow.glsl"
+#include "/program/shadow.glsl"

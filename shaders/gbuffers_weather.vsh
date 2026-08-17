@@ -1,6 +1,6 @@
 #version 130
 
-#define VSH
 #define OVERWORLD
+#define VSH
 
-#include "/programs/gbuffers_weather.glsl"
+#include "/program/gbuffers_weather.glsl"

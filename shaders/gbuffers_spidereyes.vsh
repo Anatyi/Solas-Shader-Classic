@@ -3,4 +3,4 @@
 #define OVERWORLD
 #define VSH
 
-#include "/programs/gbuffers_spidereyes.glsl"
+#include "/program/gbuffers_spidereyes.glsl"

@@ -1,6 +1,6 @@
 #version 130
 
-#define FSH
 #define OVERWORLD
+#define FSH
 
-#include "/programs/deferred.glsl"
+#include "/program/deferred.glsl"

@@ -3,8 +3,9 @@ vec3 getMotionBlur(vec3 color, float z) {
 		float weight = 0.0;
 
 		float dither = Bayer8(gl_FragCoord.xy);
+
 		#ifdef TAA
-			 dither = fract(dither * frameTimeCounter * 16.0);
+		dither = fract(dither * frameTimeCounter * 16.0);
 		#endif
 
 		vec2 doublePixel = 2.0 / vec2(viewWidth, viewHeight);

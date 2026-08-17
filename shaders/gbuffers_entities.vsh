@@ -1,6 +1,6 @@
 #version 130
 
-#define VSH
 #define OVERWORLD
+#define VSH
 
-#include "/programs/gbuffers_entities.glsl"
+#include "/program/gbuffers_entities.glsl"

@@ -1,19 +1,19 @@
-//1.19 Darkness Fog
+//Fog that appears when you have a darkness effect
 #if MC_VERSION >= 11900
-void getDarknessFog(inout vec3 color, float lViewPos) {
-	float fog = lViewPos * darknessFactor * 0.01;
+void getDarknessFog(inout vec3 color, vec3 viewPos) {
+	float fog = length(viewPos) * (darknessFactor * 0.01);
 		  fog = (1.0 - exp(-fog)) * darknessFactor;
 
-    color *= 1.0 - fog;
+	color = mix(color, vec3(0.0), fog);
 }
 #endif
 
-//Blindness Fog
-void getBlindFog(inout vec3 color, float lViewPos) {
-	float fog = lViewPos * blindFactor * 0.1;
-		  fog = (1.0 - exp(-4.0 * fog * fog * fog)) * blindFactor;
+//Fog that appears when you have a blindness effect
+void getBlindFog(inout vec3 color, vec3 viewPos) {
+	float fog = length(viewPos) * (blindFactor * 0.1);
+		  fog = (1.0 - exp(-4.0 * pow3(fog))) * blindFactor;
 
-	color *= 1.0 - fog;
+	color = mix(color, vec3(0.0), fog);
 }
 
 //Powder Snow / Lava Fog
@@ -22,63 +22,39 @@ vec3 densefogCol[2] = vec3[2](
 	vec3(0.05, 0.07, 0.12)
 );
 
-void getDenseFog(inout vec3 color, float lViewPos) {
-	float fog = lViewPos * (0.15 + float(isEyeInWater == 3) * 0.5);
-		  fog = 1.0 - exp(-2.0 * fog * fog);
+void getDenseFog(inout vec3 color, vec3 viewPos) {
+	float fog = length(viewPos) * 0.1;
+		  fog = 1.0 - exp(-2.0 * pow2(fog));
 
-	color = fmix(color, densefogCol[isEyeInWater - 2], fog);
+	color = mix(color, densefogCol[isEyeInWater - 2], fog);
 }
 
-//Normal Fog
-void getNormalFog(inout vec3 color, in vec3 atmosphereColor, in vec3 viewPos, in vec3 worldPos, in float lViewPos, in float lWorldPos, in float z0) {
-    float farPlane = far;
-
-    #ifdef VOXY
-            farPlane = max(farPlane, vxRenderDistance * 16.0);
-    #endif
-
-    #ifdef DISTANT_HORIZONS
-            farPlane = max(farPlane, float(dhRenderDistance));
-    #endif
+#if defined DISTANT_HORIZONS && (defined DEFERRED || defined DH_WATER)
+void getNormalFog(inout vec3 color, vec3 viewPos, in vec3 worldPos, in vec3 atmosphereColor) {
+	float lViewPos = length(viewPos);
+	float lWorldPos = length(worldPos.xz);
 
 	//Overworld Fog
 	#ifdef OVERWORLD
-	vec3 fogPos = worldPos + cameraPosition;
-	float noise = texture2D(noisetex, (vec2(fogPos.x * 0.5, fogPos.y * 0.5) + vec2(fogPos.z * 0.5, fogPos.y * 0.5) + vec2(fogPos.x * 0.5, fogPos.z * 0.5)) * 0.0005 + frameCounter * 0.00001).r;
-            noise *= noise;
-    float distanceFactor = 25.0 * (0.5 + timeBrightness) + FOG_DISTANCE * (0.75 + caveFactor * 0.25) - wetness * 25.0;
-    #if defined VOXY || defined DISTANT_HORIZONS
-            distanceFactor += 25.0;
-    #endif
-	float distanceMult = max(256.0 / farPlane, 2.0) * (100.0 / distanceFactor);
-	float altitudeFactor = FOG_HEIGHT + noise * 10.0 + timeBrightness * 25.0 - isJungle * 15.0;
-	float altitude = 0.25 + exp2(-max(worldPos.y + cameraPosition.y - altitudeFactor, 0.0) / exp2(FOG_HEIGHT_FALLOFF + moonVisibility + timeBrightness + wetness - isJungle - isSwamp)) * 0.75;
-		  //altitude = fmix(1.0, altitude, clamp((cameraPosition.y - altitude) / altitude, 0.0, 1.0));
-	float density = FOG_DENSITY * (1.0 + (sunVisibility - timeBrightness) * 0.25 + moonVisibility * 0.5);
-		    density += isLushCaves * 0.3 + (isDesert * 0.10 + isSwamp * 0.15 + isJungle * 0.25) + wetness * 0.25;
-            density *= 0.25 + noise * 0.5;
+	float eBS01 = pow(eBS, 0.1);
+	float wetnessCave = wetness * caveFactor;
+	float distanceFactor = mix(65.0, FOG_DISTANCE * (0.5 + sunVisibility * 0.5), caveFactor);
+	float fogAltitude = clamp(pow16((worldPos.y + cameraPosition.y + 1000.0 - FOG_HEIGHT) * 0.001), 0.0, 1.0);
+		  fogAltitude = mix(0.0, fogAltitude, caveFactor);
+		  fogAltitude = mix(fogAltitude, 0.0, wetness * 0.25);
+	float fogDistance = min(192.0 / dhFarPlane, 1.0) * (100.0 / distanceFactor);
+	float fogDensity = FOG_DENSITY * mix(1.0, 0.5, mefade) * (2.0 - caveFactor) * (1.0 - fogAltitude * 0.9) * (1.0 - eBS01 * timeBrightness * 0.5) * (1.5 - eBS01 * sunVisibility * 0.5);
 
-    #if defined VOXY || defined DISTANT_HORIZONS
-            density *= 2.0;
-    #endif
+    float fog = 1.0 - exp(-pow(lViewPos * (0.001 - 0.00075 * wetnessCave), 2.0 - wetnessCave) * lViewPos * fogDistance);
+          fog *= fogDensity;
+		  fog = clamp(fog, 0.0, 1.0);
 
-	#if MC_VERSION >= 12104
-    	    density += isPaleGarden * 0.5;
-	#endif
-
-    float fog = 1.0 - exp(-0.005 * lViewPos * distanceMult);
-		    fog = clamp(fog * density * altitude, 0.0, 1.0);
-
-    float VoL = clamp(dot(normalize(viewPos), lightVec), 0.0, 1.0);
-    float fogAtmosphereMixFactor = fmix(1.0, 0.5 + VoL * 0.25, min(sunVisibility, 1.0));
-    vec3 nSkyColor = normalize(skyColor + 0.000001) * fmix(vec3(1.0), biomeColor, sunVisibility * isSpecificBiome);
-	vec3 fogCol = fmix(caveMinLightCol * (1.0 - isCaveBiome) + caveBiomeColor,
-                            fmix(nSkyColor, pow(atmosphereColor, vec3(1.0 - sunVisibility * 0.5)), fogAtmosphereMixFactor),
-                            caveFactor);
+    vec3 fogCol = atmosphereColor;
+		 fogCol = mix(caveMinLightCol * fog, fogCol, caveFactor);
 
 	//Distant Fade
 	#ifdef DISTANT_FADE
-	if (isEyeInWater == 0) {
+	if (isEyeInWater < 0.5) {
 		#if MC_VERSION >= 11800
 		const float fogOffset = 0.0;
 		#else
@@ -91,19 +67,14 @@ void getNormalFog(inout vec3 color, in vec3 atmosphereColor, in vec3 viewPos, in
 		float fogFactor = lViewPos;
 		#endif
 
-        float distancePow = 4.0;
-        #if defined DISTANT_HORIZONS || defined VOXY
-                distancePow -= 3.0;
-        #endif
-
-		float vanillaFog = 1.0 - (farPlane - (fogFactor + fogOffset)) / farPlane;
-		        vanillaFog = clamp(pow(vanillaFog, distancePow), 0.0, 1.0) * caveFactor;
+		float vanillaFog = 1.0 - (dhFarPlane - (fogFactor + fogOffset)) * 8.0 / (4.0 * dhFarPlane);
+			  vanillaFog = clamp(pow3(vanillaFog), 0.0, 1.0) * caveFactor;
 	
 		if (vanillaFog > 0.0){
 			fogCol *= fog;
-			fog = fmix(fog, 1.0, vanillaFog);
+			fog = mix(fog, 1.0, vanillaFog);
 
-			if (0.0 < fog) fogCol = fmix(fogCol, atmosphereColor, vanillaFog) / fog;
+			if (fog > 0.0) fogCol = mix(fogCol, atmosphereColor, vanillaFog) / fog;
 		}
 	}
 	#endif
@@ -111,70 +82,109 @@ void getNormalFog(inout vec3 color, in vec3 atmosphereColor, in vec3 viewPos, in
 
 	//Nether Fog
 	#ifdef NETHER
-	float fog = lViewPos * 0.005;
+	float fog = lViewPos * 0.004;
+
 	#ifdef DISTANT_FADE
-	      fog += 6.0 * pow4(lWorldPos / farPlane);
+	fog += 6.0 * pow4(lWorldPos / dhFarPlane);
 	#endif
-	      fog = 1.0 - exp(-fog);
+
+	fog = 1.0 - exp(-fog);
 
 	vec3 fogCol = netherColSqrt.rgb * 0.25;
 	#endif
 
-	//End fog
 	#ifdef END
-    vec3 wpos = ToWorld(viewPos);
-    vec3 nWorldPos = normalize(wpos);
-    nWorldPos.y += nWorldPos.x * END_ANGLE;
+	float fog = 2.0 * pow4(lWorldPos / dhFarPlane);
 
-    #ifdef END_67
-    if (frameCounter < 500) {
-        nWorldPos.y += nWorldPos.x * 0.5 * sin(frameTimeCounter * 8);
-    }
-    #endif
+	fog = 1.0 - exp(-fog);
 
-	#ifdef END_TIME_TILT
-		nWorldPos.y += nWorldPos.x * min(0.025 * frameTimeCounter, 1.0);
+	vec3 fogCol = atmosphereColor;
 	#endif
 
-	float density = pow4(1.0 - abs(nWorldPos.y));
-		    density *= 1.0 - clamp((cameraPosition.y - 100.0) * 0.01, 0.0, 1.0);
-
-	float fog = 1.0 - exp(-0.0001 * length(wpos));
-		    fog = clamp(fog * density * 0.1, 0.0, 1.0);
-
-	vec3 fogCol = vec3(1.0, 1.0, 0.75) * endLightColSqrt;
-	#endif
-
-    //Mixing Colors depending on depth
-	#if !defined NETHER && !defined END && defined DEFERRED && !defined DISTANT_HORIZONS
-    float zMixer = float(z0 < 1.0);
-
-	#if MC_VERSION >= 12104 && defined OVERWORLD
-		  zMixer = fmix(zMixer, 1.0, isPaleGarden);
-	#endif
-	      zMixer = clamp(zMixer, 0.0, 1.0);
-
-	fog *= zMixer;
-	#endif
-
-	color = fmix(color, fogCol, fog);
+	color = mix(color, fogCol, fog);
 }
+#else
+void getNormalFog(inout vec3 color, vec3 viewPos, in vec3 worldPos, in vec3 atmosphereColor) {
+	float lViewPos = length(viewPos);
+	float lWorldPos = length(worldPos.xz);
 
-void Fog(inout vec3 color, in vec3 viewPos, in vec3 atmosphereColor, in float z0) {
-	vec4 worldPos = gbufferModelViewInverse * vec4(viewPos, 1.0);
-	        worldPos.xyz /= worldPos.w;
+	//Overworld Fog
+	#ifdef OVERWORLD
+	float eBS01 = pow(eBS, 0.1);
+	float wetnessCave = wetness * caveFactor;
+	float distanceFactor = mix(65.0, FOG_DISTANCE * (0.5 + sunVisibility * 0.5), caveFactor);
+	float fogAltitude = clamp(pow16((worldPos.y + cameraPosition.y + 1000.0 - FOG_HEIGHT) * 0.001), 0.0, 1.0);
+		  fogAltitude = mix(0.0, fogAltitude, caveFactor);
+		  fogAltitude = mix(fogAltitude, 0.0, wetness * 0.25);
+	float fogDistance = min(192.0 / far, 1.0) * (100.0 / distanceFactor);
+	float fogDensity = FOG_DENSITY * mix(1.0, 0.5, mefade) * (2.0 - caveFactor) * (1.0 - fogAltitude * 0.9) * (1.0 - eBS01 * timeBrightness * 0.5) * (1.5 - eBS01 * sunVisibility * 0.5);
 
-    float lViewPos = length(viewPos.xz);
-    float lWorldPos = length(worldPos.xz);
+    float fog = 1.0 - exp(-pow(lViewPos * (0.001 - 0.00075 * wetnessCave), 2.0 - wetnessCave) * lViewPos * fogDistance);
+          fog *= fogDensity;
+		  fog = clamp(fog, 0.0, 1.0);
 
-	if (isEyeInWater < 1) {
-        getNormalFog(color, atmosphereColor, viewPos, worldPos.xyz, lViewPos, lWorldPos, z0);
-    } else if (isEyeInWater > 1) {
-        getDenseFog(color, lViewPos);
-    }
-	if (blindFactor > 0.0) getBlindFog(color, lViewPos);
+    vec3 fogCol = atmosphereColor;
+		 fogCol = mix(caveMinLightCol * fog, fogCol, caveFactor);
+
+	//Distant Fade
+	#ifdef DISTANT_FADE
+	if (isEyeInWater < 0.5) {
+		#if MC_VERSION >= 11800
+		const float fogOffset = 0.0;
+		#else
+		const float fogOffset = 12.0;
+		#endif
+
+		#if DISTANT_FADE_STYLE == 0
+		float fogFactor = lWorldPos;
+		#else
+		float fogFactor = lViewPos;
+		#endif
+
+		float vanillaFog = 1.0 - (far - (fogFactor + fogOffset)) * 8.0 / (4.0 * far);
+			  vanillaFog = clamp(pow3(vanillaFog), 0.0, 1.0) * caveFactor;
+	
+		if (vanillaFog > 0.0){
+			fogCol *= fog;
+			fog = mix(fog, 1.0, vanillaFog);
+
+			if (fog > 0.0) fogCol = mix(fogCol, atmosphereColor, vanillaFog) / fog;
+		}
+	}
+	#endif
+	#endif
+
+	//Nether Fog
+	#ifdef NETHER
+	float fog = lViewPos * 0.004;
+
+	#ifdef DISTANT_FADE
+	fog += 6.0 * pow4(lWorldPos / far);
+	#endif
+
+	fog = 1.0 - exp(-fog);
+
+	vec3 fogCol = netherColSqrt.rgb * 0.25;
+	#endif
+
+	#ifdef END
+	float fog = 2.0 * pow4(lWorldPos / far);
+
+	fog = 1.0 - exp(-fog);
+
+	vec3 fogCol = atmosphereColor;
+	#endif
+
+	color = mix(color, fogCol, fog);
+}
+#endif
+
+void Fog(inout vec3 color, in vec3 viewPos, in vec3 worldPos, in vec3 atmosphereColor) {
+	if (isEyeInWater < 1) getNormalFog(color, viewPos, worldPos, atmosphereColor);
+	if (isEyeInWater > 1) getDenseFog(color, viewPos);
+	if (blindFactor > 0.0) getBlindFog(color, viewPos);
 
 	#if MC_VERSION >= 11900
-	if (darknessFactor > 0.0) getDarknessFog(color, lViewPos);
+	if (darknessFactor > 0.0) getDarknessFog(color, viewPos);
 	#endif
 }

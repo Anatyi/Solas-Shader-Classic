@@ -1,6 +1,6 @@
 #version 130
 
-#define VSH
 #define OVERWORLD
+#define VSH
 
-#include "/programs/deferred1.glsl"
+#include "/program/deferred1.glsl"

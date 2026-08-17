@@ -1,6 +1,6 @@
-#version 130
+#version 130 
 
-#define FSH
 #define END
+#define FSH
 
-#include "/programs/gbuffers_textured.glsl"
+#include "/program/gbuffers_textured.glsl"

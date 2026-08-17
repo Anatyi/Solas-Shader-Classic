@@ -1,6 +1,6 @@
 #version 130
 
-#define FSH
 #define OVERWORLD
+#define FSH
 
-#include "/programs/composite1.glsl"
+#include "/program/composite1.glsl"

@@ -3,4 +3,4 @@
 #define OVERWORLD
 #define VSH
 
-#include "/programs/dh_water.glsl"
+#include "/program/dh_water.glsl"

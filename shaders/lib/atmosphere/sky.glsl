@@ -1,53 +1,96 @@
-vec3 getAtmosphere(vec3 viewPos, vec3 worldPos, out float atmosphereHardMixFactor) {
-    float spaceFactor = min(max(cameraPosition.y, 0.0) / KARMAN_LINE, 1.0);
-    float spaceFactorHalf = min(max(cameraPosition.y, 0.0) / (KARMAN_LINE * 0.5), 1.0);
-    vec3 skyTint = fmix(vec3(1.0, 0.75 + timeBrightness * 0.25, 0.7 + timeBrightness * 0.3) * normalize(skyColor + 0.000001), vec3(0.35, 0.6, 1.0) * (0.35 + timeBrightnessSqrt * 0.35), spaceFactor);
-         skyTint = pow(skyTint, vec3(1.0 - wetness * 0.5));
-    vec3 daySkyColor = skyTint * fmix(vec3(1.0), biomeColor, isSpecificBiome * (1.0 - spaceFactor)) * fmix(vec3(1.0), weatherCol, wetness * (1.0 - spaceFactor));
+const float multiScatterPhase = 0.5;
 
-    vec3 nWorldPos = normalize(worldPos);
+float getZenithDensity(float density, float x) {
+    return density / pow(max(x, 0.35e-2), 0.75);
+}
+
+vec3 getSkyAbsorption(vec3 x, float y){
+    return exp2(-x * y) * 2.0;;
+}
+
+vec3 jodieReinhardTonemap(vec3 c){
+    float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
+    vec3 tc = c / (c + 1.0);
+
+    return mix(c / (l + 1.0), tc, tc);
+}
+
+vec3 getAtmosphericScattering(vec3 viewPos, vec3 lightPos) {
+    //Variables
     vec3 nViewPos = normalize(viewPos);
-    float VoS = dot(nViewPos, sunVec);
-    float VoM = dot(nViewPos, -sunVec);
-    float VoSPositive = VoS * 0.5 + 0.5;
-    float VoSClamped = clamp(VoS, 0.0, 1.0);
-    float VoMClamped = clamp(VoM, 0.0, 1.0);
-    float VoS2 = VoSClamped * VoSClamped;
-    float VoM2 = VoMClamped * VoMClamped;
-    float sunVis2 = sunVisibility * sunVisibility;
-    float sunInv2 = 1.0 - sunVis2;
-    float VoS_sv = VoS * sunVisibility;
-    float oneMinVoS  = 1.0 - VoSClamped;
-    float heightClamped = clamp(nWorldPos.y + spaceFactor * 0.55, 0.0, 1.0);
 
-    float greenBandElevation = nWorldPos.y - 0.1;
-    float greenBand = exp(-(greenBandElevation * greenBandElevation) / 0.025) * 0.2 * sunInv2 * oneMinVoS;
+    float VoSRaw = dot(nViewPos, sunVec);
+    float VoURaw = dot(nViewPos, upVec);
+    float VoUClamped = clamp(VoURaw, 0.0, 1.0);
+    float VoSClamped = clamp(VoSRaw, 0.0, 1.0);
+          VoSClamped = pow(VoSClamped, 1.25);
 
-    vec3 scatteringColor = vec3(
-        1.0 + VoS2 * (0.5 - timeBrightnessSqrt * 0.5) * sunVisibility,
-        0.35 + greenBand + sunVisibility * 0.1 + timeBrightness * 0.2,
-        0.0 + timeBrightnessSqrt * 0.1
-    ) * (1.0 + VoS2 * sunVisibility);
+    //Prepare scattering properties
+    float skyDensity = exp(-0.75 * pow(VoUClamped, 2.0 - timeBrightness));
+    float scatteringWidth = pow(1.0 - VoUClamped, 2.0 - VoSClamped) * pow3(min(1.0 + VoURaw, 1.0));
 
-    float scattering = pow(clamp(1.0 - nWorldPos.y, 0.0, 1.0), fmix(3.0 - VoS * 1.5, 1.0, spaceFactor)) * (0.5 - timeBrightnessSqrt * 0.3) * (1.0 - wetness * 0.5);
-          scattering *= sqrt(clamp(1.0 + nWorldPos.y, 0.0, 1.0));
+    float sunScatteringMixer = (1.0 - timeBrightness * 0.5) * (1.0 - wetness * 0.5) * VoSClamped;
+          sunScatteringMixer = sunScatteringMixer * scatteringWidth * 0.25;
 
-    daySkyColor = fmix(daySkyColor, scatteringColor, scattering * SUNRISE_SUNSET_INTENSITY);
-    vec3 nightSky = fmix(lightNight, lightNight * weatherCol, wetness * 0.75);
-         nightSky = pow(nightSky * (1.0 - wetness * 0.75), vec3(1.0 - wetness * 0.5));
+    float rayleighScatteringMixer = 0.25 + sunVisibility * 0.25;
+          rayleighScatteringMixer *= (1.0 - wetness * 0.75) * (1.0 - timeBrightness * timeBrightness * 0.5);
 
-    vec3 atmosphere = fmix(daySkyColor, nightSky * 0.5, moonVisibility);
+    //Realistic sky scattering
+    vec3 worldPos = normalize(ToWorld(viewPos)) * PI;
 
-    float heightPositive = max(nWorldPos.y * (1.0 - spaceFactor * 0.5) + spaceFactor * 0.5, 0.0);
-    float density = clamp((1.0 - heightPositive * (0.65 + moonVisibility * moonVisibility * 1.5 * (1.0 - wetness))), 0.0, 1.0) + moonVisibility * 0.2;
-          density = mix(density, clamp(pow5(1.0 - heightPositive * 2.0) * 32.0, 0.0, 1.0), spaceFactor);
+    float density = 1.25 - timeBrightness * 0.5;
+    float zenith = getZenithDensity(density, worldPos.y);
+    float sunPointDistMult = clamp(length(max(lightPos.y + multiScatterPhase, 0.0)), 0.0, 1.0);
+    
+    const vec3 newSkyCol = vec3(0.39, 0.57, 1.0) * 2.5;
+    vec3 absorption = getSkyAbsorption(newSkyCol, zenith);
+    vec3 sunAbsorption = getSkyAbsorption(newSkyCol, getZenithDensity(density, lightPos.y + multiScatterPhase));
+    vec3 sky = newSkyCol * zenith;
+    
+    vec3 totalSky = mix(sky * absorption, sky / sqrt(sky * sky + 2.0), sunPointDistMult);
+         totalSky *= sunAbsorption * 0.5 + 0.5 * length(sunAbsorption);
 
-    atmosphereHardMixFactor = spaceFactorHalf * density;
-    atmosphere *= density;
+    //Final calculations
+    vec3 daySky = mix(normalize(skyColor + 0.00001) * 1.5, vec3(0.62, 0.69, 1.00), 0.5 - timeBrightness * 0.25);
+         daySky = mix(daySky, lightColSqrt, pow2(1.0 - VoUClamped) * (1.0 - wetness) * (1.0 - timeBrightness) * 0.2);
+         daySky = mix(daySky * skyDensity, totalSky, rayleighScatteringMixer);
+         daySky = jodieReinhardTonemap(daySky * PI);
+         daySky = pow(daySky, vec3(2.2));
+         daySky = mix(daySky, lightColSqrt, sunScatteringMixer);
+    vec3 nightSky = lightNight * 0.65;
+         //Tint the atmosphere with slight green when aurora is visible
+         #ifdef AURORA
+         float visibilityMultiplier = pow8(1.0 - sunVisibility) * (1.0 - wetness) * AURORA_BRIGHTNESS;
+         float auroraVisibility = 0.0;
 
-    //Fade atmosphere to dark gray underground
-    float caveSkyFactor = max(caveFactor, smoothstep(0.05, 0.55, nWorldPos.y));
-    atmosphere = fmix(caveMinLightCol * (1.0 - isCaveBiome) + caveBiomeColor, atmosphere, caveSkyFactor);
+         #ifdef AURORA_FULL_MOON_VISIBILITY
+         auroraVisibility = mix(auroraVisibility, 1.0, float(moonPhase == 0));
+         #endif
+
+         #ifdef AURORA_COLD_BIOME_VISIBILITY
+         auroraVisibility = mix(auroraVisibility, 1.0, isSnowy);
+         #endif
+
+         #ifdef AURORA_ALWAYS_VISIBLE
+         auroraVisibility = 1.0;
+         #endif
+
+         auroraVisibility *= visibilityMultiplier;
+         nightSky = mix(nightSky, vec3(0.4, 2.5, 0.9), 0.02 * auroraVisibility);
+         #endif
+
+         nightSky *= skyDensity;
+    vec3 atmosphere = mix(nightSky, daySky, sunVisibility);
+         atmosphere = mix(atmosphere, weatherCol * clamp(sunVisibility, 0.35, 1.0), wetness * 0.5);
+
+    //Fade atmosphere to dark gray
+    atmosphere = mix(caveMinLightCol, atmosphere, caveFactor);
+
+    #if MC_VERSION >= 11900
+    atmosphere *= 1.0 - darknessFactor;
+    #endif
+
+    atmosphere *= 1.0 - blindFactor;
 
     return atmosphere;
 }

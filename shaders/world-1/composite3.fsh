@@ -3,4 +3,4 @@
 #define NETHER
 #define FSH
 
-#include "/programs/composite3.glsl"
+#include "/program/composite3.glsl"

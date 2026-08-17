@@ -1,6 +1,6 @@
 #version 430 compatibility
 
-#define FSH
 #define OVERWORLD
+#define FSH
 
-#include "/programs/shadow.glsl"
+#include "/program/shadow.glsl"

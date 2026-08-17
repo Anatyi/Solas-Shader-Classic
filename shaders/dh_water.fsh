@@ -3,4 +3,4 @@
 #define OVERWORLD
 #define FSH
 
-#include "/programs/dh_water.glsl"
+#include "/program/dh_water.glsl"

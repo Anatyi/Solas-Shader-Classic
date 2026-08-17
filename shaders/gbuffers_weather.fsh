@@ -1,6 +1,6 @@
 #version 130
 
-#define FSH
 #define OVERWORLD
+#define FSH
 
-#include "/programs/gbuffers_weather.glsl"
+#include "/program/gbuffers_weather.glsl"

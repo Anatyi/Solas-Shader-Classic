@@ -1,6 +1,6 @@
 #version 430 compatibility
 
-#define VSH
 #define OVERWORLD
+#define VSH
 
-#include "/programs/shadow.glsl"
+#include "/program/shadow.glsl"
