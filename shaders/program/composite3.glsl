@@ -164,10 +164,15 @@ void main() {
 	
 	//Sun Vector
 	#ifdef VL
+	#ifdef PORT_END_ON
+	//Revolving End black hole: use the same revolving light direction as the sky so the End volumetric light follows it
+	sunVec = getSunVector(gbufferModelView, timeAngle);
+	#else
 	const vec2 sunRotationData = vec2(cos(sunPathRotation * 0.01745329251994), -sin(sunPathRotation * 0.01745329251994));
 	float ang = fract(timeAngle - 0.25);
 	ang = (ang + (cos(ang * PI) * -0.5 + 0.5 - ang) / 3.0) * TAU;
 	sunVec = normalize((gbufferModelView * vec4(vec3(-sin(ang), cos(ang) * sunRotationData) * 2000.0, 1.0)).xyz);
+	#endif
 	upVec = normalize(gbufferModelView[1].xyz);
 	#endif
 

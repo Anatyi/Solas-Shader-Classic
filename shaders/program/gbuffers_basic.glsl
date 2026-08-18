@@ -16,6 +16,7 @@ uniform int isEyeInWater;
 uniform int frameCounter;
 
 uniform float viewWidth, viewHeight;
+uniform float frameTimeCounter;
 uniform float blindFactor;
 uniform float nightVision;
 

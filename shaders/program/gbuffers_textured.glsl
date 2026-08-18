@@ -24,6 +24,7 @@ uniform int heldBlockLightValue2;
 
 uniform float far, near;
 uniform float viewWidth, viewHeight;
+uniform float frameTimeCounter;
 
 #if MC_VERSION >= 11900
 uniform float darknessFactor;

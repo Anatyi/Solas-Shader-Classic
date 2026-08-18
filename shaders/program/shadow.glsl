@@ -127,6 +127,14 @@ void main() {
 	vec4 position = shadowModelViewInverse * shadowProjectionInverse * ftransform();
 	worldPos = position.xyz;
 
+	#if defined PORT_END_ON && defined END
+	//Rotate the shadow camera with the revolving End black hole so ground shadows follow it (End only)
+	float enhEndTF = fract(frameTimeCounter * ((1.0 / 60.0) / ENH_END_REVOLUTION_CYCLE) + ENH_END_START_ANGLE / 360.0) * TAU;
+	float enhEndC = cos(-enhEndTF);
+	float enhEndS = sin(-enhEndTF);
+	position.xyz = vec3(position.x * enhEndC - position.z * enhEndS, position.y, position.x * enhEndS + position.z * enhEndC);
+	#endif
+
 	gl_Position = shadowProjection * shadowModelView * position;
 
 	float dist = sqrt(gl_Position.x * gl_Position.x + gl_Position.y * gl_Position.y);

@@ -86,22 +86,33 @@ float sunVisibility = clamp(dot(sunVec, upVec) + 0.1, 0.0, 0.25) * 4.0;
 void main() {
 	vec4 color = texture2D(colortex0, texCoord);
 
-	#if defined PBR || defined GENERATED_SPECULAR
+	#if defined REFLECTION && (defined PBR || defined GENERATED_SPECULAR)
 	vec4 gbuffersData = texture2D(colortex3, texCoord);
 	float z0 = texture2D(depthtex0, texCoord).r;
 	float z1 = texture2D(depthtex1, texCoord).r;
 
+	#if REFLECTION_MODE == 2
+	//No reflection
+	#elif REFLECTION_MODE == 1
+	//Global ground reflection: all geometry reflects (fresnel attenuated, ignores smoothness gate)
+	if (z0 > 0.56 && z0 < 1.0 && z0 >= z1) {
+		vec3 normal = decodeNormal(gbuffersData.rg);
+		vec3 viewPos = ToView(vec3(texCoord, z0));
+		float fresnel = clamp(1.0 + dot(normal, normalize(viewPos)), 0.0, 1.0);
+		getReflection(color, viewPos, normal, fresnel * fresnel, 1.0);
+	}
+	#else
+	//Default reflection: only on smooth/metallic surfaces
 	//z0 < 1.0 excludes sky pixels: gbuffers don't write colortex3 for the sky, and since colortex3
 	//isn't cleared (colortex3Clear = false) a stale smoothness value there could wrongly trigger SSR
 	//on the sky and reflect the scene (including shadows) back, leaving 2D screen-space ghosting.
 	if (gbuffersData.a > 0.01 && gbuffersData.a <= 0.95 && z0 > 0.56 && z0 < 1.0 && z0 >= z1) {
 		vec3 normal = decodeNormal(gbuffersData.rg);
 		vec3 viewPos = ToView(vec3(texCoord, z0));
-
 		float fresnel = clamp(1.0 + dot(normal, normalize(viewPos)), 0.0, 1.0);
-
 		getReflection(color, viewPos, normal, fresnel * fresnel, gbuffersData.a);
 	}
+	#endif
 	#endif
 
 	/* DRAWBUFFERS:0 */

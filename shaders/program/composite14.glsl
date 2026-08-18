@@ -7,9 +7,11 @@
 in vec2 texCoord;
 
 //Uniforms//
-#if defined BLOOM || defined LENS_FLARE || defined DOF
-#ifdef TAA
+#if defined BLOOM || defined LENS_FLARE_ANY || defined DOF
+#if defined TAA && !defined PORT_END_ON
 uniform int frameTimeCounter;
+#elif defined PORT_END_ON
+uniform float frameTimeCounter;
 #endif
 
 uniform float viewWidth, viewHeight;
@@ -20,7 +22,7 @@ uniform float timeBrightness;
 #endif
 #endif
 
-#ifdef LENS_FLARE
+#ifdef LENS_FLARE_ANY
 uniform int isEyeInWater;
 uniform float wetness;
 uniform float blindFactor;
@@ -29,12 +31,13 @@ uniform float darknessFactor;
 #endif
 uniform vec3 cameraPosition, sunPosition;
 uniform mat4 gbufferModelView;
+uniform mat4 gbufferModelViewInverse;
 #ifdef OVERWORLD
 uniform float shadowFade;
 #endif
 #endif
 
-#if defined LENS_FLARE || defined DOF
+#if defined LENS_FLARE_ANY || defined DOF
 uniform mat4 gbufferProjection;
 uniform sampler2D depthtex1;
 #endif
@@ -71,8 +74,21 @@ const bool colortex2MipmapEnabled = true;
 //Common Variables//
 float eBS = eyeBrightnessSmooth.y / 240.0;
 
-#ifdef LENS_FLARE
+#ifdef LENS_FLARE_ANY
+#if defined PORT_END_ON && defined END
+//Revolve the End black hole direction for the lens flare (called at sunVec initialisation - no global re-assignment)
+vec3 enhEndRevolveDir() {
+	vec3 enhWorldSun = mat3(gbufferModelViewInverse) * sunPosition;
+	float enhEndTF = fract(frameTimeCounter * ((1.0 / 60.0) / ENH_END_REVOLUTION_CYCLE) + ENH_END_START_ANGLE / 360.0) * TAU;
+	float enhEndC = cos(enhEndTF);
+	float enhEndS = sin(enhEndTF);
+	vec3 enhRotated = vec3(enhWorldSun.x * enhEndC - enhWorldSun.z * enhEndS, enhWorldSun.y, enhWorldSun.x * enhEndS + enhWorldSun.z * enhEndC);
+	return normalize(mat3(gbufferModelView) * enhRotated);
+}
+vec3 sunVec = enhEndRevolveDir();
+#else
 vec3 sunVec = normalize(sunPosition);
+#endif
 vec3 upVec = normalize(gbufferModelView[1].xyz);
 float caveFactor = mix(clamp((cameraPosition.y - 56.0) / 16.0, float(sign(isEyeInWater)), 1.0), 1.0, sqrt(eBS));
 float sunVisibility = clamp((dot( sunVec, upVec) + 0.15) * 3.0, 0.0, 1.0);
@@ -92,7 +108,7 @@ float moonVisibility = clamp((dot(-sunVec, upVec) + 0.15) * 3.0, 0.0, 1.0);
 #include "/lib/post/computeDOF.glsl"
 #endif
 
-#ifdef LENS_FLARE
+#ifdef LENS_FLARE_ANY
 #include "/lib/post/lensFlare.glsl"
 #endif
 
@@ -106,7 +122,7 @@ void main() {
 
 	float temporalData = 0.0;
 
-	#ifdef LENS_FLARE
+	#ifdef LENS_FLARE_ANY
 	float pixelWidth = 1.0 / viewWidth;
 	float pixelHeight = 1.0 / viewHeight;
 	float tempVisibleSun = texture2D(colortex2, vec2(3.0 * pixelWidth, pixelHeight)).r;
@@ -128,7 +144,7 @@ void main() {
 	color += (Bayer8(gl_FragCoord.xy) - 0.25) / 64.0;
 
 	//Lens Flare
-	#ifdef LENS_FLARE
+	#ifdef LENS_FLARE_ANY
 	vec2 lightPos = getLightPos();
 	float truePos = sign(sunVec.z);
 
@@ -139,17 +155,36 @@ void main() {
 		  visibleSun *= (1.0 - max(blindFactor, darknessFactor));
 	#endif
 
-	float multiplier = tempVisibleSun * LENS_FLARE_STRENGTH * (length(color) * 0.25 + 0.25);
+	//Per-dimension lens flare: independent switch / strength / style (default off in the Nether)
+	float multiplier = tempVisibleSun * (length(color) * 0.25 + 0.25);
+
+	float flareStrength = 0.0;
+	int flareStyle = 0;
 
 	#ifdef OVERWORLD
-		  multiplier *= shadowFade;
+	#ifdef LENS_FLARE
+	flareStrength = LENS_FLARE_STRENGTH * shadowFade;
+	flareStyle = LENS_FLARE_STYLE;
+	#endif
 	#endif
 
 	#ifdef END
-		  multiplier *= END_LENS_FLARE_STRENGTH;
+	#ifdef END_LENS_FLARE
+	flareStrength = END_LENS_FLARE_STRENGTH;
+	flareStyle = END_LENS_FLARE_STYLE;
+	#endif
 	#endif
 
-	if (multiplier > 0.001) LensFlare(color, lightPos, truePos, multiplier);
+	#ifdef NETHER
+	#ifdef NETHER_LENS_FLARE
+	flareStrength = NETHER_LENS_FLARE_STRENGTH;
+	flareStyle = NETHER_LENS_FLARE_STYLE;
+	#endif
+	#endif
+
+	multiplier *= flareStrength;
+
+	if (multiplier > 0.001) LensFlare(color, lightPos, truePos, multiplier, flareStyle);
 
 	if (texCoord.x > 2.0 * pixelWidth && texCoord.x < 4.0 * pixelWidth && texCoord.y < 2.0 * pixelHeight)
 		temporalData = mix(tempVisibleSun, visibleSun, 0.125);

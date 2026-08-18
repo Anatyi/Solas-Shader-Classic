@@ -1,8 +1,8 @@
 #shaders/lang/fr_FR.lang
 
 option.SOLAS_BY_SEPTONIOUS=§6Solas
-value.SOLAS_BY_SEPTONIOUS.0=§bDéveloppement non officiel V2.3.1
-option.SOLAS_BY_SEPTONIOUS.comment=Auteur original : Septonious (Solas Shader)\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\nÉtape de développement : Portage et Amélioration V2.3.1\nJournal des modifications :\n- Porté depuis 3.7 : Reflet de Lentille, DOF (mise au point manuelle), Vanilla Water, Nuages Cubiques double couche, Portail de l'End 3D\n- Amélioré : Soleil et Lune Vanilla, Étoiles, Lumière Volumétrique, Styles de Reflet, Reflet de l'End\n- Corrigé : SSR, reflets des flaques de redstone, feuillage rapide
+value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.2
+option.SOLAS_BY_SEPTONIOUS.comment=Auteur original : Septonious (Solas Shader)\nDéveloppeur : Anatyi\nDépôt : https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\nJournal des modifications :\n- Porté depuis 3.7 : Reflet de Lentille, DOF (mise au point manuelle), Vanilla Water, Nuages Cubiques double couche, Portail de l'End 3D\n- Amélioré : Soleil et Lune Vanilla, Étoiles, Lumière Volumétrique, Styles de Reflet, Reflet de l'End\n- Masquage des Nuages : modes d'occlusion entre couches (aucun / ombres / mutuel)\n- Révolution de l'End : le trou noir, les étoiles et la direction de la lumière tournent avec le temps, halo et lentille gravitationnelle\n- Reflet par dimension : interrupteurs indépendants de l'End / du Nether, intensité et style de revêtement\n- Nouveaux menus Améliorations et Performances\n- Corrigé : SSR, reflets des flaques de redstone, feuillage rapide
 
 #ATMOSPHERICS
 
@@ -32,6 +32,7 @@ option.BLOCKY_CLOUDS1_XZSTRETCH=Étirement XZ Couche 1
 option.BLOCKY_CLOUDS1_AMOUNT=Quantité Couche 1
 option.BLOCKY_CLOUDS1_BRIGHTNESS=Luminosité Couche 1
 option.BLOCKY_CLOUDS1_OPACITY=Opacité Couche 1
+option.BLOCKY_CLOUDS1_FLOW=Flux Couche 1
 option.BLOCKY_CLOUDS2=Nuages Cubiques Couche 2
 option.BLOCKY_CLOUDS2_HEIGHT=Hauteur Couche 2
 option.BLOCKY_CLOUDS2_THICKNESS=Épaisseur Couche 2
@@ -40,6 +41,12 @@ option.BLOCKY_CLOUDS2_AMOUNT=Quantité Couche 2
 option.BLOCKY_CLOUDS2_OFFSET=Décalage de bruit Couche 2
 option.BLOCKY_CLOUDS2_BRIGHTNESS=Luminosité Couche 2
 option.BLOCKY_CLOUDS2_OPACITY=Opacité Couche 2
+option.BLOCKY_CLOUDS2_FLOW=Flux Couche 2
+option.BLOCKY_CLOUDS_CULLING=Masquage des Nuages
+option.BLOCKY_CLOUDS_CULLING.comment=Comment les deux couches de nuages cubiques se masquent entre elles.
+option.BLOCKY_CLOUDS_CULLING.0=Pas de Masquage
+option.BLOCKY_CLOUDS_CULLING.1=Masquer les Ombres
+option.BLOCKY_CLOUDS_CULLING.2=Masquage Mutuel
 option.VC_DISTANT_FADE=Distance de Fondu des Nuage
 option.VC_AMOUNT=Quantité
 value.VC_AMOUNT.0.90=Très faible
@@ -105,6 +112,29 @@ option.END_VORTEX_SIZE=Taille du Vortex
 option.END_VORTEX_WHIRL=Tourbillons du Vortex
 option.END_VORTEX_ARMS=Nombre de bras du Vortex
 
+screen.ENH_END_CONFIG=Révolution de l'End
+option.ENH_END_REVOLUTION=Révolution de l'End
+option.ENH_END_REVOLUTION.comment=tourne le trou noir de l'End, les étoiles et la direction de la lumière avec le temps.
+option.ENH_END_REVOLUTION_CYCLE=Période de Révolution
+option.ENH_END_REVOLUTION_CYCLE.comment=Temps pour une révolution complète du trou noir de l'End.
+suffix.ENH_END_REVOLUTION_CYCLE=min
+option.ENH_END_START_ANGLE=Décalage Initial du Trou Noir
+option.ENH_END_START_ANGLE.comment=Décalage de la position initiale du trou noir en degrés.
+option.ENH_END_GLOW_BRIGHTNESS=Luminosité du Halo du Trou Noir
+option.ENH_END_GLOW_BRIGHTNESS.comment=Luminosité du halo doux autour du trou noir en révolution.
+option.ENH_END_GLOW_CONTRAST=Contraste du Halo du Trou Noir
+option.ENH_END_GLOW_CONTRAST.comment=Contraste de l'atténuation du halo depuis le centre du trou noir.
+option.ENH_END_GLOW_BLACK_LEVEL=Niveau de Noir du Halo
+option.ENH_END_GLOW_BLACK_LEVEL.comment=Augmentation de base du niveau de noir du halo (teinte aussi l'horizon des événements).
+option.ENH_END_GLOW_SATURATION=Saturation du Halo du Trou Noir
+option.ENH_END_GLOW_SATURATION.comment=Saturation des couleurs du halo autour du trou noir.
+option.ENH_END_GLOW_RADIUS=Rayon du Halo du Trou Noir
+option.ENH_END_GLOW_RADIUS.comment=Étendue/rayon du halo doux autour du trou noir.
+option.ENH_END_LENS=Lentille Gravitationnelle
+option.ENH_END_LENS.comment=Incurve les étoiles près du trou noir avec un vortex gravitationnel.
+option.ENH_END_LENS_STRENGTH=Intensité de la Lentille
+option.ENH_END_LENS_STRENGTH.comment=À quel point les étoiles proches sont incurvées autour du trou noir.
+
 #WATER
 
 screen.WATER=Eau
@@ -129,6 +159,19 @@ option.WAVING_WATER=Eau Ondulante
 #LIGHTING
 
 screen.LIGHTING=Éclairage
+screen.HANDLIGHT_CONFIG=Sources de Lumière en Main
+option.HL_TLCF_I=Torche et Lanterne
+option.HL_SOUL_I=Sources de l'Âme
+option.HL_ER_I=Bâton de l'End
+option.HL_SL_I=Lanterne Marine
+option.HL_GS_I=Pierre Lumineuse
+option.HL_SLRL_I=Champi-Lampe, Lampe et Ampoules
+option.HL_CTL_I=Torche et Lanterne en Cuivre
+option.HL_RED_I=Torche de Redstone
+option.HL_LAVA_I=Lave
+option.HL_JL_I=Citrouille-Lanterne
+option.HL_FROG_I=Lampes Grenouille
+option.HL_BC_I=Balise
 
 option.shadowMapResolution=Résolution des Ombres
 option.SHADOW_DISTANCE=Distance des Ombres
@@ -173,6 +216,13 @@ option.RAIN_PUDDLES=Flaques d'Eau
 option.REFLECTION_RT_SAMPLE_COUNT=Échantillons des Reflets
 option.SPECULAR_STRENGTH=Force des Spéculaire
 option.WATER_SPECULAR_STRENGTH=Force des Reflets de l'Eau
+option.REFLECTION=Réflexions
+option.REFLECTION_MODE=Mode de Réflexion
+option.REFLECTION_MODE.comment=Ajuste le comportement des réflexions en espace écran.
+value.REFLECTION_MODE.0=Réflexions par Défaut
+value.REFLECTION_MODE.1=Réflexions Globales au Sol
+value.REFLECTION_MODE.2=Sans Réflexions
+option.EDGE_HIGHLIGHT=Reflet de Bord
 
 
 option.INTEGRATED_EMISSION=IPBR Émissifs
@@ -333,6 +383,7 @@ screen.ER=Barre de l'End
 screen.SL=Lanterne Marine
 screen.GS=Pierre Lumineuse
 screen.SLRL=Champi-Lampe, Lampe de Redstone & Ampoules en Cuivre
+screen.CTL=Torche et Lanterne en Cuivre
 screen.RACO=Ancre de Réapparition & Obsidienne Pleureuse
 screen.LAVA=Lave
 screen.CB=Baies Lumineuses
@@ -378,6 +429,10 @@ option.SLRL_R=Rouge
 option.SLRL_G=Vert
 option.SLRL_B=Bleu
 option.SLRL_I=Intensité
+option.CTL_R=Rouge
+option.CTL_G=Vert
+option.CTL_B=Bleu
+option.CTL_I=Intensité
 option.RACO_R=Rouge
 option.RACO_G=Vert
 option.RACO_B=Bleu
@@ -472,8 +527,36 @@ option.LENS_FLARE_STYLE.5=Violet de l'End
 option.LENS_FLARE_STYLE.6=Magenta de l'End
 option.LENS_FLARE_STYLE.7=Cyan du Vide
 option.LENS_FLARE_STYLE.8=Pierre de l'End
+option.END_LENS_FLARE=Reflet de l'End
+option.END_LENS_FLARE.comment=Active le reflet de lentille dans la dimension de l'End.
+option.END_LENS_FLARE_STYLE=Style du Reflet de l'End
+option.END_LENS_FLARE_STYLE.0=Original
+option.END_LENS_FLARE_STYLE.1=Revêtement Bleu
+option.END_LENS_FLARE_STYLE.2=Revêtement Rouge
+option.END_LENS_FLARE_STYLE.3=Revêtement Vert
+option.END_LENS_FLARE_STYLE.4=Mixte
+option.END_LENS_FLARE_STYLE.5=Violet de l'End
+option.END_LENS_FLARE_STYLE.6=Magenta de l'End
+option.END_LENS_FLARE_STYLE.7=Cyan du Vide
+option.END_LENS_FLARE_STYLE.8=Pierre de l'End
+option.NETHER_LENS_FLARE=Reflet du Nether
+option.NETHER_LENS_FLARE.comment=Active le reflet de lentille dans la dimension du Nether (désactivé par défaut).
+option.NETHER_LENS_FLARE_STYLE=Style du Reflet du Nether
+option.NETHER_LENS_FLARE_STYLE.0=Original
+option.NETHER_LENS_FLARE_STYLE.1=Revêtement Bleu
+option.NETHER_LENS_FLARE_STYLE.2=Revêtement Rouge
+option.NETHER_LENS_FLARE_STYLE.3=Revêtement Vert
+option.NETHER_LENS_FLARE_STYLE.4=Mixte
+option.NETHER_LENS_FLARE_STYLE.5=Violet de l'End
+option.NETHER_LENS_FLARE_STYLE.6=Magenta de l'End
+option.NETHER_LENS_FLARE_STYLE.7=Cyan du Vide
+option.NETHER_LENS_FLARE_STYLE.8=Pierre de l'End
+option.NETHER_LENS_FLARE_STRENGTH=Reflet du Nether
+option.NETHER_LENS_FLARE_STRENGTH.comment=Contrôle le reflet de lentille dans la dimension du Nether.
 option.END_LENS_FLARE_STRENGTH=Reflet de l'End
 screen.LENS_FLARE_CONFIG=Config Reflet de Lentille
+screen.ENHANCEMENTS=Améliorations
+screen.PERFORMANCE=Performances
 option.VANILLA_WATER=Texture d'Eau Vanilla
 
 screen.TONEMAP=Configuration de la Tonemap

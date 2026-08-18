@@ -1,8 +1,11 @@
+#ifndef TEXTURE2D_SHADOW_DEFINED
+#define TEXTURE2D_SHADOW_DEFINED
 float texture2DShadow(sampler2D shadowtex, vec3 shadowPos) {
     float shadow = texture2D(shadowtex, shadowPos.xy).r;
 
     return clamp((shadow - shadowPos.z) * 65536.0, 0.0, 1.0);
 }
+#endif
 
 #ifdef VC
 float cloudHeight = mix(VC_HEIGHT, 100.0, wetness);

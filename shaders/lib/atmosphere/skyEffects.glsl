@@ -1,3 +1,30 @@
+//End Revolution helpers//
+#ifdef PORT_END_ON
+float getEnhEndTimeFactor() {
+    return fract(frameTimeCounter * ((1.0 / 60.0) / ENH_END_REVOLUTION_CYCLE) + ENH_END_START_ANGLE / 360.0) * TAU;
+}
+vec3 enhEndRotateY(vec3 dir, float ang) {
+    float c = cos(ang);
+    float s = sin(ang);
+    return vec3(dir.x * c - dir.z * s, dir.y, dir.x * s + dir.z * c);
+}
+#endif
+
+#ifdef PORT_END_LENS_ON
+//Gravitational lensing: bend ray directions near the black hole into a vortex swirl
+vec3 enhEndLensWarp(vec3 dir, vec3 bhViewDir) {
+	vec3 d = normalize(dir);
+	float ang = dot(d, bhViewDir);
+	//Wide smooth falloff so the warp is clearly visible around the black hole
+	float falloff = exp(-(1.0 - ang) * 4.0);
+	vec3 tangent = normalize(cross(bhViewDir, vec3(0.0, 1.0, 0.0)) + 0.0001);
+	vec3 bitangent = cross(bhViewDir, tangent);
+	//Stronger vortex swirl + radial lensing
+	d = normalize(d + (tangent * 0.22 + bitangent * 0.12 + bhViewDir * 0.28) * ENH_END_LENS_STRENGTH * falloff);
+	return d * length(dir);
+}
+#endif
+
 #if defined STARS || defined END_STARS
 float getNoise(vec2 pos) {
 	return fract(sin(dot(pos, vec2(12.9898, 4.1414))) * 43758.5453);
@@ -70,8 +97,13 @@ void drawMilkyWay(inout vec3 color, in vec3 worldPos, in float VoU, in float cav
 float getSpiralWarping(vec2 coord){
 	float whirl = END_VORTEX_WHIRL;
 	float arms = END_VORTEX_ARMS;
+	float spiralRot = frameTimeCounter * 0.125;
+	#ifdef PORT_END_ON
+	//Rotation is already carried by the revolving plane coords - keep the nebula locked to the black hole
+	spiralRot = 0.0;
+	#endif
 
-    coord = vec2(atan(coord.y, coord.x) - frameTimeCounter * 0.125, sqrt(coord.x * coord.x + coord.y * coord.y));
+    coord = vec2(atan(coord.y, coord.x) - spiralRot, sqrt(coord.x * coord.x + coord.y * coord.y));
     float center = pow8(1.0 - coord.y) * 24.0;
     float spiral = sin((coord.x + sqrt(coord.y) * whirl) * arms) + center - coord.y;
 
@@ -82,10 +114,14 @@ void getEndNebula(inout vec3 color, in vec3 worldPos, in float VoU, inout float 
 	float visibility = pow2(1.0 - abs(VoU)) * END_NEBULA_BRIGHTNESS;
 
 	if (visibility > 0.0) {
+		//The revolving black hole direction is already baked into sunVec by getSunVector (VSH) - rotate only once, never here
 		vec3 sunVec = mat3(gbufferModelViewInverse) * sunVec;
 		vec2 sunCoord = sunVec.xz / (sunVec.y + length(sunVec));
 		vec2 planeCoord1 = worldPos.xz / (length(worldPos) + worldPos.y) - sunCoord;
 		vec2 planeCoord2 = worldPos.xz / length(worldPos) - sunCoord;
+		//Original wide, soft background glow restored - the plane coords already pivot around the black hole
+		//centre, so the nebula still follows the revolving hole without being dimmed into a tight core.
+		float bhGlow = 1.0;
 		float spiral1 = getSpiralWarping(planeCoord1) * clamp(VoU, 0.0, 1.0);
 		float spiral2 = getSpiralWarping(planeCoord2) * clamp(VoU, 0.0, 1.0);
 			 planeCoord1 += cameraPosition.xz * 0.0001;
@@ -104,8 +140,8 @@ void getEndNebula(inout vec3 color, in vec3 worldPos, in float VoU, inout float 
 			  nebulaNoise2 += texture2D(noisetex, planeCoord2 * 0.08 - frameTimeCounter * 0.00060).r * 0.50;
 			  nebulaNoise2 = clamp(nebulaNoise2 - 0.8, 0.0, 1.0);
 
-		color += mix(mix(endAmbientCol, endLightCol, nebulaNoise1), mix(vec3(2.0, 0.8, 0.2), vec3(0.1, 2.1, 0.8), nebulaNoise1), texture2D(noisetex, planeCoord1 * 0.025).r * 0.4) * visibility * nebulaNoise1;
-		color += mix(vec3(2.3, 0.8, 0.5), vec3(1.2, 2.2, 0.9), nebulaNoise2 - 0.25) * visibility * pow2(nebulaNoise2) * 0.125;
+		color += mix(mix(endAmbientCol, endLightCol, nebulaNoise1), mix(vec3(2.0, 0.8, 0.2), vec3(0.1, 2.1, 0.8), nebulaNoise1), texture2D(noisetex, planeCoord1 * 0.025).r * 0.4) * visibility * nebulaNoise1 * bhGlow;
+		color += mix(vec3(2.3, 0.8, 0.5), vec3(1.2, 2.2, 0.9), nebulaNoise2 - 0.25) * visibility * pow2(nebulaNoise2) * 0.125 * bhGlow;
 		nebulaFactor = (nebulaNoise1 + nebulaNoise2) * visibility;
 	}
 }
@@ -115,8 +151,13 @@ void getEndNebula(inout vec3 color, in vec3 worldPos, in float VoU, inout float 
 vec3 getSpiral(vec2 coord, float hole) {
 	float whirl = END_VORTEX_WHIRL * mix(1.0, 3.0, pow4(hole));
 	float arms = END_VORTEX_ARMS;
+	float spiralRot = frameTimeCounter * 0.125;
+	#ifdef PORT_END_ON
+	//Rotation is already carried by the revolving plane coords - keep the vortex locked to the black hole
+	spiralRot = 0.0;
+	#endif
 
-    coord = vec2(atan(coord.y, coord.x) - frameTimeCounter * 0.125, sqrt(coord.x * coord.x + coord.y * coord.y));
+    coord = vec2(atan(coord.y, coord.x) - spiralRot, sqrt(coord.x * coord.x + coord.y * coord.y));
     float center = pow8(1.0 - coord.y) * 24.0;
     float spiral = sin((coord.x + sqrt(coord.y) * whirl) * arms) + center - coord.y;
 
@@ -124,28 +165,77 @@ vec3 getSpiral(vec2 coord, float hole) {
 }
 
 void getEndVortex(inout vec3 color, in vec3 worldPos, in vec3 stars, in float VoU, in float VoS) {
+	#ifdef PORT_END_ON
+	//Wide visibility range so the black hole stays visible across the sky while revolving (no hard clip)
+	if (VoS > 0.05) {
+	#else
+	//Vanilla: original visibility threshold untouched
 	if (VoS > 0.5) {
+	#endif
+		//The revolving black hole direction is already baked into sunVec by getSunVector (VSH) - rotate only once, never here
 		vec3 sunVec = mat3(gbufferModelViewInverse) * sunVec;
 		vec2 sunCoord = sunVec.xz / (sunVec.y + length(sunVec));
-		vec2 planeCoord0 = worldPos.xz / (worldPos.y + length(worldPos)) + sunCoord;
+		vec2 dirProj = worldPos.xz / (worldPos.y + length(worldPos));
+		#ifdef PORT_END_ON
+		//All components share the black-hole-centred frame (dirProj - sunCoord) so they stay perfectly aligned
+		vec2 planeCoord0 = dirProj - sunCoord;
+		vec2 planeCoord1 = dirProj - sunCoord;
+		vec2 center = vec2(0.0);
+		#else
+		vec2 planeCoord0 = dirProj + sunCoord;
 			 planeCoord0.x += 0.5;
 			 planeCoord0.y -= 0.23;
-		vec2 planeCoord1 = worldPos.xz / (worldPos.y + length(worldPos)) - sunCoord;
+		vec2 planeCoord1 = dirProj - sunCoord;
 		vec2 center = vec2(0.5);
+		#endif
 		
 		float dist = distance(planeCoord0, center);
 		float invDist = 1.0 - dist;
+		#ifdef PORT_END_ON
+		//Fade out smoothly near the screen edge instead of hard-clipping the black hole
+		float edgeFade = smoothstep(1.0, 0.6, dist);
+		#else
+		float edgeFade = 1.0;
+		#endif
 		float ring = pow(smoothstep(0.3, 0.05, dist * 1.5) * 4.0, 3.5) + 1.0;
 
 		float hole = step(0.05, dist);
 			  hole *= smoothstep(0.085, 0.100, dist);
 
+		#ifdef PORT_END_ON
+		vec3 accretionDisk = endLightCol * pow7(max(invDist, 0.0)) * 0.25;
+		#else
 		vec3 accretionDisk = endLightCol * pow7(invDist) * 0.25;
+		#endif
 		vec3 spiral = getSpiral(planeCoord1, VoS);
+		#ifdef PORT_END_ON
+		//Hide the vortex inside the event horizon so it cannot leak through the black core
+		spiral *= smoothstep(0.05, 0.12, dist);
+		#endif
 
 		color = mix(color, spiral, pow3(length(spiral)));
-		color += clamp(ring * hole * accretionDisk, 0.0, 1.0);
+		color += clamp(ring * hole * accretionDisk * edgeFade, 0.0, 1.0);
+		#ifdef PORT_END_ON
+		//Event horizon: black core responds to the glow black-level control (lifts from pure black)
+		color *= mix(1.0, ENH_END_GLOW_BLACK_LEVEL, 1.0 - hole);
+		//Wide soft glow on top of the black hole - radius/contrast/brightness/black-level all tuneable
+		vec3 glowCol = mix(vec3(dot(endLightCol, vec3(0.3333))), endLightCol, ENH_END_GLOW_SATURATION);
+		float glowDist = dist / ENH_END_GLOW_RADIUS;
+		color += glowCol * (pow(max(1.0 - glowDist, 0.0), ENH_END_GLOW_CONTRAST) * 0.28 * ENH_END_GLOW_BRIGHTNESS * smoothstep(0.05, 0.12, dist) + ENH_END_GLOW_BLACK_LEVEL) * edgeFade;
+		#ifdef PORT_END_LENS_ON
+		//Visible gravitational vortex: swept star streaks around the black hole
+		vec2 swirlP = planeCoord0;
+		float sr = length(swirlP);
+		float sa = atan(swirlP.y, swirlP.x);
+		float swirlStreng = ENH_END_LENS_STRENGTH * exp(-sr * 2.0);
+		float streak = pow(max(sin(sa * 7.0 + sr * 10.0 + swirlStreng * 4.0), 0.0), 3.0);
+		float swirlMask = exp(-sr * 2.5) * smoothstep(0.6, 0.2, sr);
+		color += endLightCol * streak * swirlMask * 0.35 * ENH_END_LENS_STRENGTH * edgeFade;
+		#endif
+		#else
+		//Vanilla: original mask untouched
 		color *= mix(1.0, 0.0, float(VoS > 0.97) * (1.0 - hole));
+		#endif
 	}
 }
 #endif

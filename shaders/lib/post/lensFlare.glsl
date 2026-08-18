@@ -58,27 +58,17 @@ vec3 RainbowLens(vec2 lightPos, float size, float dist, float rad) {
 	return rainbowLens;
 }
 
-//Lens flare coating style presets (cinema lens simulation)
-vec3 getLensFlareCoating() {
-	#if LENS_FLARE_STYLE == 1
-	return vec3(0.65, 0.85, 1.55); //Blue coating
-	#elif LENS_FLARE_STYLE == 2
-	return vec3(1.6, 0.75, 0.7); //Red coating
-	#elif LENS_FLARE_STYLE == 3
-	return vec3(0.7, 1.55, 0.8); //Green coating
-	#elif LENS_FLARE_STYLE == 4
-	return vec3(1.35, 0.7, 1.5); //Mixed cinema coating (magenta/teal)
-	#elif LENS_FLARE_STYLE == 5
-	return vec3(0.8, 0.55, 1.5); //End Purple
-	#elif LENS_FLARE_STYLE == 6
-	return vec3(1.45, 0.55, 1.5); //End Magenta (Chorus)
-	#elif LENS_FLARE_STYLE == 7
-	return vec3(0.5, 1.0, 1.3); //Void Cyan
-	#elif LENS_FLARE_STYLE == 8
-	return vec3(1.4, 1.15, 0.8); //End Stone
-	#else
-	return vec3(1.0); //Original
-	#endif
+//Lens flare coating style presets (cinema lens simulation) - style passed at runtime per-dimension
+vec3 getLensFlareCoating(int style) {
+	if (style == 1) return vec3(0.65, 0.85, 1.55); //Blue coating
+	else if (style == 2) return vec3(1.6, 0.75, 0.7); //Red coating
+	else if (style == 3) return vec3(0.7, 1.55, 0.8); //Green coating
+	else if (style == 4) return vec3(1.35, 0.7, 1.5); //Mixed cinema coating (magenta/teal)
+	else if (style == 5) return vec3(0.8, 0.55, 1.5); //End Purple
+	else if (style == 6) return vec3(1.45, 0.55, 1.5); //End Magenta (Chorus)
+	else if (style == 7) return vec3(0.5, 1.0, 1.3); //Void Cyan
+	else if (style == 8) return vec3(1.4, 1.15, 0.8); //End Stone
+	else return vec3(1.0); //Original
 }
 
 vec3 LensTint(vec3 lens, float truePos) {
@@ -89,7 +79,7 @@ vec3 LensTint(vec3 lens, float truePos) {
 	return lens * visibility;
 }
 
-void LensFlare(inout vec3 color, vec2 lightPos, float truePos, float multiplier) {
+void LensFlare(inout vec3 color, vec2 lightPos, float truePos, float multiplier, int style) {
 	float falloffBase = length(lightPos * vec2(aspectRatio, 1.0));
 	float falloffIn = pow(clamp(falloffBase * 10.0, 0.0, 1.0), 2.0);
 	float falloffOut = clamp(falloffBase * 3.0 - 1.5, 0.0, 1.0);
@@ -228,7 +218,7 @@ void LensFlare(inout vec3 color, vec2 lightPos, float truePos, float multiplier)
 			RainbowLens(lightPos, 2.0, 4.0, 0.1) * 0.00
 		) * (1.0 - falloffOut);
 
-		lensFlare *= getLensFlareCoating();
+		lensFlare *= getLensFlareCoating(style);
 		lensFlare = LensTint(lensFlare, truePos);
 
 		#ifdef END

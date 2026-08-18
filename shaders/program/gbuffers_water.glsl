@@ -231,7 +231,7 @@ void main() {
 			#endif
 		}
 
-		#ifdef WATER_REFLECTIONS
+		#if defined WATER_REFLECTIONS && defined REFLECTION
 		float fresnel = clamp(1.0 + dot(normalize(newNormal), nViewPos), 0.0, 1.0 - float(isEyeInWater == 1.0) * 0.5);
 		//Thin/transparent blocks (redstone wire, rails, pressure plates, carpets, glass, etc., material == 2)
 		//don't get the water planar reflection — it looks like an unnatural full-surface reflection on them
@@ -244,6 +244,8 @@ void main() {
 		#ifdef OVERWORLD
         float vanillaDiffuse = (0.25 * NoU + 0.75) + (0.667 - abs(NoE)) * (1.0 - abs(NoU)) * 0.15;
 		float smoothnessF = 0.6 + length(albedo.rgb) * 0.2 * float(mat == 10000 || mat == 10001);
+		//Edge highlight gloss control (default 1.0 = original)
+		smoothnessF = clamp(smoothnessF * EDGE_HIGHLIGHT, 0.0, 1.0);
 
 		vec3 baseReflectance = vec3(0.1);
 		//Same exclusion for the sun specular highlight (it shares the same smoothnessF path on all blocks)

@@ -263,7 +263,6 @@ uniform float timeAngle;
 #endif
 
 #if defined WAVING_LEAVES || defined WAVING_PLANTS
-uniform float frameTimeCounter;
 uniform float rainStrength;
 
 uniform vec3 cameraPosition;

@@ -2,6 +2,10 @@
 
 #define SOLAS_BY_SEPTONIOUS 0 //[0]
 
+#if defined VSH
+uniform float frameTimeCounter;
+#endif
+
 ////////////// S H A D E R S E T T I N G S //////////////
 
 const int shadowMapResolution = 1536; //[512 1024 1536 2048 3072]
@@ -75,6 +79,30 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define END_STAR_BRIGHTNESS 0.75 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00]
 #define END_STAR_SIZE 1.00 //[1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 6.0 8.0 10.0]
 
+//End Revolution//
+//#define ENH_END_REVOLUTION
+#define ENH_END_REVOLUTION_CYCLE 15.0 //[0.25 0.5 0.75 1.0 1.5 2.0 3.0 5.0 7.5 10.0 15.0 20.0 30.0 60.0]
+#define ENH_END_START_ANGLE 0 //[0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100 105 110 115 120 125 130 135 140 145 150 155 160 165 170 175 180 185 190 195 200 205 210 215 220 225 230 235 240 245 250 255 260 265 270 275 280 285 290 295 300 305 310 315 320 325 330 335 340 345 350 355]
+
+//End black hole glow tuning (active with ENH_END_REVOLUTION)//
+#define ENH_END_GLOW_BRIGHTNESS 2.0 //[0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0 2.5 3.0]
+#define ENH_END_GLOW_CONTRAST 4.5 //[1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 6.0]
+#define ENH_END_GLOW_BLACK_LEVEL 0.03 //[0.0 0.01 0.02 0.03 0.05 0.07 0.1]
+#define ENH_END_GLOW_SATURATION 0.5 //[0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define ENH_END_GLOW_RADIUS 1.0 //[0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0 2.5 3.0]
+
+//End black hole gravitational lensing (warp stars nearby)//
+//#define ENH_END_LENS
+#define ENH_END_LENS_STRENGTH 1.0 //[0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
+
+//Internal port flags (auto-enabled by the ENH_END_* controls)//
+#ifdef ENH_END_REVOLUTION
+	#define PORT_END_ON
+	#ifdef ENH_END_LENS
+		#define PORT_END_LENS_ON
+	#endif
+#endif
+
 //Planar Clouds
 #define PLANAR_CLOUDS
 #define PLANAR_CLOUDS_BRIGHTNESS 1.1 //[0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5]
@@ -101,6 +129,7 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define BLOCKY_CLOUDS1_AMOUNT 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00 5.00]
 #define BLOCKY_CLOUDS1_BRIGHTNESS 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 3.00 4.00 5.00]
 #define BLOCKY_CLOUDS1_OPACITY 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00]
+#define BLOCKY_CLOUDS1_FLOW 0.0 //[0.0 0.5 1.0 1.5 2.0 2.5 3.0 4.0 5.0 6.0 8.0 10.0 12.0 16.0]
 //#define BLOCKY_CLOUDS2
 #define BLOCKY_CLOUDS2_HEIGHT 230.0 //[10.0 20.0 30.0 40.0 50.0 60.0 70.0 80.0 90.0 100.0 110.0 120.0 130.0 140.0 150.0 160.0 170.0 180.0 190.0 200.0 210.0 220.0 230.0 240.0 250.0 260.0 270.0 280.0 290.0 300.0 320.0 340.0 360.0 380.0 400.0]
 #define BLOCKY_CLOUDS2_THICKNESS 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00 5.00 6.00 8.00]
@@ -109,6 +138,8 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define BLOCKY_CLOUDS2_OFFSET 0.50 //[0.00 0.50 1.00 1.50 2.00 2.50 3.00 4.00 5.00 6.00 8.00 10.00 12.00 16.00 20.00 24.00 32.00 48.00 64.00]
 #define BLOCKY_CLOUDS2_BRIGHTNESS 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 3.00 4.00 5.00]
 #define BLOCKY_CLOUDS2_OPACITY 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00]
+#define BLOCKY_CLOUDS2_FLOW 0.0 //[0.0 0.5 1.0 1.5 2.0 2.5 3.0 4.0 5.0 6.0 8.0 10.0 12.0 16.0]
+#define BLOCKY_CLOUDS_CULLING 1 //[0 1 2]
 
 //VL//
 #define VL
@@ -166,6 +197,20 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define DYNAMIC_HANDLIGHT
 #define DYNAMIC_HANDLIGHT_STRENGTH 1.50 //[0.50 0.75 1.00 1.25 1.50 1.75 2.00]
 
+//Per-handheld-light-source strength (Handheld Light Sources)
+#define HL_TLCF_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_SOUL_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_ER_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_SL_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_GS_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_SLRL_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_CTL_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_RED_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_LAVA_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_JL_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_FROG_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+#define HL_BC_I 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
+
 //RSM GI//
 //#define GI
 #define GI_SAMPLES 6 //[4 5 6 7 8 9 10 11 12 13 14 15 16]
@@ -195,7 +240,16 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define LENS_FLARE
 #define LENS_FLARE_STRENGTH 0.6 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
 #define LENS_FLARE_STYLE 0 //[0 1 2 3 4 5 6 7 8]
+//#define END_LENS_FLARE
 #define END_LENS_FLARE_STRENGTH 0.0 //[0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.25 1.5 1.75 2.0]
+#define END_LENS_FLARE_STYLE 5 //[0 1 2 3 4 5 6 7 8]
+//#define NETHER_LENS_FLARE
+#define NETHER_LENS_FLARE_STRENGTH 0.0 //[0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.25 1.5 1.75 2.0]
+#define NETHER_LENS_FLARE_STYLE 0 //[0 1 2 3 4 5 6 7 8]
+
+#if defined LENS_FLARE || defined END_LENS_FLARE || defined NETHER_LENS_FLARE
+#define LENS_FLARE_ANY
+#endif
 
 #define BASELENS1
 #define BASELENS2
@@ -247,6 +301,11 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 //Water//
 //#define VANILLA_WATER
 #define WATER_REFLECTIONS
+//Global reflection switch & mode (0=default reflection, 1=global ground reflection, 2=no reflection)
+#define REFLECTION
+#define REFLECTION_MODE 0 //[0 1 2]
+//Edge highlight gloss (modifies the PBR specular highlight's glossiness)
+#define EDGE_HIGHLIGHT 1.00 //[0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
 //Water Ripple Noise (waves on the water surface)
 #define WATER_WAVES
 #define WATER_NORMALS 1 //[0 1 2]
@@ -406,6 +465,11 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define SLRL_B 0.10 //[0.00 0.02 0.05 0.10 0.15 0.18 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
 #define SLRL_I 4.50 //[0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00 3.25 3.50 3.75 4.00 4.25 4.50 4.75 5.00 5.25 5.50 5.75 6.00 6.50 7.00 7.50 8.00]
 
+#define CTL_R 0.10 //[0.00 0.02 0.05 0.10 0.15 0.18 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
+#define CTL_G 1.00 //[0.00 0.02 0.05 0.10 0.15 0.18 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
+#define CTL_B 0.30 //[0.00 0.02 0.05 0.10 0.15 0.18 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
+#define CTL_I 1.50 //[0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00 3.25 3.50 3.75 4.00 4.25 4.50 4.75 5.00 5.25 5.50 5.75 6.00 6.50 7.00 7.50 8.00]
+
 #define RACO_R 0.60 //[0.00 0.02 0.05 0.10 0.15 0.18 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
 #define RACO_G 0.05 //[0.00 0.02 0.05 0.10 0.15 0.18 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
 #define RACO_B 1.00 //[0.00 0.02 0.05 0.10 0.15 0.18 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
@@ -547,7 +611,15 @@ vec3 getSunVector(mat4 gbufferModelView, float timeAngle) {
 	return normalize((gbufferModelView * vec4(vec3(-sin(ang), cos(ang) * sunRotationData) * 2000.0, 1.0)).xyz);
 	#elif defined END
 	const vec2 sunRotationData = vec2(cos(sunPathRotation * 0.01745329251994), -sin(sunPathRotation * 0.01745329251994));
-	return normalize((gbufferModelView * vec4(vec3(0.0, sunRotationData * 2000.0), 1.0)).xyz);
+	vec3 worldSun = vec3(0.0, sunRotationData * 2000.0);
+	#if defined VSH && defined PORT_END_ON
+	//Bind the global light (and shadow direction) to the revolving End black hole
+	float enhEndTF = fract(frameTimeCounter * ((1.0 / 60.0) / ENH_END_REVOLUTION_CYCLE) + ENH_END_START_ANGLE / 360.0) * TAU;
+	float enhEndC = cos(enhEndTF);
+	float enhEndS = sin(enhEndTF);
+	worldSun = vec3(worldSun.x * enhEndC - worldSun.z * enhEndS, worldSun.y, worldSun.x * enhEndS + worldSun.z * enhEndC);
+	#endif
+	return normalize((gbufferModelView * vec4(worldSun, 1.0)).xyz);
 	#else
 	return vec3(0.0);
 	#endif

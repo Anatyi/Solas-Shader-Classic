@@ -236,7 +236,12 @@ void main() {
 
 	#ifdef END
 	#ifdef END_STARS
+	#ifdef PORT_END_LENS_ON
+	//Gravitational lensing: warp nearby stars around the black hole
+	drawStars(skyColor, enhEndLensWarp(worldPos, sunVec), stars, VoU, 1.0, nebulaFactor, vc.a, 0.3);
+	#else
 	drawStars(skyColor, worldPos, stars, VoU, 1.0, nebulaFactor, vc.a, 0.3);
+	#endif
 	#endif
 
 	#ifdef END_VORTEX

@@ -143,6 +143,8 @@ vec3 getBlocklightColor(int id) {
 	else if(id == 66) color = vec3(0.1, 0.5, 0.7) * 0.2;
 	//Mob Spawner
 	else if(id == 67) color = vec3(0.1, 0.01, 0.15);
+	//Copper Torches & Lanterns
+	else if(id == 72 || id == 73) color = vec3(CTL_R, CTL_G, CTL_B) * CTL_I;
 
 	return color;
 }

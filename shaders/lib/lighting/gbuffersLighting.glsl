@@ -161,6 +161,8 @@ void gbuffersLighting(inout vec4 albedo, in vec3 screenPos, in vec3 viewPos, in 
 
     float smoothnessF = 0.15 + length(albedo.rgb) * 0.25 + NoL * 0.15 + float(subsurface > 0.0) * 0.05;
           smoothnessF = mix(smoothnessF, 0.95, smoothness);
+          //Edge highlight gloss control (default 1.0 = original)
+          smoothnessF = clamp(smoothnessF * EDGE_HIGHLIGHT, 0.0, 1.0);
 
     //Thin/transparent blocks (redstone wire, rails, pressure plates, carpets, glass, etc., material == 2)
     //don't get the sun specular highlight — it looks like an unnatural full-surface reflection on them

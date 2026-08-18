@@ -29,6 +29,7 @@ uniform float isSnowy;
 #endif
 
 uniform float viewWidth, viewHeight;
+uniform float frameTimeCounter;
 uniform float blindFactor;
 uniform float nightVision;
 
