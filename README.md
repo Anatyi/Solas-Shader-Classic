@@ -24,6 +24,10 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 - Volumetric Light
 - Flare Style Presets
 - End Flare
+- Added Enhancements & Performance menus
+- Per-dimension Lens Flare: independent Overworld / End / Nether switches, strength & coating style
+- End Revolution: black hole, stars and light direction revolve over time, glow & gravitational lensing
+- Blocky Cloud Culling: layer occlusion modes (none / cull shadows / mutual culling)
 
 ### Fixed
 - SSR (Screen Space Reflections)
