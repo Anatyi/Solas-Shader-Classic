@@ -9,7 +9,7 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 
 ---
 
-## ✨ Features at a Glance
+## Features at a Glance
 
 ### Ported from v3.7
 - Lens Flare
@@ -36,7 +36,7 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 
 ---
 
-## 📦 Installation
+## Installation
 
 1. Download the latest release from the [Releases](../../releases) page.
 2. Place the `.zip` file into your Minecraft `shaderpacks` folder.
@@ -45,21 +45,21 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 
 ---
 
-## 📜 License & Credits
+## License & Credits
 
 - **Original Solas Shader** – all rights and credits belong to **Septonious**.
 - This fork is **non‑commercial** and provided “as is”.
 
 ---
 
-## 🙏 Acknowledgements
+## Acknowledgements
 
 Huge thanks to **Septonious** for creating the original Solas Shader and for granting permission to host this fork.  
 If you enjoy this shader pack, please consider supporting the original project.
 
 ---
 
-## 🐛 Bug Reports
+## Bug Reports
 
 If you find a bug specific to this fork, please [open an issue](../../issues) with:
 - Minecraft version
@@ -71,4 +71,3 @@ I will try to address them as time permits, but **please be patient** – this i
 
 ---
 
-**Happy shading!** 🎨✨
