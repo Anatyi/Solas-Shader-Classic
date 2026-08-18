@@ -15,11 +15,11 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 - Lens Flare
 - DOF (Depth of Field) with manual focus
 - Vanilla Water
-- Double-layer Blocky Clouds
 - 3D End Portal
 
 ### Enhanced
 - Vanilla Sun & Moon
+- Double-layer Blocky Clouds
 - Stars
 - Volumetric Light
 - Flare Style Presets
