@@ -8,6 +8,11 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 > All bug reports should be directed to this repository's issue tracker. Fixes are provided by the maintainer on a best-effort basis – no guaranteed timeline.
 
 ---
+## Gallery
+
+<img width="2561" height="1080" alt="2026-08-27_00 42 12" src="https://github.com/user-attachments/assets/896e137a-0a34-4ad4-898f-1b963ecfddce" />
+
+
 
 ## Features at a Glance
 
