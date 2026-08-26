@@ -16,6 +16,11 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 - DOF (Depth of Field) with manual focus
 - Vanilla Water
 - 3D End Portal
+- 3.7 volumetric clouds (VC_3_7) and planar clouds (PLANAR_CLOUDS_3_7)
+- 3.7 Overworld sky (SKY_3_7), stars (STARS_3_7) and generated night nebula
+- 3.x End: nebula (END_NEBULA_3_7), black hole (lensing + vortex), starfield, protoplanetary disk / End clouds
+- 3.x Nether smoke (NETHER_SMOKE_3_7) and LPV fog noise (LPV_FOG_NOISE)
+- 
 
 ### Enhanced
 - Vanilla Sun & Moon
@@ -28,13 +33,18 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 - Per-dimension Lens Flare: independent Overworld / End / Nether switches, strength & coating style
 - End Revolution: black hole, stars and light direction revolve over time, glow & gravitational lensing
 - Blocky Cloud Culling: layer occlusion modes (none / cull shadows / mutual culling)
+- Gravity vortex controls: strength / range, negative values allowed; starfield density independent of the End nebula
+- Reorganized Sky & Atmosphere menus (switch + config two-column layout)
+- Fixed Menu: LPV fog noise energy
 
 ### Fixed
 - SSR (Screen Space Reflections)
 - Redstone puddle reflections
 - Fast Leaves rendering issues
+- End disk glass culling, End reflection fix
 
 ---
+check the presets
 
 ## Installation
 
@@ -62,12 +72,11 @@ If you enjoy this shader pack, please consider supporting the original project.
 ## Bug Reports
 
 If you find a bug specific to this fork, please [open an issue](../../issues) with:
-- Minecraft version
+- Iris version
 - GPU and driver version
 - Steps to reproduce
 - Any relevant logs or screenshots
 
-I will try to address them as time permits, but **please be patient** – this is a hobby project maintained in my free time.
 
 ---
 
