@@ -11,7 +11,7 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 
 ## Features at a Glance
 
-### Ported from v3.7
+### Ported from v3.x
 - Lens Flare
 - DOF (Depth of Field) with manual focus
 - Vanilla Water
@@ -20,7 +20,6 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 - 3.7 Overworld sky (SKY_3_7), stars (STARS_3_7) and generated night nebula
 - 3.x End: nebula (END_NEBULA_3_7), black hole (lensing + vortex), starfield, protoplanetary disk / End clouds
 - 3.x Nether smoke (NETHER_SMOKE_3_7) and LPV fog noise (LPV_FOG_NOISE)
-- 
 
 ### Enhanced
 - Vanilla Sun & Moon
