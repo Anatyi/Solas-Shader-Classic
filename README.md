@@ -43,14 +43,13 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 - End disk glass culling, End reflection fix
 
 ---
-check the presets
 
 ## Installation
 
 1. Download the latest release from the [Releases](../../releases) page.
 2. Place the `.zip` file into your Minecraft `shaderpacks` folder.
 3. Launch Minecraft, go to **Options → Video Settings → Shaders**, and select `Solas-Shader-Classic`.
-4. Enjoy the classic look with modern compatibility!
+4. Check the presets and Enjoy the classic look with modern compatibility!
 
 ---
 
