@@ -11,6 +11,10 @@ A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Min
 ## Gallery
 
 <img width="2561" height="1080" alt="2026-08-27_00 42 12" src="https://github.com/user-attachments/assets/896e137a-0a34-4ad4-898f-1b963ecfddce" />
+![Uploading 2026-08-27_00.49.09.png…]()
+![Uploading 2026-08-27_00.46.08.png…]()
+![Uploading 2026-08-27_00.57.32_3.png…]()
+
 
 
 
