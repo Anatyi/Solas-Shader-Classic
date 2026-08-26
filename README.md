@@ -1,7 +1,7 @@
 # Solas-Shader-Classic
 
 A legacy fork of the iconic Solas Shader (v2.3 visual style), modernized for Minecraft 1.21+ (26.x) with backported enhancements from later versions.
-Default style is classic during initial installation，high customizability allows users to switch visual styles at any time
+Default style is classic during initial installation，high customizability allows users to switch visual styles at any time.
 
 > **⚠️ Important Notice**  
 > This is an **unofficial fork** and is **not affiliated with the original author Septonious**.  
