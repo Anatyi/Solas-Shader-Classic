@@ -86,6 +86,9 @@ vec3 lightVec = sunVec;
 #include "/lib/color/netherColor.glsl"
 #include "/lib/vx/blocklightColor.glsl"
 #include "/lib/vx/voxelization.glsl"
+#if PBR_SCHEME == 1
+#include "/lib/pbr/ggx.glsl"
+#endif
 #include "/lib/lighting/shadows.glsl"
 
 #ifdef GI
@@ -95,7 +98,11 @@ vec3 lightVec = sunVec;
 #include "/lib/lighting/gbuffersLighting.glsl"
 
 #ifdef GENERATED_EMISSION
+#if PBR_SCHEME == 1
+#include "/lib/pbr_24/integratedEmissionEntities.glsl"
+#else
 #include "/lib/pbr/integratedEmissionEntities.glsl"
+#endif
 #endif
 
 //Program//
@@ -128,7 +135,7 @@ void main() {
 		#endif
 
 		vec3 shadow = vec3(0.0);
-		gbuffersLighting(albedo, screenPos, viewPos, worldPos, shadow, lightmap, NoU, NoL, NoE, 0.0, 0.0, emission, 0.0);
+		gbuffersLighting(albedo, screenPos, viewPos, worldPos, newNormal, shadow, lightmap, NoU, NoL, NoE, 0.0, 0.0, emission, 0.0);
 	}
 
 	/* DRAWBUFFERS:03 */

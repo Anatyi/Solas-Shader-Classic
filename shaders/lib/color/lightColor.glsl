@@ -27,4 +27,18 @@ vec3 ambientColor = mix(lightNight, mix(lightColRaw, normalize(skyColor + 0.0001
 vec3 ambientColRaw = pow(ambientColor, vec3(0.75)) * 0.5 * ambientIntensity;
 vec3 ambientColSqrt = mix(ambientColRaw, dot(ambientColRaw, vec3(0.299, 0.587, 0.114)) * weatherCol, wetness * 0.5);
 vec3 ambientCol = ambientColSqrt * ambientColSqrt;
+
+#if defined VC_3_7 || defined SKY_3_7
+//3.7 per-biome weather (shared by the 3.7 sky and clouds)
+uniform float isDesert, isCherryGrove, isSwamp, isMushroom, isJungle, isLushCaves, isDeepDark;
+
+vec3 biomeColor = vec3(1.105, 0.805, 0.615) * (1.0 + timeBrightness * 0.5) * isDesert +
+                  vec3(1.095, 0.925, 1.025) * isCherryGrove +
+                  vec3(1.025, 1.285, 0.785) * isSwamp +
+                  vec3(1.115, 0.745, 0.975) * isMushroom +
+                  vec3(0.955, 1.085, 0.895) * isJungle;
+float isSpecificBiome = isDesert + isCherryGrove + isSwamp + isMushroom + isJungle;
+vec3 caveBiomeColor = vec3(0.125, 0.145, 0.035) * isLushCaves + vec3(0.025, 0.095, 0.135) * isDeepDark;
+float isCaveBiome = isLushCaves + isDeepDark;
+#endif
 #endif

@@ -6,8 +6,8 @@ profile.HIGH=高 (默认)
 profile.ULTRA=超级高
 
 option.SOLAS_BY_SEPTONIOUS=§6Solas Shader
-value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.2
-option.SOLAS_BY_SEPTONIOUS.comment=原作者: Septonious (Solas Shader)\n开发者: Anatyi\n仓库: https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\n更新日志:\n- 移植3.7: 镜头炫光 / 景深(手动对焦) / Vanilla Water / 双层方块云 / 3D末地门\n- 增强: 原版日月 / 星空 / 光轴 / 炫光样式预设 / 末地炫光\n- 方块云剔除: 两层云互相遮挡模式(无剔除/剔除阴影/互相剔除)\n- 末地公转: 黑洞/星空/光线方向随时间旋转, 光晕与引力透镜可调\n- 分维度炫光: 主世界/末地/地狱独立开关+强度+镀膜样式\n- 新增增强功能与性能菜单\n- 修复: SSR反射 / 红石线积水 / 树叶内部剔除
+value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.3
+option.SOLAS_BY_SEPTONIOUS.comment=原作者: Septonious (Solas Shader)\n开发者: Anatyi\n仓库: https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\n更新日志 (V2.3.3):\n- 移植3.7体积云(VC_3_7)与平面云(PLANAR_CLOUDS_3_7)\n- 移植3.7主世界天空(SKY_3_7)/星空(STARS_3_7)/生成式夜空星云\n- 移植3.7末地: 星云(END_NEBULA_3_7) / 黑洞(引力透镜+涡旋) / 星空 / 原行星盘(末地云雾)\n- 移植3.7下界: 烟雾(NETHER_SMOKE_3_7) / 光雾噪声(LPV_FOG_NOISE)\n- 引力涡旋控件: 强度/范围, 支持负值; 移植星空密度独立于原版末地星云\n- 末地云雾剔除玻璃, 末地反射修复, 末地云雾淡化距离控件\n- 重组天空与大气菜单(开关+配置两列布局)\n- 修复: 移植星空可见性, 光雾噪声能量守恒, 涡旋/范围控件
 
 #=======================================================# ATMOSPHERICS #=======================================================#
 
@@ -19,10 +19,13 @@ option.SKYBOX_MIX_FACTOR=天空盒混合系数
 option.SKYBOX_MIX_FACTOR.comment=控制资源包天空盒与光影大气混合的系数.
 option.SKYBOX_BRIGHTNESS=天空盒亮度
 
-screen.SUN_MOON_CONFIG=日月配置
+screen.VANILLA_SUN_MOON_CONFIG=原版日月配置
 
-option.VANILLA_SUN_MOON=原版日月
-option.VANILLA_SUN_MOON.comment=在光影天空中渲染原版日月贴图（替代光影程序化日月）
+option.SUN_MOON_STYLE=日月样式
+option.SUN_MOON_STYLE.0=经典
+option.SUN_MOON_STYLE.1=原版贴图
+option.SUN_MOON_STYLE.2=V3.x 样式
+option.SUN_MOON_STYLE.comment=经典: 2.3 程序化日月. 原版: 原版日月贴图(可调日月亮度). V3.x: 3.7 日月圆盘(深空过渡/3.7眩光与月相).
 option.VANILLA_SUN_BRIGHTNESS=太阳亮度
 option.VANILLA_MOON_BRIGHTNESS=月亮亮度
 option.END_PORTAL_3D=3D 末地传送门
@@ -59,6 +62,12 @@ option.BLOCKY_CLOUDS_CULLING.comment=两层方块云之间的互相遮挡方式.
 option.BLOCKY_CLOUDS_CULLING.0=无剔除
 option.BLOCKY_CLOUDS_CULLING.1=剔除阴影
 option.BLOCKY_CLOUDS_CULLING.2=互相剔除
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION=方块云剔除极光
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION.comment=方块云会遮挡其后方的极光. 开启后, 云后的极光被剔除而不是穿透云显示.
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH=极光剔除强度
+option.BLOCKY_CLOUDS_WORLD_TIME=方块云流动跟随世界时间
+option.BLOCKY_CLOUDS_WORLD_TIME.comment=方块云流动跟随世界时钟而非实时计数器. 流动速度(FLOW)作为倍率应用. 关闭=内置帧时间. 默认开启.
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH.comment=极光剔除强度. 0 = 无额外剔除(极光穿透云); 1 = 强剔除(半透明云也遮挡极光).
 option.VC_DETAIL=细节
 option.VC_DENSITY=密度
 option.VC_AMOUNT=数量
@@ -69,6 +78,13 @@ option.VC_DISTANCE=渲染距离
 option.VC_OPACITY=透明度
 option.VC_SHADOWS=云隙光
 option.VC_SHADOWS.comment=当阳光被云层遮挡时, 使云层表现出体积光一样的感觉.
+option.VC_3_7=体积云3.7样式
+option.VC_3_7.comment=将云层替换为3.7高版本体积化系统(动态天气/空间线性光照/深空表现). 默认关闭.
+screen.VC_3_7_CONFIG=体积云3.7配置
+option.VC_DYNAMIC_WEATHER=动态天气
+option.VC_DYNAMIC_WEATHER.comment=云层会随世界天数逐日演变.
+option.VC_SCALE=云层缩放
+option.VC_SCALE.comment=云层特征的尺度缩放.
 
 #----------------------------------------------------------------------------------#
 
@@ -77,6 +93,13 @@ screen.PC_CONFIG=平面云配置
 option.PLANAR_CLOUDS=平面云
 option.PLANAR_CLOUDS_BRIGHTNESS=亮度
 option.PLANAR_CLOUDS_OPACITY=不透明度
+screen.PLANAR_CLOUDS_3_7_CONFIG=平面云3.7配置
+option.PLANAR_CLOUDS_3_7=平面云 3.7 样式
+option.PLANAR_CLOUDS_3_7.comment=将平面云替换为 3.7 样式(采样 3.7 noise3_7 噪声贴图). 需要 3.7 月亮可见度. 默认关闭.
+option.PLANAR_CLOUDS_3_7_AMOUNT=云量
+option.PLANAR_CLOUDS_3_7_HEIGHT=高度
+option.PLANAR_CLOUDS_3_7_BRIGHTNESS=亮度
+option.PLANAR_CLOUDS_3_7_OPACITY=不透明度
 
 #----------------------------------------------------------------------------------#
 
@@ -97,6 +120,13 @@ option.VF_NETHER_STRENGTH=强度
 option.VF_NETHER_SPEED=速度
 option.VF_NETHER_FREQUENCY=频率
 
+screen.NETHER_SMOKE_3_7_CONFIG=下界烟雾3.7配置
+
+option.NETHER_SMOKE_3_7=下界烟雾3.7
+option.NETHER_SMOKE_3_7_STRENGTH=强度
+option.NETHER_SMOKE_3_7_SPEED=速度
+option.NETHER_SMOKE_3_7_FREQUENCY=频率
+
 #----------------------------------------------------------------------------------#
 
 screen.VF_END_CONFIG=末地云雾配置
@@ -106,6 +136,7 @@ option.VF_END_HEIGHT=高度
 option.VF_END_OPACITY=不透明度
 option.VF_END_AMOUNT=数量
 option.VF_END_THICKNESS=厚度
+option.VF_END_FADE_DISTANCE=淡化距离
 
 #----------------------------------------------------------------------------------#
 
@@ -115,6 +146,9 @@ option.LPV_FOG=光雾
 option.LPV_FOG.comment=允许光源影响雾气照明.
 option.LPV_FOG_STRENGTH=雾气强度
 option.LPV_FOG_SAMPLES=雾气采样值
+option.LPV_FOG_NOISE=光雾噪声
+option.LPV_FOG_NOISE.comment=为光雾添加3D云雾噪声(3.7风格). 开启时自动禁用过曝修复, 以免进一步削弱光雾强度.
+option.LPV_FOG_NOISE_STRENGTH=噪声强度
 
 #----------------------------------------------------------------------------------#
 
@@ -131,12 +165,24 @@ option.FOG_HEIGHT=地表雾气高度
 #----------------------------------------------------------------------------------#
 
 screen.SKY_CONFIG=天空配置
+screen.SKY_PORT_CONFIG=天空增强移植
 
 option.STARS=星空
 option.STAR_BRIGHTNESS=星星亮度
 option.STAR_AMOUNT=星星数量
 option.STAR_DENSITY=星星密度
 option.STAR_SIZE=星星大小
+screen.STARS_3_7_CONFIG=星空3.7配置
+option.STARS_3_7=星空 3.7 样式
+option.STARS_3_7.comment=将星空替换为 3.7 样式. 需要 3.7 月亮可见度. 默认关闭.
+option.SHOOTING_STARS=流星 / 陨石
+option.SHOOTING_STARS.comment=在夜空添加流星(3.7). 需要开启星空 3.7 样式. 默认关闭.
+option.SHOOTING_STARS_SIZE=流星大小
+option.SHOOTING_STARS_SPEED=流星速度
+option.SHOOTING_STARS_CHANCE=流星概率
+option.SHOOTING_STARS_COUNT=流星数量
+option.SHOOTING_STARS_LINE_THICKNESS=流星轨迹粗细
+option.SHOOTING_STARS_TRAIL_LENGTH=流星轨迹长度
 option.END_STARS=末地星空
 option.END_STAR_AMOUNT=末地星空星星数量
 option.END_STAR_DENSITY=末地星空星星密度
@@ -144,14 +190,74 @@ option.END_STAR_BRIGHTNESS=末地星空星星亮度
 option.END_STAR_SIZE=末地星空星星大小
 option.MILKY_WAY=银河
 option.MILKY_WAY_BRIGHTNESS=银河亮度
+option.MILKY_WAY_3_7=银河3.7样式
+option.MILKY_WAY_3_7.comment=3.7 银河: 月亮照亮银河带(亮度由月亮可见度而非夜晚深度驱动), 带深空过渡可见度与色调. 默认关闭.
+option.GENERATED_NIGHT_NEBULA=生成夜星云
+option.GENERATED_NIGHT_NEBULA.comment=3.7噪声云层,随星空流动并与极光混合. 需开启3.7天空.
+option.GENERATED_NIGHT_NEBULA_BRIGHTNESS=星云亮度
 option.END_NEBULA=末地星云
 option.END_NEBULA_BRIGHTNESS=星云亮度
+option.END_STARS_3_7=末地星空3.7样式
+option.END_STARS_3_7.comment=3.7末地星空: 随机亮点聚集成星座样图案, 按3.7方式混合(均匀可见度). 替换2.3末地星星. 默认关闭.
+option.END_STARS_3_7_NOISE=星空噪声强度
+option.END_STARS_3_7_AMOUNT=星空数量
+option.END_STARS_3_7_BRIGHTNESS=星空亮度
+option.END_STARS_3_7_SIZE=星空大小
+screen.END_BLACK_HOLE_3_7_CONFIG=末地黑洞3.7配置
+option.END_BLACK_HOLE_3_7=末地黑洞
+option.END_BLACK_HOLE_3_7.comment=3.7末地黑洞: 将末地星云围绕太阳方向扭曲, 带光子环与吸积辉光. 默认关闭.
+option.END_BLACK_HOLE_SIZE_3_7=黑洞尺寸
+value.END_BLACK_HOLE_SIZE_3_7.3.0=极小
+value.END_BLACK_HOLE_SIZE_3_7.2.5=小
+value.END_BLACK_HOLE_SIZE_3_7.2.0=正常
+value.END_BLACK_HOLE_SIZE_3_7.1.5=大
+value.END_BLACK_HOLE_SIZE_3_7.1.0=很大
+value.END_BLACK_HOLE_SIZE_3_7.0.5=巨大
+value.END_BLACK_HOLE_SIZE_3_7.0.25=极限
+option.END_ANGLE_3_7=倾斜角度
+screen.END_DISK_3_7_CONFIG=末地行星盘配置
+option.END_DISK_3_7=末地行星盘云雾
+option.END_DISK_3_7.comment=围绕末地主岛旋转的巨大宇宙云盘(3.7). 替换2.3末地云雾. 默认关闭.
+option.END_DISK_HEIGHT_3_7=云盘高度
+option.END_DISK_AMOUNT_3_7=云盘数量
+option.END_DISK_THICKNESS_3_7=云盘厚度
+option.END_DISK_OPACITY_3_7=云盘不透明度
+option.END_DISK_FADE_DISTANCE_3_7=云盘淡化距离
 option.RAINBOW=彩虹
 option.AURORA=极光
 option.AURORA_COLD_BIOME_VISIBILITY=极光在积雪生物群系可见
 option.AURORA_COLD_BIOME_VISIBILITY.comment=只有当玩家在积雪生物群系中时,才会启用极光.
 option.AURORA_FULL_MOON_VISIBILITY=极光在满月夜晚可见
 option.AURORA_FULL_MOON_VISIBILITY.comment=只有当满月的时,才会启用极光.
+screen.AURORA_CONFIG=极光配置
+option.AURORA_3_7=极光3.7样式
+option.AURORA_3_7.comment=将极光替换为3.7体积化系统(地磁活动/高度/光照影响). 默认关闭.
+option.SKY_3_7=天空3.7样式
+option.SKY_3_7.comment=将天空替换为3.7全局天空(空间因子/生物群系染色/绿色光带). 默认关闭.
+option.SUN_MOON_3_7=日月3.7样式
+option.SUN_MOON_3_7.comment=将日月圆盘替换为3.7样式(随高度深空过渡/3.7眩光与月相). 默认关闭.
+option.SUNRISE_SUNSET_INTENSITY=日出日落强度
+option.SUNRISE_SUNSET_INTENSITY.comment=3.7天空日出日落散射光带的强度.
+option.AURORA_ALTITUDE=极光高度
+option.AURORA_ALTITUDE.comment=极光体积所在的海拔高度(格).
+option.AURORA_LIGHTING_INFLUENCE=光照贡献
+option.AURORA_LIGHTING_INFLUENCE.comment=允许强烈的极光轻微照亮云层和地面.
+option.AURORA_ALWAYS_VISIBLE=恒定可见
+option.AURORA_ALWAYS_VISIBLE.comment=使极光在每个夜晚都出现.
+option.AURORA_SOFTEN=极光柔和度
+option.AURORA_SOFTEN.comment=柔和极光高光,避免过曝发白并减少可见噪声(对齐3.7观感).
+option.AURORA_BLOOM=极光泛光
+option.AURORA_BLOOM.comment=调试:极光在夜空中的泛光(光晕)强度(0=无光晕,越高越强).
+option.AURORA_EXPOSURE=极光曝光
+option.AURORA_EXPOSURE.comment=调试:极光整体亮度倍率.
+option.AURORA_CONTRAST=极光对比度
+option.AURORA_CONTRAST.comment=调试:极光对比度(pow曲线).
+option.AURORA_SCALE=极光缩放
+option.AURORA_SCALE.comment=调试:极光条带缩放(越大条带越宽).
+option.AURORA_OFFSET=极光偏移
+option.AURORA_OFFSET.comment=调试:极光噪声偏移.
+option.AURORA_RADIAL=极光放射深度
+option.AURORA_RADIAL.comment=调试:极光条带纵向衰减深度.
 
 #----------------------------------------------------------------------------------#
 
@@ -162,6 +268,10 @@ option.END_VORTEX.comment=末地天空中的黑色洞状天体开关.
 option.END_VORTEX_SIZE=涡旋尺寸
 option.END_VORTEX_WHIRL=涡旋旋扭程度
 option.END_VORTEX_ARMS=涡旋齿数
+option.END_VORTEX_LENS=黑洞引力涡旋
+option.END_VORTEX_LENS_GRAVITY=引力扭曲强度
+option.END_VORTEX_LENS_GRAVITY_RANGE=引力扭曲范围
+option.END_VORTEX_LENS.comment=使2.3末地黑洞附近的星星产生螺旋涡旋扭曲(3.7风格引力透镜). 默认关闭.
 
 screen.ENH_END_CONFIG=末地公转
 option.ENH_END_REVOLUTION=末地公转
@@ -324,6 +434,11 @@ option.NORMAL_THRESHOLD=生成阈值
 #=======================================================# Resourcepack PBR #=======================================================#
 
 screen.PBR=资源包 PBR
+
+option.PBR_SCHEME=PBR 方案
+option.PBR_SCHEME.comment=选择 PBR 实现方案. Classic 为原始 2.3 管线, V2.4b 为 2.4b 管线 (高光/反射处理不同). 默认为 Classic.
+value.PBR_SCHEME.0=经典 (2.3)
+value.PBR_SCHEME.1=V2.4b
 
 option.PBR=资源包 PBR
 option.PBR.comment=启用资源包高光反射和法线贴图, 可以使各种方块的表面有更多的细节.  §e[*]§r本选项需要加载含高光贴图或法线贴图的资源包, 如未加载相应资源包则请禁用. §e[*]§r需要启用高级材质的选项用*加以表示, 在禁用高级材质选项时, 更改这些选项不会影响视觉效果或性能.
@@ -673,3 +788,27 @@ option.WAVING_AMPLITUDE=摇晃幅度
 option.FIREFLIES=萤火虫
 option.FIREFLIES.comment=在夜晚启用体积萤火虫效果. §c[-]§r影响性能.
 option.FIREFLIES_BRIGHTNESS=萤火虫亮度
+
+#=======================================================# 修复 #=======================================================#
+
+screen.FIXES=修复
+
+option.FIXES=启用修复
+option.FIXES.comment=这些是作为自本发布以来因本体或更新产生的开发非预期而被认定为漏洞进行的修复项，除必须进行移除的恶性漏洞未列出其余部分可选修复默认为开启状态，这是为了更好的预期效果。如果你认为列表中若干作为特性的存在却被修复，请关闭它。部分主线版本认为未达到预期的修复项默认为关闭状态。
+
+option.LPV_FOG_FIX_GLOBAL=光雾修复: 全局
+option.LPV_FOG_FIX_GLOBAL.comment=在所有地方抑制光雾(LPV)过曝. 关闭时, 仅由高频开关(若开启)限制大量光源聚集处的过曝. 默认关闭.
+option.LPV_FOG_FIX_HIGH_FREQ=光雾修复: 仅限制高频
+option.LPV_FOG_FIX_HIGH_FREQ.comment=只在大量光源聚集处抑制光雾过曝, 单个/少量光源保持原版强度. 默认开启.
+option.LPV_FOG_HF_THRESHOLD=高频阈值
+option.LPV_FOG_HF_THRESHOLD.comment=floodfill 亮度超过此值即视为"大量光源"(高频). 值越大, 被抑制的采样越少.
+option.LPV_FOG_HF_BANDWIDTH=高频过渡带宽
+option.LPV_FOG_HF_BANDWIDTH.comment=高频阈值周围的平滑过渡范围.
+option.LPV_FOG_HF_SUPPRESS=高频抑制强度
+option.LPV_FOG_HF_SUPPRESS.comment=大量光源聚集处光雾的缩放程度. 0 = 完全去除, 1 = 原版.
+option.LPV_FOG_DARK_VISIBILITY=暗处光雾可见度
+option.LPV_FOG_DARK_VISIBILITY.comment=暗/封闭空间中光雾可见度的提升量。0 = 3.7 默认（不提升）；1 = 原版拉高（易过曝）。
+option.LPV_FOG_BRIGHT_FADE=明亮环境衰减
+option.LPV_FOG_BRIGHT_FADE.comment=明亮地表环境下光雾淡出的强度（3.7 默认 3.0）。数值越大对亮环境光雾抑制越强。
+option.LPV_FOG_DARK_DENSITY=暗处光雾浓度
+option.LPV_FOG_DARK_DENSITY.comment=暗/封闭空间中光雾浓度的提升量。0 = 3.7 默认（不提升）；1 = 原版浓度 40（易过曝）。

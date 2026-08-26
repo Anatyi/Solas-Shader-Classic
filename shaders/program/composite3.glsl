@@ -11,7 +11,7 @@ in vec3 sunVec, upVec;
 #endif
 
 //Uniforms//
-#if defined LPV_FOG || defined VL || defined FIREFLIES
+#if defined LPV_FOG || defined VL || defined FIREFLIES || defined NETHER_SMOKE_3_7
 uniform int isEyeInWater;
 uniform int frameCounter;
 
@@ -40,7 +40,7 @@ uniform vec3 fogColor;
 
 uniform sampler2D colortex0;
 
-#if defined LPV_FOG || defined VL || defined FIREFLIES
+#if defined LPV_FOG || defined VL || defined FIREFLIES || defined NETHER_SMOKE_3_7
 uniform sampler2D noisetex;
 uniform sampler2D colortex1;
 uniform sampler2D depthtex0, depthtex1;
@@ -65,7 +65,7 @@ uniform mat4 gbufferModelViewInverse;
 #endif
 
 //Common Variables//
-#if defined LPV_FOG || defined VL || defined FIREFLIES
+#if defined LPV_FOG || defined VL || defined FIREFLIES || defined NETHER_SMOKE_3_7
 float eBS = eyeBrightnessSmooth.y / 240.0;
 float caveFactor = mix(clamp((cameraPosition.y - 56.0) / 16.0, float(sign(isEyeInWater)), 1.0), 1.0, eBS);
 
@@ -75,7 +75,7 @@ float sunVisibility = clamp(dot(sunVec, upVec) + 0.1, 0.0, 0.25) * 4.0;
 #endif
 
 //Includes//
-#if defined LPV_FOG || defined VL || defined FIREFLIES
+#if defined LPV_FOG || defined VL || defined FIREFLIES || defined NETHER_SMOKE_3_7
 #include "/lib/atmosphere/spaceConversion.glsl"
 #include "/lib/util/ToView.glsl"
 #include "/lib/util/ToWorld.glsl"
@@ -87,6 +87,10 @@ float sunVisibility = clamp(dot(sunVec, upVec) + 0.1, 0.0, 0.25) * 4.0;
 #endif
 
 #include "/lib/atmosphere/lpvFog.glsl"
+#endif
+
+#ifdef NETHER_SMOKE_3_7
+#include "/lib/atmosphere/netherSmoke3_7.glsl"
 #endif
 
 #ifdef VL
@@ -102,7 +106,7 @@ void main() {
 	vec4 vl = vec4(0.0);
 	float fireflies = 0.0;
 
-	#if defined LPV_FOG || defined VL || defined FIREFLIES
+	#if defined LPV_FOG || defined VL || defined FIREFLIES || defined NETHER_SMOKE_3_7
 	vec3 translucent = texture2D(colortex1, texCoord).rgb;
 
 	float bayerDither = Bayer8(gl_FragCoord.xy);
@@ -117,6 +121,17 @@ void main() {
 
 	#ifdef LPV_FOG
 	computeLPVFog(vl.rgb, translucent, bayerDither);
+	#endif
+
+	#ifdef NETHER_SMOKE_3_7
+	//3.7-style volumetric nether smoke (independent of the 2.3 LPV NETHER_CLOUDY_FOG)
+	float blueNoiseDither = texture2D(noisetex, gl_FragCoord.xy / 512.0).b;
+
+	#ifdef TAA
+	blueNoiseDither = fract(blueNoiseDither + 1.61803398875 * mod(float(frameCounter), 3600.0));
+	#endif
+
+	computeNetherSmoke3_7(vl.rgb, translucent, blueNoiseDither);
 	#endif
 
 	#ifdef VL

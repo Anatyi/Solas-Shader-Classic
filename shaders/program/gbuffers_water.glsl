@@ -57,6 +57,9 @@ uniform vec3 cameraPosition;
 
 uniform sampler2D texture;
 uniform sampler2D noisetex;
+#ifdef GENERATED_NIGHT_NEBULA
+uniform sampler2D noise3_7;
+#endif
 uniform sampler2D depthtex1;
 uniform sampler2D gaux1;
 
@@ -113,8 +116,13 @@ vec3 lightVec = sunVec;
 #include "/lib/atmosphere/fog.glsl"
 
 #ifdef WATER_REFLECTIONS
+#if PBR_SCHEME == 1
+#include "/lib/pbr_24/raytracer.glsl"
+#include "/lib/pbr_24/waterReflection.glsl"
+#else
 #include "/lib/pbr/raytracer.glsl"
 #include "/lib/pbr/waterReflection.glsl"
+#endif
 #endif
 
 #ifdef OVERWORLD
@@ -155,7 +163,7 @@ void main() {
 	vec3 worldPos = ToWorld(viewPos);
 	vec2 lightmap = clamp(lmCoord, 0.0, 1.0);
 
-	#ifdef VC
+	#if defined VC || defined END_CLOUDY_FOG || defined END_DISK_3_7
 	float cloudDepth = texture2D(gaux1, screenPos.xy).g * (far * 2.0);
 
 	float viewLength = length(viewPos);
@@ -200,7 +208,7 @@ void main() {
     vec3 skyColor = atmosphereColor;
 
 	vec3 shadow = vec3(0.0);
-	gbuffersLighting(albedo, screenPos, viewPos, worldPos, shadow, lightmap, NoU, NoL, NoE, 0.0, 0.0, emission, 0.0);
+	gbuffersLighting(albedo, screenPos, viewPos, worldPos, newNormal, shadow, lightmap, NoU, NoL, NoE, 0.0, 0.0, emission, 0.0);
 
 	if (mat != 10031) {
 		if (mat == 10001 && isEyeInWater == 0) {

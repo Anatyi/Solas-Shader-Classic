@@ -6,22 +6,25 @@ profile.HIGH=High (Default)
 profile.ULTRA=Ultra
 
 option.SOLAS_BY_SEPTONIOUS=§6Solas Shader
-value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.2
-option.SOLAS_BY_SEPTONIOUS.comment=Original author: Septonious (Solas Shader)\nDeveloper: Anatyi\nRepository: https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\nChangelog:\n- Ported from 3.7: Lens Flare, DOF (manual focus), Vanilla Water, Double-layer Blocky Clouds, 3D End Portal\n- Enhanced: Vanilla Sun & Moon, Stars, Volumetric Light, Flare Style Presets, End Flare\n- Blocky Cloud Culling: layer occlusion modes (none / cull shadows / mutual culling)\n- End Revolution: black hole, stars and light direction revolve over time, glow & gravitational lensing\n- Per-dimension Lens Flare: independent Overworld / End / Nether switches, strength & coating style\n- Added Enhancements & Performance menus\n- Fixed: SSR reflections, Redstone puddle reflections, Fast Leaves
+value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.3
+option.SOLAS_BY_SEPTONIOUS.comment=Original author: Septonious (Solas Shader)\nDeveloper: Anatyi\nRepository: https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\nChangelog (V2.3.3):\n- Ported 3.7 volumetric clouds (VC_3_7) and planar clouds (PLANAR_CLOUDS_3_7)\n- Ported 3.7 Overworld sky (SKY_3_7), stars (STARS_3_7) and generated night nebula\n- Ported 3.7 End: nebula (END_NEBULA_3_7), black hole (lensing + vortex), starfield, protoplanetary disk / End clouds\n- Ported 3.7 Nether: smoke (NETHER_SMOKE_3_7) and LPV fog noise (LPV_FOG_NOISE)\n- Gravity vortex controls: strength / range, negative values allowed; starfield density independent of the End nebula\n- End disk glass culling, End reflection fix, fade-distance controls for End clouds\n- Reorganized Sky & Atmosphere menus (switch + config two-column layout)\n- Fixed: End starfield visibility, LPV fog noise energy, vortex/range controls
 
 #=======================================================# ATMOSPHERICS #=======================================================#
 
 screen.ATMOSPHERICS=Atmospherics
 screen.SKYBOX_CONFIG=Skybox Config
-screen.SUN_MOON_CONFIG=Sun & Moon Config
+screen.VANILLA_SUN_MOON_CONFIG=Vanilla Sun & Moon Config
 
 option.SKYBOX=Resourcepack Skybox
 option.SKYBOX_MIX_FACTOR=Skybox Mix Factor
 option.SKYBOX_MIX_FACTOR.comment=Controls the mix of resourcepack skybox with the shader's atmosphere
 option.SKYBOX_BRIGHTNESS=Skybox Brightness 
 
-option.VANILLA_SUN_MOON=Vanilla Sun & Moon
-option.VANILLA_SUN_MOON.comment=Renders the vanilla sun and moon sprites on the shader sky (instead of the shader's procedural sun/moon)
+option.SUN_MOON_STYLE=Sun & Moon Style
+option.SUN_MOON_STYLE.0=Classic
+option.SUN_MOON_STYLE.1=Vanilla Sprites
+option.SUN_MOON_STYLE.2=V3.x Style
+option.SUN_MOON_STYLE.comment=Classic: the 2.3 procedural sun/moon. Vanilla: the vanilla sun/moon sprites (with Sun/Moon brightness). V3.x: the 3.7 sun/moon disc (space transition, 3.7 glare and moon phases).
 option.VANILLA_SUN_BRIGHTNESS=Sun Brightness
 option.VANILLA_MOON_BRIGHTNESS=Moon Brightness
 option.END_PORTAL_3D=3D End Portal
@@ -58,6 +61,12 @@ option.BLOCKY_CLOUDS_CULLING.comment=How the two blocky cloud layers occlude eac
 option.BLOCKY_CLOUDS_CULLING.0=No Culling
 option.BLOCKY_CLOUDS_CULLING.1=Cull Shadows
 option.BLOCKY_CLOUDS_CULLING.2=Mutual Culling
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION=Blocky Clouds Occlude Aurora
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION.comment=Blocky clouds occlude the aurora behind them. When on, the aurora is culled behind the clouds instead of showing through.
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH=Aurora Occlusion Strength
+option.BLOCKY_CLOUDS_WORLD_TIME=Cloud Flow Follows World Time
+option.BLOCKY_CLOUDS_WORLD_TIME.comment=Blocky cloud flow follows the world clock instead of the real-time counter. FLOW is applied as a multiplier. Off = built-in frame time. Default on.
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH.comment=Aurora occlusion strength. 0 = no extra culling (aurora shows through clouds); 1 = strong culling (semi-transparent clouds also hide the aurora).
 option.VC_DETAIL=Detail
 option.VC_DENSITY=Density
 option.VC_AMOUNT=Amount
@@ -68,6 +77,13 @@ option.VC_DISTANCE=Render Distance
 option.VC_OPACITY=Opacity
 option.VC_SHADOWS=Cloud light rays
 option.VC_SHADOWS.comment=Allows clouds to behave like VL when sunlight is obstructed by blocks.
+option.VC_3_7=Clouds 3.7 Style
+option.VC_3_7.comment=Replaces the clouds with the 3.7 high-version volumetric system (dynamic weather, space/linear lighting, deep-space look). Default off.
+screen.VC_3_7_CONFIG=Clouds 3.7 Config
+option.VC_DYNAMIC_WEATHER=Dynamic Weather
+option.VC_DYNAMIC_WEATHER.comment=Clouds evolve day to day based on the world day.
+option.VC_SCALE=Cloud Scale
+option.VC_SCALE.comment=Scale of the cloud layer features.
 
 #----------------------------------------------------------------------------------#
 
@@ -76,6 +92,13 @@ screen.PC_CONFIG=Planar Clouds Config
 option.PLANAR_CLOUDS=Planar Clouds
 option.PLANAR_CLOUDS_BRIGHTNESS=Brightness
 option.PLANAR_CLOUDS_OPACITY=Opacity
+screen.PLANAR_CLOUDS_3_7_CONFIG=Planar Clouds 3.7 Config
+option.PLANAR_CLOUDS_3_7=Planar Clouds 3.7 Style
+option.PLANAR_CLOUDS_3_7.comment=Replaces planar clouds with the 3.7 style (samples the 3.7 noise3_7 texture). Requires the 3.7 moon visibility. Default off.
+option.PLANAR_CLOUDS_3_7_AMOUNT=Amount
+option.PLANAR_CLOUDS_3_7_HEIGHT=Altitude
+option.PLANAR_CLOUDS_3_7_BRIGHTNESS=Brightness
+option.PLANAR_CLOUDS_3_7_OPACITY=Opacity
 
 #----------------------------------------------------------------------------------#
 
@@ -96,6 +119,13 @@ option.VF_NETHER_STRENGTH=Strength
 option.VF_NETHER_SPEED=Speed
 option.VF_NETHER_FREQUENCY=Frequency
 
+screen.NETHER_SMOKE_3_7_CONFIG=Nether Smoke 3.7 Config
+
+option.NETHER_SMOKE_3_7=Nether Smoke 3.7
+option.NETHER_SMOKE_3_7_STRENGTH=Intensity
+option.NETHER_SMOKE_3_7_SPEED=Speed
+option.NETHER_SMOKE_3_7_FREQUENCY=Frequency
+
 #----------------------------------------------------------------------------------#
 
 screen.VF_END_CONFIG=End Cloudy Fog Config
@@ -105,6 +135,7 @@ option.VF_END_HEIGHT=Height
 option.VF_END_OPACITY=Opacity
 option.VF_END_AMOUNT=Amount
 option.VF_END_THICKNESS=Thickness
+option.VF_END_FADE_DISTANCE=Fade Distance
 
 #----------------------------------------------------------------------------------#
 
@@ -114,6 +145,9 @@ option.LPV_FOG=Light Fog
 option.LPV_FOG.comment=Allows light sources to contribute to fog illumination
 option.LPV_FOG_STRENGTH=Strength
 option.LPV_FOG_SAMPLES=Samples
+option.LPV_FOG_NOISE=Light Fog Noise
+option.LPV_FOG_NOISE.comment=Applies 3D cloudy noise to the light fog (3.7 style). Disables the overexposure fixes while active so they cannot weaken the fog.
+option.LPV_FOG_NOISE_STRENGTH=Noise Strength
 
 #----------------------------------------------------------------------------------#
 
@@ -130,12 +164,24 @@ option.FOG_HEIGHT=Ground Fog Height
 #----------------------------------------------------------------------------------#
 
 screen.SKY_CONFIG=Sky Config
+screen.SKY_PORT_CONFIG=Sky Enhancements Port
 
 option.STARS=Stars
 option.STAR_BRIGHTNESS=Stars Brightness
 option.STAR_AMOUNT=Stars Amount
 option.STAR_DENSITY=Stars Density
 option.STAR_SIZE=Stars Size
+screen.STARS_3_7_CONFIG=Stars 3.7 Config
+option.STARS_3_7=Stars 3.7 Style
+option.STARS_3_7.comment=Replaces the starfield with the 3.7 style. Requires the 3.7 moon visibility. Default off.
+option.SHOOTING_STARS=Shooting Stars / Meteors
+option.SHOOTING_STARS.comment=Adds meteors crossing the night sky (3.7). Requires Stars 3.7 Style. Default off.
+option.SHOOTING_STARS_SIZE=Meteors Size
+option.SHOOTING_STARS_SPEED=Meteors Speed
+option.SHOOTING_STARS_CHANCE=Meteors Chance
+option.SHOOTING_STARS_COUNT=Meteors Count
+option.SHOOTING_STARS_LINE_THICKNESS=Meteor Trail Thickness
+option.SHOOTING_STARS_TRAIL_LENGTH=Meteor Trail Length
 option.END_STARS=Ender Stars
 option.END_STAR_AMOUNT=Ender Stars Amount
 option.END_STAR_DENSITY=Ender Stars Density
@@ -143,14 +189,74 @@ option.END_STAR_BRIGHTNESS=Ender Stars Brightness
 option.END_STAR_SIZE=Ender Stars Size
 option.MILKY_WAY=Milky Way
 option.MILKY_WAY_BRIGHTNESS=Milky Way Brightness
+option.MILKY_WAY_3_7=Milky Way 3.7 Style
+option.MILKY_WAY_3_7.comment=3.7 milky way where the moon lights up the band (brightness from the moon visibility instead of night depth), with space-transition visibility and tint. Default off.
+option.GENERATED_NIGHT_NEBULA=Generated Night Nebula
+option.GENERATED_NIGHT_NEBULA.comment=3.7 noise cloud layer that drifts with the starfield and blends with the aurora. Requires the 3.7 sky.
+option.GENERATED_NIGHT_NEBULA_BRIGHTNESS=Nebula Brightness
 option.END_NEBULA=Ender Nebula
 option.END_NEBULA_BRIGHTNESS=Ender Nebula Brightness
+option.END_STARS_3_7=End Stars 3.7 Style
+option.END_STARS_3_7.comment=3.7 ender starfield: random bright points that cluster into constellation-like patterns, blended like 3.7. Replaces the 2.3 End stars. Default off.
+option.END_STARS_3_7_NOISE=End Stars Noise Strength
+option.END_STARS_3_7_AMOUNT=End Stars Amount
+option.END_STARS_3_7_BRIGHTNESS=End Stars Brightness
+option.END_STARS_3_7_SIZE=End Stars Size
+screen.END_BLACK_HOLE_3_7_CONFIG=End Black Hole 3.7 Config
+option.END_BLACK_HOLE_3_7=End Black Hole
+option.END_BLACK_HOLE_3_7.comment=3.7 black hole in the End sky: warps the ender nebula around the sun direction with a photon ring and accretion glow. Default off.
+option.END_BLACK_HOLE_SIZE_3_7=Black Hole Size
+value.END_BLACK_HOLE_SIZE_3_7.3.0=Very Small
+value.END_BLACK_HOLE_SIZE_3_7.2.5=Small
+value.END_BLACK_HOLE_SIZE_3_7.2.0=Normal
+value.END_BLACK_HOLE_SIZE_3_7.1.5=Large
+value.END_BLACK_HOLE_SIZE_3_7.1.0=Very Large
+value.END_BLACK_HOLE_SIZE_3_7.0.5=Huge
+value.END_BLACK_HOLE_SIZE_3_7.0.25=Extreme
+option.END_ANGLE_3_7=Tilt Angle
+screen.END_DISK_3_7_CONFIG=End Planetary Disk Config
+option.END_DISK_3_7=Ender Planetary Disk Clouds
+option.END_DISK_3_7.comment=An enormous disk of cosmic clouds rotating around the central End island (3.7). Replaces the 2.3 End cloudy fog. Default off.
+option.END_DISK_HEIGHT_3_7=Disk Height
+option.END_DISK_AMOUNT_3_7=Disk Amount
+option.END_DISK_THICKNESS_3_7=Disk Thickness
+option.END_DISK_OPACITY_3_7=Disk Opacity
+option.END_DISK_FADE_DISTANCE_3_7=Disk Fade Distance
 option.RAINBOW=Rainbow
 option.AURORA=Aurora Borealis
 option.AURORA_COLD_BIOME_VISIBILITY=Aurora Cold Biome Visibility
 option.AURORA_COLD_BIOME_VISIBILITY.comment=Enables aurora only when player is in a cold biome
 option.AURORA_FULL_MOON_VISIBILITY=Aurora Full Moon Visibility
 option.AURORA_FULL_MOON_VISIBILITY.comment=Enables aurora only when the Moon if full
+screen.AURORA_CONFIG=Aurora Config
+option.AURORA_3_7=Aurora 3.7 Style
+option.AURORA_3_7.comment=Replaces the aurora with the 3.7 volumetric system (geomagnetic activity, altitude, lighting influence). Default off.
+option.SKY_3_7=Sky 3.7 Style
+option.SKY_3_7.comment=Replaces the sky with the 3.7 global sky (space factor, biome tinting, green band). Default off.
+option.SUN_MOON_3_7=Sun & Moon 3.7 Style
+option.SUN_MOON_3_7.comment=Replaces the sun/moon disc with the 3.7 style (height-based space transition, 3.7 glare and moon phases). Default off.
+option.SUNRISE_SUNSET_INTENSITY=Sunrise/Sunset Intensity
+option.SUNRISE_SUNSET_INTENSITY.comment=Intensity of the sunrise/sunset scattering band on the 3.7 sky.
+option.AURORA_ALTITUDE=Aurora Altitude
+option.AURORA_ALTITUDE.comment=Altitude of the aurora volume in blocks.
+option.AURORA_LIGHTING_INFLUENCE=Light Contribution
+option.AURORA_LIGHTING_INFLUENCE.comment=Allows powerful aurora to slightly lit up the clouds and ground.
+option.AURORA_ALWAYS_VISIBLE=Constant Visibility
+option.AURORA_ALWAYS_VISIBLE.comment=Makes aurora appear every night
+option.AURORA_SOFTEN=Aurora Softness
+option.AURORA_SOFTEN.comment=Soft-rolls the aurora highlights so they stay colourful instead of blowing out to white, and reduces the visible noise (matches 3.7).
+option.AURORA_BLOOM=Aurora Bloom
+option.AURORA_BLOOM.comment=Debug: aurora blur/bloom glow strength on the night sky (0 = no glow, higher = stronger).
+option.AURORA_EXPOSURE=Aurora Exposure
+option.AURORA_EXPOSURE.comment=Debug: overall aurora brightness multiplier.
+option.AURORA_CONTRAST=Aurora Contrast
+option.AURORA_CONTRAST.comment=Debug: aurora contrast (pow curve).
+option.AURORA_SCALE=Aurora Scale
+option.AURORA_SCALE.comment=Debug: aurora band scale (larger = wider bands).
+option.AURORA_OFFSET=Aurora Offset
+option.AURORA_OFFSET.comment=Debug: aurora noise offset.
+option.AURORA_RADIAL=Aurora Radial Depth
+option.AURORA_RADIAL.comment=Debug: vertical falloff depth of the aurora bands.
 
 #----------------------------------------------------------------------------------#
 
@@ -161,6 +267,10 @@ option.END_VORTEX.comment=Toggles the Ender Black Hole
 option.END_VORTEX_SIZE=Vortex Size
 option.END_VORTEX_WHIRL=Vortex Whirling
 option.END_VORTEX_ARMS=Vortex Arms Count
+option.END_VORTEX_LENS=End Vortex Gravitational Lensing
+option.END_VORTEX_LENS_GRAVITY=Gravity Distortion
+option.END_VORTEX_LENS_GRAVITY_RANGE=Gravity Distortion Range
+option.END_VORTEX_LENS.comment=Warps nearby stars into a spiral vortex around the 2.3 End black hole (3.7-style lensing). Default off.
 
 screen.ENH_END_CONFIG=End Revolution
 option.ENH_END_REVOLUTION=End Revolution
@@ -323,6 +433,11 @@ option.NORMAL_THRESHOLD=Generation Threshold
 #=======================================================# Resourcepack PBR #=======================================================#
 
 screen.PBR=Resourcepack PBR
+
+option.PBR_SCHEME=PBR Scheme
+option.PBR_SCHEME.comment=Selects the PBR implementation. Classic is the original 2.3 pipeline. V2.4b is the 2.4b pipeline (different specular/reflection handling). Default Classic.
+value.PBR_SCHEME.0=Classic (2.3)
+value.PBR_SCHEME.1=V2.4b
 
 option.PBR=Resourcepack PBR
 option.PBR.comment=Enables the use of specular and normal mapping which allows for more detail on various things.  §e[*]§rThis option requires a resource pack which contains specular and/or normal maps, disable if none is currently used. §e[*]§rOptions which requires advanced materials are indicated by *, changing these options won't affect the visuals or performance while advanced materials is disabled.
@@ -672,3 +787,27 @@ option.WAVING_AMPLITUDE=Waving Amplitude
 option.FIREFLIES=Fireflies
 option.FIREFLIES.comment=Enables volumetric fireflies at night. §c[-]§rAffects performance.
 option.FIREFLIES_BRIGHTNESS=Fireflies Brightness
+
+#=======================================================# FIXES #=======================================================#
+
+screen.FIXES=Fixes
+
+option.FIXES=Enable Fixes
+option.FIXES.comment=These are fixes for issues identified as bugs introduced unintentionally by the shader or by updates since this release. Except for the critical bugs that had to be removed (not listed), the remaining optional fixes are enabled by default for better expected results. If you think some fixes in the list are actually features, turn them off. Fixes that some mainline versions considered below expectations are disabled by default.
+
+option.LPV_FOG_FIX_GLOBAL=LPV Fog Fix: Global
+option.LPV_FOG_FIX_GLOBAL.comment=Suppresses LPV (light) fog overexposure everywhere (global). When off, only the High-freq switch (if on) limits overexposure where many light sources stack up. Default off.
+option.LPV_FOG_FIX_HIGH_FREQ=LPV Fog Fix: High-freq Only
+option.LPV_FOG_FIX_HIGH_FREQ.comment=Suppresses LPV fog overexposure only where many light sources stack up, keeping single/few lights at the vanilla strength. Default on.
+option.LPV_FOG_HF_THRESHOLD=High-freq Threshold
+option.LPV_FOG_HF_THRESHOLD.comment=Floodfill brightness above which a sample counts as "many light sources" (high frequency). Higher = fewer samples suppressed.
+option.LPV_FOG_HF_BANDWIDTH=High-freq Bandwidth
+option.LPV_FOG_HF_BANDWIDTH.comment=Smooth transition range around the high-freq threshold.
+option.LPV_FOG_HF_SUPPRESS=High-freq Suppress
+option.LPV_FOG_HF_SUPPRESS.comment=How much the light fog is scaled down where many light sources stack up. 0 = fully removed, 1 = vanilla.
+option.LPV_FOG_DARK_VISIBILITY=Dark Space Fog Visibility
+option.LPV_FOG_DARK_VISIBILITY.comment=How much the light fog visibility is boosted in dark/enclosed spaces. 0 = 3.7 default (no boost); 1 = vanilla boost (can overexpose).
+option.LPV_FOG_BRIGHT_FADE=Bright Environment Fade
+option.LPV_FOG_BRIGHT_FADE.comment=How strongly the light fog fades out in bright surface environments (3.7 default 3.0). Higher values suppress bright-environment fog more.
+option.LPV_FOG_DARK_DENSITY=Dark Space Fog Density
+option.LPV_FOG_DARK_DENSITY.comment=How much the light fog density is boosted in dark/enclosed spaces. 0 = 3.7 default (no boost); 1 = vanilla density 40 (can overexpose).

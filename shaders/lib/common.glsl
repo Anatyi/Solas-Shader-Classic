@@ -43,13 +43,68 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define STAR_DENSITY 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00]
 #define STAR_SIZE 1.00 //[1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 6.0 8.0 10.0]
 
+//Stars 3.7 Style (3.7 starfield + shooting stars, default off). Reuses STAR_BRIGHTNESS/AMOUNT/SIZE.//
+//#define STARS_3_7
+//#define SHOOTING_STARS
+#define SHOOTING_STARS_SIZE 0.40 //[0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75]
+#define SHOOTING_STARS_SPEED 7.0 //[4.0 4.5 5.0 5.5 6.0 6.5 7.0 7.5 8.0 8.5 9.0 9.5 10.0 10.5 11.0 11.5 12.0 12.5 13.0 13.5 14.0 14.5 15.0]
+#define SHOOTING_STARS_CHANCE 0.2 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define SHOOTING_STARS_COUNT 6 //[1 2 3 4 5 6 7 8 9 10]
+#define SHOOTING_STARS_LINE_THICKNESS 0.60 //[0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
+#define SHOOTING_STARS_TRAIL_LENGTH 0.60 //[0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85]
+
 #define AURORA
 #define AURORA_BRIGHTNESS 0.7 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
 #define AURORA_COLD_BIOME_VISIBILITY
 #define AURORA_FULL_MOON_VISIBILITY
 
+//Aurora 3.7 Style (3.7 volumetric aurora system, default off)//
+//#define AURORA_3_7
+#ifdef AURORA_3_7
+#define AURORA_ALTITUDE 50000 //[1000 2000 3000 4000 5000 10000 15000 20000 25000 30000 35000 40000 45000 50000 60000 70000 80000 90000 100000]
+//Debug controls (tune these, then I bake the final values)
+#define AURORA_EXPOSURE 1.0 //[0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0]
+#define AURORA_CONTRAST 1.0 //[0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0]
+#define AURORA_SCALE 1.0 //[0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0]
+#define AURORA_OFFSET 0.0 //[-1.0 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1.0]
+#define AURORA_RADIAL 1.0 //[0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0]
+#define AURORA_SOFTEN 1.0 //[0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
+#define AURORA_BLOOM 1.0 //[0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
+#define AURORA_LIGHTING_INFLUENCE
+//#define AURORA_ALWAYS_VISIBLE
+#endif
+
+//Sky 3.7 Style (3.7 sky, default off) - the Karman line is shared by aurora/clouds/sky 3.7
+//#define SKY_3_7
+#ifdef SKY_3_7
+#define SUNRISE_SUNSET_INTENSITY 0.60 //[0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
+#endif
+
+//Sun & Moon style (0 = Classic 2.3, 1 = Vanilla sprites, 2 = V3.x style)//
+#define SUN_MOON_STYLE 0 //[0 1 2]
+#if SUN_MOON_STYLE == 1
+#define VANILLA_SUN_MOON
+#elif SUN_MOON_STYLE == 2
+#define SUN_MOON_3_7
+#endif
+
+//Generated night nebula (3.7 noise cloud layer that drifts with the starfield and blends with the
+//aurora). Independent control: not gated by SKY_3_7 so it can be toggled on its own.
+//#define GENERATED_NIGHT_NEBULA
+#ifdef GENERATED_NIGHT_NEBULA
+#define GENERATED_NIGHT_NEBULA_BRIGHTNESS 1.50 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00]
+#endif
+
+#if defined AURORA_3_7 || defined VC_3_7 || defined SKY_3_7 || defined SUN_MOON_3_7 || defined MILKY_WAY_3_7 || defined GENERATED_NIGHT_NEBULA
+#define KARMAN_LINE 100000 //[50000 60000 70000 80000 90000 100000 110000 120000 130000 140000 150000 200000 250000 300000 400000 500000 1000000]
+#endif
+
 #define MILKY_WAY
 #define MILKY_WAY_BRIGHTNESS 2.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00]
+
+//Milky Way 3.7 Style (moon lights up the milky way, default off) - 3.7 brightness driven by the
+//moon visibility (pow4) instead of night depth, with space-transition visibility/tint.
+//#define MILKY_WAY_3_7
 
 #define RAINBOW
 #define RAINBOW_BRIGHTNESS 2.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00 3.25 3.50 3.75 4.00]
@@ -58,13 +113,12 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define SKYBOX_MIX_FACTOR 0.5 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
 #define SKYBOX_BRIGHTNESS 1.00 //[0.50 0.75 1.00 1.25 1.50 1.75 2.00]
 
-//Vanilla Sun & Moon sprites (rendered on top of the shader sky, with independent sun/moon brightness)
-//#define VANILLA_SUN_MOON
+//Vanilla Sun & Moon sprites brightness (used when SUN_MOON_STYLE = 1)
 #define VANILLA_SUN_BRIGHTNESS 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 3.00]
 #define VANILLA_MOON_BRIGHTNESS 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 3.00]
 
-//End Portal: 3D swirl (ported from 3.7) vs vanilla 2D camera effect
-#define END_PORTAL_3D
+//End Portal: 3D swirl (ported from 3.7) vs vanilla 2D camera effect (default off)
+//#define END_PORTAL_3D
 #define END_PORTAL_BRIGHTNESS 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 3.00]
 #define END_PORTAL_TEXSCALE 2.00 //[0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00]
 
@@ -73,11 +127,75 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define END_VORTEX
 #define END_VORTEX_ARMS 5.0 //[4.0 5.0 6.0 7.0 8.0]
 #define END_VORTEX_WHIRL 20.0 //[16.0 18.0 20.0 22.0 24.0 26.0 28.0 30.0 32.0]
+//End Vortex gravitational lensing (2.3 black hole, default off) - 3.7-style spiral vortex around
+//the 2.3 End black hole: dims nearby stars and pushes them into a lensing ring. SIZE scales the
+//vortex radius (default 1.5 slightly widens the vortex over the 3.7 default).
+//#define END_VORTEX_LENS
+#ifdef END_VORTEX_LENS
+#define END_VORTEX_LENS_GRAVITY 1.5 //[-16.0 -14.0 -12.0 -10.0 -8.0 -6.0 -4.0 -2.0 -1.5 -1.0 -0.5 0.5 1.0 1.5 2.0 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
+#define END_VORTEX_LENS_GRAVITY_RANGE 1.0 //[-16.0 -14.0 -12.0 -10.0 -8.0 -6.0 -4.0 -2.0 -1.0 -0.5 0.5 1.0 2.0 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
+//Iris option reference - keeps the checkbox visible in the End Vortex config menu
+#endif
+
+//End Nebula 3.7 style (independent control, default off) - 3.7 ender nebula noise band.
+//#define END_NEBULA_3_7
+#ifdef END_NEBULA_3_7
+#define END_NEBULA_BRIGHTNESS_3_7 3.00 //[1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00 3.25 3.50 3.75 4.00]
+//3.7 nebula color stops (R/G/B 0-255, I intensity). Tune here, not in the menu.
+#define NEBULA_END_FIRST_R 208
+#define NEBULA_END_FIRST_G 132
+#define NEBULA_END_FIRST_B 44
+#define NEBULA_END_FIRST_I 2.60
+#define NEBULA_END_SECOND_R 32
+#define NEBULA_END_SECOND_G 244
+#define NEBULA_END_SECOND_B 184
+#define NEBULA_END_SECOND_I 1.60
+const vec3 endNebulaColFirstSqrt = vec3(NEBULA_END_FIRST_R, NEBULA_END_FIRST_G, NEBULA_END_FIRST_B) / 255.0 * NEBULA_END_FIRST_I;
+const vec3 endNebulaColFirst = endNebulaColFirstSqrt * endNebulaColFirstSqrt;
+const vec3 endNebulaColSecondSqrt = vec3(NEBULA_END_SECOND_R, NEBULA_END_SECOND_G, NEBULA_END_SECOND_B) / 255.0 * NEBULA_END_SECOND_I;
+const vec3 endNebulaColSecond = endNebulaColSecondSqrt * endNebulaColSecondSqrt;
+#endif
+
+//End Black Hole 3.7 (independent control, default off) - warps the 3.7 nebula around the sun
+//direction with a photon ring + accretion glow. For the full 3.7 look also enable END_NEBULA_3_7.
+//#define END_BLACK_HOLE_3_7
+#ifdef END_BLACK_HOLE_3_7
+#define END_BLACK_HOLE_SIZE_3_7 1.0 //[3.0 2.5 2.0 1.5 1.0 0.5 0.25]
+#endif
+#define END_ANGLE_3_7 0.0 //[0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+
 #define END_STARS
 #define END_STAR_AMOUNT 1.2 //[0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0 2.2 2.4 2.6 2.8 3.0 3.5 4.0 4.5 5.0]
 #define END_STAR_DENSITY 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00]
 #define END_STAR_BRIGHTNESS 0.75 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00]
 #define END_STAR_SIZE 1.00 //[1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 6.0 8.0 10.0]
+
+//End Stars 3.7 style (independent, default off) - 3.7 ender starfield: random bright points that
+//cluster into constellation-like patterns, blended like 3.7 (uniform visibility). Uses its OWN
+//END_STARS_3_7_AMOUNT/BRIGHTNESS/SIZE controls defaulting to the 3.7 values so the starfield is
+//visible out of the box, tuned independently from the 2.3 END_STARS. NOISE (default 2.5) lowers
+//the star threshold -> MORE stars; 1.0 = exact 3.7 behaviour.
+//#define END_STARS_3_7
+#ifdef END_STARS_3_7
+#define END_STARS_3_7_NOISE 1.25 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00]
+#define END_STARS_3_7_AMOUNT 1.60 //[0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75]
+#define END_STARS_3_7_BRIGHTNESS 1.2 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0]
+#define END_STARS_3_7_SIZE 1.00 //[0.25 0.35 0.50 0.65 0.80 1.00 1.25 1.50 1.75 2.00 2.50 3.00 3.50 4.00 5.00 6.00]
+#endif
+
+//End Disk 3.7 (Ender Protoplanetary Disk / 末地行星盘云雾, ported from 3.7, default off) - an
+//enormous rotating disk of cosmic clouds around the central End island. Uses the 2.3 End fog
+//color/lighting. FADE_DISTANCE 0 = auto: 2000 when the vanilla End nebula (END_NEBULA) is on,
+//else 4000. Any other value overrides the fade distance (values above 2000 keep the disk visible
+//further).
+//#define END_DISK_3_7
+#ifdef END_DISK_3_7
+#define END_DISK_HEIGHT_3_7 -60.0 //[-50.0 -40.0 -30.0 -20.0 -10.0 0.0 10.0 20.0 30.0 40.0]
+#define END_DISK_AMOUNT_3_7 9.0 //[10.0 9.5 9.0 8.5 8.0]
+#define END_DISK_THICKNESS_3_7 12.0 //[4.0 6.0 8.0 10.0 12.0 14.0 16.0 18.0 20.0]
+#define END_DISK_OPACITY_3_7 1.0 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define END_DISK_FADE_DISTANCE_3_7 0.0 //[0.0 1000.0 1500.0 2000.0 2500.0 3000.0 3500.0 4000.0 4500.0 5000.0 6000.0 8000.0 10000.0]
+#endif
 
 //End Revolution//
 //#define ENH_END_REVOLUTION
@@ -108,6 +226,13 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define PLANAR_CLOUDS_BRIGHTNESS 1.1 //[0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5]
 #define PLANAR_CLOUDS_OPACITY 0.8 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
 
+//Planar Clouds 3.7 Style (3.7 planar clouds sampling the independent 3.7 noise3_7 texture, default off)//
+//#define PLANAR_CLOUDS_3_7
+#define PLANAR_CLOUDS_3_7_AMOUNT 0.05 //[0.01 0.02 0.03 0.04 0.05 0.06 0.07 0.08 0.09 0.10]
+#define PLANAR_CLOUDS_3_7_HEIGHT 700 //[500 600 700 800 900 1000 1100 1200 1300 1400 1500]
+#define PLANAR_CLOUDS_3_7_BRIGHTNESS 1.5 //[0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5]
+#define PLANAR_CLOUDS_3_7_OPACITY 1.0 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+
 //Volumetric Clouds
 #define VC
 #define VC_FREQUENCY 0.7 //[0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5]
@@ -122,6 +247,13 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 //#define VC_SHADOWS
 //#define BLOCKY_CLOUDS
 
+//Volumetric Clouds 3.7 Style (high-version volumetric clouds, default off)//
+//#define VC_3_7
+#ifdef VC_3_7
+#define VC_DYNAMIC_WEATHER
+#define VC_SCALE 8.0 //[5.0 6.0 7.0 8.0 9.0 10.0 11.0 12.0 13.0 14.0 15.0]
+#endif
+
 //Blocky Clouds (double layer)//
 #define BLOCKY_CLOUDS1_HEIGHT 170.0 //[10.0 20.0 30.0 40.0 50.0 60.0 70.0 80.0 90.0 100.0 110.0 120.0 130.0 140.0 150.0 160.0 170.0 180.0 190.0 200.0 210.0 220.0 230.0 240.0 250.0 260.0 270.0 280.0 290.0 300.0]
 #define BLOCKY_CLOUDS1_THICKNESS 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00 5.00 6.00 8.00]
@@ -129,17 +261,25 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define BLOCKY_CLOUDS1_AMOUNT 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00 5.00]
 #define BLOCKY_CLOUDS1_BRIGHTNESS 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 3.00 4.00 5.00]
 #define BLOCKY_CLOUDS1_OPACITY 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00]
-#define BLOCKY_CLOUDS1_FLOW 0.0 //[0.0 0.5 1.0 1.5 2.0 2.5 3.0 4.0 5.0 6.0 8.0 10.0 12.0 16.0]
+#define BLOCKY_CLOUDS1_FLOW 1.5 //[0.0 0.5 1.0 1.5 2.0 2.5 3.0 4.0 5.0 6.0 8.0 10.0 12.0 16.0]
 //#define BLOCKY_CLOUDS2
-#define BLOCKY_CLOUDS2_HEIGHT 230.0 //[10.0 20.0 30.0 40.0 50.0 60.0 70.0 80.0 90.0 100.0 110.0 120.0 130.0 140.0 150.0 160.0 170.0 180.0 190.0 200.0 210.0 220.0 230.0 240.0 250.0 260.0 270.0 280.0 290.0 300.0 320.0 340.0 360.0 380.0 400.0]
+#define BLOCKY_CLOUDS2_HEIGHT 320.0 //[10.0 20.0 30.0 40.0 50.0 60.0 70.0 80.0 90.0 100.0 110.0 120.0 130.0 140.0 150.0 160.0 170.0 180.0 190.0 200.0 210.0 220.0 230.0 240.0 250.0 260.0 270.0 280.0 290.0 300.0 320.0 340.0 360.0 380.0 400.0]
 #define BLOCKY_CLOUDS2_THICKNESS 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00 5.00 6.00 8.00]
 #define BLOCKY_CLOUDS2_XZSTRETCH 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00 5.00 6.00 8.00]
-#define BLOCKY_CLOUDS2_AMOUNT 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00 5.00]
-#define BLOCKY_CLOUDS2_OFFSET 0.50 //[0.00 0.50 1.00 1.50 2.00 2.50 3.00 4.00 5.00 6.00 8.00 10.00 12.00 16.00 20.00 24.00 32.00 48.00 64.00]
+#define BLOCKY_CLOUDS2_AMOUNT 1.75 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00 5.00]
+#define BLOCKY_CLOUDS2_OFFSET 48.00 //[0.00 0.50 1.00 1.50 2.00 2.50 3.00 4.00 5.00 6.00 8.00 10.00 12.00 16.00 20.00 24.00 32.00 48.00 64.00]
 #define BLOCKY_CLOUDS2_BRIGHTNESS 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 3.00 4.00 5.00]
 #define BLOCKY_CLOUDS2_OPACITY 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00]
-#define BLOCKY_CLOUDS2_FLOW 0.0 //[0.0 0.5 1.0 1.5 2.0 2.5 3.0 4.0 5.0 6.0 8.0 10.0 12.0 16.0]
-#define BLOCKY_CLOUDS_CULLING 1 //[0 1 2]
+#define BLOCKY_CLOUDS2_FLOW 0.5 //[0.0 0.5 1.0 1.5 2.0 2.5 3.0 4.0 5.0 6.0 8.0 10.0 12.0 16.0]
+#define BLOCKY_CLOUDS_CULLING 2 //[0 1 2]
+
+//Blocky clouds occlude the aurora behind them (switch + strength)//
+#define BLOCKY_CLOUDS_AURORA_OCCLUSION
+#define BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH 1.00 //[0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00]
+
+//Blocky clouds flow follows the world time instead of the real-time counter (Frame Time).
+//FLOW is applied as a multiplier. Default: follow world time.
+#define BLOCKY_CLOUDS_WORLD_TIME
 
 //VL//
 #define VL
@@ -154,11 +294,44 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define LPV_FOG_STRENGTH 0.6 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
 #define LPV_FOG_SAMPLES 6 //[4 5 6 7 8 9 10]
 
+//LPV Fog Noise (3.7-style cloudy noise on light fog, default off) - 3D cloudy noise
+//modulates the light fog density like the 3.7 LPV_CLOUDY_FOG. While active the LPV fog
+//overexposure fixes (GLOBAL/HIGH_FREQ) are disabled so they cannot further weaken the fog.
+//STRENGTH 0 = no noise, 1 = full 3.7 cloudy modulation.
+//#define LPV_FOG_NOISE
+#ifdef LPV_FOG_NOISE
+#define LPV_FOG_NOISE_STRENGTH 1.0 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#endif
+
+//LPV fog overexposure fix tuning (used when LPV_FOG_FIX_GLOBAL or LPV_FOG_FIX_HIGH_FREQ is on).
+//Defaults are the 3.7 parameters: DARK_VISIBILITY/DARK_DENSITY are 0 (boost fully removed),
+//BRIGHT_FADE is 3.0 (the 3.7 bright-surface fade baseline).
+#define LPV_FOG_DARK_VISIBILITY 0.0 //[0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define LPV_FOG_BRIGHT_FADE 3.0 //[0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5 6.0]
+#define LPV_FOG_DARK_DENSITY 0.0 //[0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+
+//High-frequency-only tuning (used when LPV_FOG_FIX_HIGH_FREQ is on): a sample is treated as
+//"many light sources" when its floodfill brightness exceeds HF_THRESHOLD; those samples are
+//scaled toward HF_SUPPRESS while single/few-light samples keep the vanilla strength.
+#define LPV_FOG_HF_THRESHOLD 1.0 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00]
+#define LPV_FOG_HF_BANDWIDTH 0.5 //[0.10 0.20 0.30 0.40 0.50 0.75 1.00 1.50]
+#define LPV_FOG_HF_SUPPRESS 0.3 //[0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.50 0.60 0.70 0.80 0.90 1.00]
+
 //Nether Cloudy Fog//
 #define NETHER_CLOUDY_FOG
 #define VF_NETHER_STRENGTH 1.5 //[0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0 2.1 2.2 2.3 2.4 2.5]
 #define VF_NETHER_FREQUENCY 3.00 //[2.00 2.25 2.50 2.75 3.00 3.25 3.50 3.75 4.00]
 #define VF_NETHER_SPEED 6.00 //[1.00 1.50 2.00 2.50 3.00 3.50 4.00 4.50 5.00 5.50 6.00 6.50 7.00 7.50 8.00]
+
+//Nether Smoke 3.7 (3.7-style volumetric nether smoke, default off) - rising smoke columns
+//driven by a 3D noise, sampled along the view ray inside the Nether (y 40..255, 128 blocks).
+//Independent of the 2.3 NETHER_CLOUDY_FOG (LPV-based) so they can be combined or used alone.
+//#define NETHER_SMOKE_3_7
+#ifdef NETHER_SMOKE_3_7
+#define NETHER_SMOKE_3_7_STRENGTH 0.8 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define NETHER_SMOKE_3_7_FREQUENCY 1.50 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00 3.25 3.50 3.75 4.00]
+#define NETHER_SMOKE_3_7_SPEED 2.00 //[1.00 1.50 2.00 2.50 3.00 3.50 4.00 4.50 5.00 5.50 6.00 6.50 7.00 7.50 8.00]
+#endif
 
 //End Cloudy Fog//
 #define END_CLOUDY_FOG
@@ -166,6 +339,7 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define VF_END_AMOUNT 8.5 //[7.5 8.0 8.5 9.0 9.5 10.0]
 #define VF_END_THICKNESS 10.0 //[4.0 6.0 8.0 10.0 12.0 14.0 16.0 18.0 20.0 22.0 24.0]
 #define VF_END_OPACITY 0.7 //[0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define VF_END_FADE_DISTANCE 386.0 //[100.0 150.0 200.0 250.0 300.0 386.0 500.0 600.0 800.0 1000.0 1500.0 2000.0]
 
 //Fog//
 #define DISTANT_FADE
@@ -324,6 +498,10 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #undef REFRACTION
 #endif
 
+//PBR Scheme (0 = Classic 2.3, 1 = V2.4b) - switches the whole PBR implementation between the
+//2.3 files (lib/pbr/) and the independent 2.4b copy (lib/pbr_24/). Default 0 keeps the 2.3 look.
+#define PBR_SCHEME 0 //[0 1]
+
 //PBR//
 #define GENERATED_EMISSION
 #define EMISSION_STRENGTH 3.00 //[1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00 3.25 3.50 3.75 4.00]
@@ -349,13 +527,32 @@ const float shadowMapBias = 1.0 - 25.6 / shadowDistance;
 #define SELF_SHADOW
 #define SELF_SHADOW_ANGLE 3.0 //[0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5 6.0 6.5 7.0 7.5 8.0]
 #define SELF_SHADOW_QUALITY 6 //[4 6 8 10 12 14 16]
+#if PBR_SCHEME == 1
+#define SELF_SHADOW_STRENGTH 32 //[4 8 16 32 48 64]
+#else
 #define SELF_SHADOW_STRENGTH 48 //[4 8 16 32 48 64]
+#endif
 
 //Waving//
 #define WAVING_PLANTS
 #define WAVING_LEAVES
 #define WAVING_AMPLITUDE 2.50 //[1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00 3.25 3.50 3.75 4.00]
 #define WAVING_SPEED 1.2 //[0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5]
+
+//Fixes (修复) - parent switch. Every fix below nests under this: when this is OFF, every fix
+//toggle is forced disabled regardless of its own state. Fixes address unintended behavior that
+//was introduced by the shader itself or by updates since this release and identified as bugs.
+#define FIXES
+
+#ifdef FIXES
+//Individual fixes are defined here, nested under FIXES (e.g. //#define FIX_SOMETHING).
+//LPV fog overexposure fix (boolean switches, shown as text instead of numbers):
+//LPV_FOG_FIX_GLOBAL suppresses all light fog; LPV_FOG_FIX_HIGH_FREQ suppresses overexposure
+//only where many light sources stack up (single/few lights keep the vanilla strength).
+//Both off = vanilla. Default: High-freq only.
+//#define LPV_FOG_FIX_GLOBAL
+#define LPV_FOG_FIX_HIGH_FREQ
+#endif
 
 //Colors//
 //Sun & Moon Light Color//
@@ -659,11 +856,20 @@ float linearStep(float edge0, float edge1, float x) {
 
 #ifndef OVERWORLD
 #undef MILKY_WAY
+#undef MILKY_WAY_3_7
 #undef RAINBOW
 #undef AURORA
+#undef AURORA_3_7
 #undef VC
+#undef VC_3_7
 #undef STARS
+#undef STARS_3_7
+#undef SHOOTING_STARS
 #undef PLANAR_CLOUDS
+#undef PLANAR_CLOUDS_3_7
+#undef SKY_3_7
+#undef SUN_MOON_3_7
+#undef GENERATED_NIGHT_NEBULA
 #undef RAIN_PUDDLES
 #undef WAVING_PLANTS
 #undef WAVING_LEAVES
@@ -673,11 +879,17 @@ float linearStep(float edge0, float edge1, float x) {
 
 #ifndef NETHER
 #undef NETHER_CLOUDY_FOG
+#undef NETHER_SMOKE_3_7
 #endif
 
 #ifndef END
 #undef END_NEBULA
 #undef END_VORTEX
+#undef END_VORTEX_LENS
+#undef END_NEBULA_3_7
+#undef END_BLACK_HOLE_3_7
+#undef END_STARS_3_7
+#undef END_DISK_3_7
 #undef END_CLOUDY_FOG
 #endif
 

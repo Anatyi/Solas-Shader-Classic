@@ -6,8 +6,8 @@ profile.HIGH=Высоко (По умолчанию)
 profile.ULTRA=Ультра
 
 option.SOLAS_BY_SEPTONIOUS=§6Solas Shader
-value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.2
-option.SOLAS_BY_SEPTONIOUS.comment=Оригинальный автор: Septonious (Solas Shader)\nРазработчик: Anatyi\nРепозиторий: https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\nЖурнал изменений:\n- Перенесено из 3.7: Линзовые блики, DOF (ручной фокус), Vanilla Water, Двухслойные кубические облака, 3D портал Края\n- Улучшено: Ванильные солнце и луна, Звёзды, Объёмный свет, Стили бликов, Блики Края\n- Отсечение Облаков: режимы перекрытия слоёв (нет / тени / взаимное)\n- Вращение Края: чёрная дыра, звёзды и направление света вращаются со временем, свечение и гравитационная линза\n- Блики по измерениям: независимые переключатели Края / Нижнего мира, яркость и стиль покрытия\n- Новые меню Улучшений и Производительности\n- Исправлено: SSR, лужи редстоуна, быстрорастущая листва
+value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.3
+option.SOLAS_BY_SEPTONIOUS.comment=Оригинальный автор: Septonious (Solas Shader)\nРазработчик: Anatyi\nРепозиторий: https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\nЖурнал изменений (V2.3.3):\n- Перенесены Объёмные облака 3.7 (VC_3_7) и Плоские облака (PLANAR_CLOUDS_3_7)\n- Перенесено Небо Верхнего мира 3.7 (SKY_3_7), Звёзды (STARS_3_7) и генерируемая ночная туманность\n- Перенесено из Края 3.7: Туманность (END_NEBULA_3_7), Чёрная дыра (линза + вихрь), Звёздное поле, Протопланетный диск / Облака Края\n- Перенесено из Нижнего мира 3.7: Дым (NETHER_SMOKE_3_7) и Шум светового тумана (LPV_FOG_NOISE)\n- Управление гравитационным вихрем: сила / радиус, отрицательные; плотность звёздного поля независима от туманности Края\n- Маскировка стекла облаками Края, исправлено отражение Края, дистанция исчезновения облаков Края\n- Меню Неба и Атмосферы реорганизованы (двухколоночная раскладка переключатель + конфиг)\n- Исправлено: видимость звёздного поля, энергия шума тумана, контролы вихря / радиуса
 
 #=======================================================# ATMOSPHERICS #=======================================================#
 
@@ -19,10 +19,13 @@ option.SKYBOX_MIX_FACTOR=Слияние с атмосферой
 option.SKYBOX_MIX_FACTOR.comment=Определяет степень слияния атмосферы шейдера со скайбоксом из ресурспака.
 option.SKYBOX_BRIGHTNESS=Яркость
 
-screen.SUN_MOON_CONFIG=Настройки Солнца и Луны
+screen.VANILLA_SUN_MOON_CONFIG=Настройки Ваннильных Солнца и Луны
 
-option.VANILLA_SUN_MOON=Ваннильное Солнце и Луна
-option.VANILLA_SUN_MOON.comment=Отрисовывает ваннильные спрайты солнца и луны в небе шейдера (вместо процедурных)
+option.SUN_MOON_STYLE=Стиль Солнца и Луны
+option.SUN_MOON_STYLE.0=Классика
+option.SUN_MOON_STYLE.1=Ваннильные Спрайты
+option.SUN_MOON_STYLE.2=Стиль V3.x
+option.SUN_MOON_STYLE.comment=Классика: процедурные солнце/луна 2.3. Ваннильные: ваннильные спрайты солнца/луны (с яркостью). V3.x: диск 3.7 (переход в космос, блик 3.7 и фазы луны).
 option.VANILLA_SUN_BRIGHTNESS=Яркость Солнца
 option.VANILLA_MOON_BRIGHTNESS=Яркость Луны
 option.END_PORTAL_3D=3D Портал в Энд
@@ -59,6 +62,12 @@ option.BLOCKY_CLOUDS_CULLING.comment=Как два слоя кубических
 option.BLOCKY_CLOUDS_CULLING.0=Без Отсечения
 option.BLOCKY_CLOUDS_CULLING.1=Отсекать Тени
 option.BLOCKY_CLOUDS_CULLING.2=Взаимное Отсечение
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION=Облака скрывают сияние
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION.comment=Квадратные облака скрывают сияние за собой. При включении сияние скрывается за облаками.
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH=Сила скрытия сияния
+option.BLOCKY_CLOUDS_WORLD_TIME=Поток облаков следует за мировым временем
+option.BLOCKY_CLOUDS_WORLD_TIME.comment=Поток кубических облаков следует за мировыми часами вместо счётчика реального времени. FLOW применяется как множитель. Выкл = встроенное время кадра. По умолчанию: Вкл.
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH.comment=Сила скрытия сияния. 0 = без дополнительного скрытия; 1 = сильное скрытие.
 option.VC_DETAIL=Детальность
 option.VC_DENSITY=Плотность
 option.VC_AMOUNT=Количество
@@ -69,6 +78,13 @@ option.VC_DISTANCE=Дистанция Рендера
 option.VC_OPACITY=Непрозрачность
 option.VC_SHADOWS=Лучи Света в Облаках
 option.VC_SHADOWS.comment=Добавляет облакам объёмное освещение (солнечные лучи).
+option.VC_3_7=Облака Стиль 3.7
+option.VC_3_7.comment=Заменяет облака на объёмную систему 3.7 (динамическая погода, линейное/космическое освещение, вид из глубокого космоса). Выключено по умолчанию.
+screen.VC_3_7_CONFIG=Настройки Облаков 3.7
+option.VC_DYNAMIC_WEATHER=Динамическая Погода
+option.VC_DYNAMIC_WEATHER.comment=Облака меняются день ото дня в зависимости от дня мира.
+option.VC_SCALE=Масштаб Облаков
+option.VC_SCALE.comment=Масштаб особенностей слоя облаков.
 
 #----------------------------------------------------------------------------------#
 
@@ -77,6 +93,13 @@ screen.PC_CONFIG=Настройки 2D Облаков
 option.PLANAR_CLOUDS=2D Облака
 option.PLANAR_CLOUDS_BRIGHTNESS=Яркость
 option.PLANAR_CLOUDS_OPACITY=Непрозрачность
+screen.PLANAR_CLOUDS_3_7_CONFIG=Настройки 2D Облаков 3.7
+option.PLANAR_CLOUDS_3_7=Стиль 2D Облаков 3.7
+option.PLANAR_CLOUDS_3_7.comment=Заменяет 2D облака на стиль 3.7 (семплирует текстуру шума 3.7 noise3_7). Требует видимость луны 3.7. Выключено по умолчанию.
+option.PLANAR_CLOUDS_3_7_AMOUNT=Количество
+option.PLANAR_CLOUDS_3_7_HEIGHT=Высота
+option.PLANAR_CLOUDS_3_7_BRIGHTNESS=Яркость
+option.PLANAR_CLOUDS_3_7_OPACITY=Непрозрачность
 
 #----------------------------------------------------------------------------------#
 
@@ -97,6 +120,13 @@ option.VF_NETHER_STRENGTH=Сила
 option.VF_NETHER_SPEED=Скорость
 option.VF_NETHER_FREQUENCY=Частота
 
+screen.NETHER_SMOKE_3_7_CONFIG=Настройки 3D Дыма в Аду (3.7)
+
+option.NETHER_SMOKE_3_7=Дым в Аду (3.7)
+option.NETHER_SMOKE_3_7_STRENGTH=Яркость
+option.NETHER_SMOKE_3_7_SPEED=Скорость
+option.NETHER_SMOKE_3_7_FREQUENCY=Частота
+
 #----------------------------------------------------------------------------------#
 
 screen.VF_END_CONFIG=Настройки 3D Тумана в Энде
@@ -106,6 +136,7 @@ option.VF_END_HEIGHT=Высота
 option.VF_END_OPACITY=Непрозрачность
 option.VF_END_AMOUNT=Количество
 option.VF_END_THICKNESS=Размер
+option.VF_END_FADE_DISTANCE=Дистанция исчезновения
 
 #----------------------------------------------------------------------------------#
 
@@ -115,6 +146,9 @@ option.LPV_FOG=Световой Туман
 option.LPV_FOG.comment=Позволяет источникам света подсвечивать туман вокруг.
 option.LPV_FOG_STRENGTH=Сила
 option.LPV_FOG_SAMPLES=Качество
+option.LPV_FOG_NOISE=Шум Светового Тумана
+option.LPV_FOG_NOISE.comment=Добавляет 3D облачный шум к световому туману (стиль 3.7). Пока активен, исправления пересвета отключаются, чтобы не ослаблять туман.
+option.LPV_FOG_NOISE_STRENGTH=Сила Шума
 
 #----------------------------------------------------------------------------------#
 
@@ -131,12 +165,24 @@ option.FOG_HEIGHT=Высота Тумана
 #----------------------------------------------------------------------------------#
 
 screen.SKY_CONFIG=Настройки Неба
+screen.SKY_PORT_CONFIG=Улучшения Неба (Порт)
 
 option.STARS=Звёзды
 option.STAR_BRIGHTNESS=Яркость Звёзд
 option.STAR_AMOUNT=Количество Звёзд
 option.STAR_DENSITY=Плотность Звёзд
 option.STAR_SIZE=Размер Звёзд
+screen.STARS_3_7_CONFIG=Настройки Звёзд 3.7
+option.STARS_3_7=Стиль Звёзд 3.7
+option.STARS_3_7.comment=Заменяет звёздное небо на стиль 3.7. Требует видимость луны 3.7. Выключено по умолчанию.
+option.SHOOTING_STARS=Падающие Звезды / Метеоры
+option.SHOOTING_STARS.comment=Добавляет метеоры в ночном небе (3.7). Требует Стиль Звёзд 3.7. Выключено по умолчанию.
+option.SHOOTING_STARS_SIZE=Размер Метеоров
+option.SHOOTING_STARS_SPEED=Скорость Метеоров
+option.SHOOTING_STARS_CHANCE=Шанс Метеоров
+option.SHOOTING_STARS_COUNT=Число Метеоров
+option.SHOOTING_STARS_LINE_THICKNESS=Толщина Следа
+option.SHOOTING_STARS_TRAIL_LENGTH=Длина Следа
 option.END_STARS=Звёзды в Краю
 option.END_STAR_AMOUNT=Количество Звёзд в Краю
 option.END_STAR_DENSITY=Плотность Звёзд в Краю
@@ -144,14 +190,74 @@ option.END_STAR_BRIGHTNESS=Яркость Звёзд в Краю
 option.END_STAR_SIZE=Размер Звёзд в Краю
 option.MILKY_WAY=Млечный Путь
 option.MILKY_WAY_BRIGHTNESS=Яркость Млечного Пути
+option.MILKY_WAY_3_7=Стиль Млечного Пути 3.7
+option.MILKY_WAY_3_7.comment=Млечный Путь 3.7, где луна освещает полосу (яркость от видимости луны вместо ночной глубины), с переходом в космос для видимости и оттенка. Выключено по умолчанию.
+option.GENERATED_NIGHT_NEBULA=Генерируемая Ночная Туманность
+option.GENERATED_NIGHT_NEBULA.comment=Шумовой облачный слой 3.7, плывущий вместе со звёздами и смешивающийся с сиянием. Требуется небо 3.7.
+option.GENERATED_NIGHT_NEBULA_BRIGHTNESS=Яркость Туманности
 option.END_NEBULA=Туманность в Краю
 option.END_NEBULA_BRIGHTNESS=Яркость Туманности
+option.END_STARS_3_7=Звёзды Края, стиль 3.7
+option.END_STARS_3_7.comment=Звёздное небо Края 3.7: случайные яркие точки, собирающиеся в созвездия, смешиваются как в 3.7. Заменяет звёзды Края 2.3. По умолчанию: Выкл.
+option.END_STARS_3_7_NOISE=Сила шума звёзд
+option.END_STARS_3_7_AMOUNT=Количество звёзд
+option.END_STARS_3_7_BRIGHTNESS=Яркость звёзд
+option.END_STARS_3_7_SIZE=Размер звёзд
+screen.END_BLACK_HOLE_3_7_CONFIG=Настройки Чёрной Дыры 3.7
+option.END_BLACK_HOLE_3_7=Чёрная дыра в Крае
+option.END_BLACK_HOLE_3_7.comment=Чёрная дыра 3.7 в небе Края: искажает туманность Края вокруг направления солнца с фотонным кольцом и светом аккреции. По умолчанию: Выкл.
+option.END_BLACK_HOLE_SIZE_3_7=Размер чёрной дыры
+value.END_BLACK_HOLE_SIZE_3_7.3.0=Очень Маленький
+value.END_BLACK_HOLE_SIZE_3_7.2.5=Маленький
+value.END_BLACK_HOLE_SIZE_3_7.2.0=Нормальный
+value.END_BLACK_HOLE_SIZE_3_7.1.5=Большой
+value.END_BLACK_HOLE_SIZE_3_7.1.0=Очень Большой
+value.END_BLACK_HOLE_SIZE_3_7.0.5=Огромный
+value.END_BLACK_HOLE_SIZE_3_7.0.25=Экстремальный
+option.END_ANGLE_3_7=Угол наклона
+screen.END_DISK_3_7_CONFIG=Настройки Планетарного Диска
+option.END_DISK_3_7=Облака планетарного диска Края
+option.END_DISK_3_7.comment=Огромный диск космических облаков, вращающийся вокруг центрального острова Края (3.7). Заменяет облачный туман Края 2.3. По умолчанию: Выкл.
+option.END_DISK_HEIGHT_3_7=Высота диска
+option.END_DISK_AMOUNT_3_7=Количество облаков
+option.END_DISK_THICKNESS_3_7=Толщина диска
+option.END_DISK_OPACITY_3_7=Непрозрачность диска
+option.END_DISK_FADE_DISTANCE_3_7=Дистанция исчезновения диска
 option.RAINBOW=Радуга
 option.AURORA=Полярное Сияние (ПС)
 option.AURORA_COLD_BIOME_VISIBILITY=ПС в холодных биомах
 option.AURORA_COLD_BIOME_VISIBILITY.comment=Переключает видимость Полярного Сияния только в снежных биомах
 option.AURORA_FULL_MOON_VISIBILITY=ПС при полной луне
 option.AURORA_FULL_MOON_VISIBILITY.comment=Переключает видимость Полярного Сияния только при полной луне
+screen.AURORA_CONFIG=Настройки Полярного Сияния
+option.AURORA_3_7=Стиль Сияния 3.7
+option.AURORA_3_7.comment=Заменяет сияние на объёмную систему 3.7 (геомагнитная активность, высота, влияние света). Выключено по умолчанию.
+option.SKY_3_7=Стиль Неба 3.7
+option.SKY_3_7.comment=Заменяет небо на глобальное небо 3.7 (космический фактор, окраска биомов, зелёная полоса). Выключено по умолчанию.
+option.SUN_MOON_3_7=Стиль Солнца и Луны 3.7
+option.SUN_MOON_3_7.comment=Заменяет диск солнца/луны на стиль 3.7 (переход в космос по высоте, блик 3.7 и фазы луны). Выключено по умолчанию.
+option.SUNRISE_SUNSET_INTENSITY=Интенсивность Рассвета/Заката
+option.SUNRISE_SUNSET_INTENSITY.comment=Интенсивность полосы рассеяния рассвета/заката на небе 3.7.
+option.AURORA_ALTITUDE=Высота Сияния
+option.AURORA_ALTITUDE.comment=Высота объёма сияния в блоках.
+option.AURORA_LIGHTING_INFLUENCE=Освещение Объектов
+option.AURORA_LIGHTING_INFLUENCE.comment=Позволяет ярким полярным сиянияем слегка освещать землю и облака.
+option.AURORA_ALWAYS_VISIBLE=Постоянная Видимость
+option.AURORA_ALWAYS_VISIBLE.comment=Делает сияние видимым каждую ночь.
+option.AURORA_SOFTEN=Мягкость Сияния
+option.AURORA_SOFTEN.comment=Смягчает яркие участки сияния, чтобы они не выгорали в белый, и уменьшает заметный шум (как в 3.7).
+option.AURORA_BLOOM=Свечение Сияния
+option.AURORA_BLOOM.comment=Отладка: сила свечения (bloom) сияния на ночном небе (0 = нет, выше = сильнее).
+option.AURORA_EXPOSURE=Экспозиция Сияния
+option.AURORA_EXPOSURE.comment=Отладка: общая яркость сияния (множитель).
+option.AURORA_CONTRAST=Контраст Сияния
+option.AURORA_CONTRAST.comment=Отладка: контраст сияния (кривая pow).
+option.AURORA_SCALE=Масштаб Сияния
+option.AURORA_SCALE.comment=Отладка: масштаб полос (больше = шире).
+option.AURORA_OFFSET=Смещение Сияния
+option.AURORA_OFFSET.comment=Отладка: смещение шума сияния.
+option.AURORA_RADIAL=Радиальная Глубина
+option.AURORA_RADIAL.comment=Отладка: глубина вертикального затухания полос.
 
 #----------------------------------------------------------------------------------#
 
@@ -161,6 +267,10 @@ option.END_VORTEX=Чёрная Дыра в Энде
 option.END_VORTEX_SIZE=Радиус
 option.END_VORTEX_WHIRL=Закручивание
 option.END_VORTEX_ARMS=Количество Спиральных Ветвей
+option.END_VORTEX_LENS=Гравитационная линза вихря Края
+option.END_VORTEX_LENS_GRAVITY=Гравитационное искажение
+option.END_VORTEX_LENS_GRAVITY_RANGE=Радиус гравитационного искажения
+option.END_VORTEX_LENS.comment=Искривляет звёзды вокруг чёрной дыры Края 2.3 в спиральный вихрь (линза в стиле 3.7). По умолчанию: Выкл.
 
 screen.ENH_END_CONFIG=Вращение Края
 option.ENH_END_REVOLUTION=Вращение Края
@@ -321,6 +431,11 @@ option.NORMAL_THRESHOLD=Порог Генерации
 #=======================================================# Resourcepack PBR #=======================================================#
 
 screen.PBR=Сторонний PBR
+
+option.PBR_SCHEME=Схема PBR
+option.PBR_SCHEME.comment=Selects the PBR implementation. Classic is the original 2.3 pipeline. V2.4b is the 2.4b pipeline (different specular/reflection handling). Default Classic.
+value.PBR_SCHEME.0=Классическая (2.3)
+value.PBR_SCHEME.1=V2.4b
 
 option.PBR=Сторонний PBR
 option.PBR.comment=Enables the use of specular and normal mapping which allows for more detail on various things.  §e[*]§rThis option requires a resource pack which contains specular and/or normal maps, disable if none is currently used. §e[*]§rOptions which requires advanced materials are indicated by *, changing these options won't affect the visuals or performance while advanced materials is disabled.
@@ -669,3 +784,26 @@ option.WAVING_AMPLITUDE=Амплитуда
 option.FIREFLIES=Светлячки
 option.FIREFLIES.comment=Добавляет светлячков ночью. §c[-]§rРаботают только при включенном Световом Тумане.
 option.FIREFLIES_BRIGHTNESS=Яркость Светлячков
+#=======================================================# ИСПРАВЛЕНИЯ #=======================================================#
+
+screen.FIXES=Исправления
+
+option.FIXES=Включить исправления
+option.FIXES.comment=Это исправления проблем, признанных ошибками, непреднамеренно введёнными шейдером или обновлениями с момента выпуска. Кроме критических ошибок, которые пришлось удалить (не перечислены), остальные дополнительные исправления включены по умолчанию для лучшего ожидаемого результата. Если вы считаете, что некоторые исправления в списке на самом деле являются функциями, отключите их. Исправления, которые некоторые основные версии сочли не соответствующими ожиданиям, отключены по умолчанию.
+
+option.LPV_FOG_FIX_GLOBAL=Исправление тумана: Глобально
+option.LPV_FOG_FIX_GLOBAL.comment=Подавляет пересвет светового тумана (LPV) везде. Выключено — только переключатель ВЧ ограничивает пересвет там, где много света. По умолчанию: Выкл.
+option.LPV_FOG_FIX_HIGH_FREQ=Исправление тумана: Только ВЧ
+option.LPV_FOG_FIX_HIGH_FREQ.comment=Подавляет пересвет тумана только там, где много источников света, оставляя одиночные/немногие источники с исходной силой. По умолчанию: Вкл.
+option.LPV_FOG_HF_THRESHOLD=Порог ВЧ
+option.LPV_FOG_HF_THRESHOLD.comment=Яркость floodfill, выше которой образец считается "многими источниками". Больше = меньше подавлений.
+option.LPV_FOG_HF_BANDWIDTH=Полоса ВЧ
+option.LPV_FOG_HF_BANDWIDTH.comment=Диапазон плавного перехода вокруг порога.
+option.LPV_FOG_HF_SUPPRESS=Подавление ВЧ
+option.LPV_FOG_HF_SUPPRESS.comment=Насколько уменьшается туман там, где много света. 0 = убрано, 1 = исходно.
+option.LPV_FOG_DARK_VISIBILITY=Видимость тумана в тёмных местах
+option.LPV_FOG_DARK_VISIBILITY.comment=Насколько повышается видимость светового тумана в тёмных/закрытых пространствах. 0 = по умолчанию 3.7 (без повышения); 1 = оригинальное повышение (может пересвечивать).
+option.LPV_FOG_BRIGHT_FADE=Затухание в ярких средах
+option.LPV_FOG_BRIGHT_FADE.comment=Насколько световой туман затухает в ярких средах (по умолчанию 3.7 = 3.0). Большие значения сильнее подавляют туман.
+option.LPV_FOG_DARK_DENSITY=Плотность тумана в тёмных местах
+option.LPV_FOG_DARK_DENSITY.comment=Насколько повышается плотность светового тумана в тёмных/закрытых пространствах. 0 = по умолчанию 3.7 (без повышения); 1 = оригинальная плотность 40 (может пересвечивать).

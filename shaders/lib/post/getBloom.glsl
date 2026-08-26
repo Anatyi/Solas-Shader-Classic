@@ -23,7 +23,15 @@ void getBloom(inout vec3 color, vec2 coord, float z1) {
 	float bloomStrength = BLOOM_STRENGTH;
 
 	#ifdef OVERWORLD
+	#ifdef AURORA_3_7
+	//3.7: moonlight strongly boosts the bloom on the sky (z1==1.0), giving the aurora its soft radial
+	//glow. Classic's BLOOM_STRENGTH is 1.25 vs 3.7's 1.0 base, so scale the moon boost by 0.6 to
+	//keep the full-moon sky bloom at the 3.7 level (~2.0). AURORA_BLOOM is a debug control for the
+	//aurora blur/bloom strength (0 = no glow, higher = stronger).
+	bloomStrength *= 1.0 + float(z1 == 1.0) * moonVisibility * 0.6 * AURORA_BLOOM;
+	#else
 	bloomStrength *= 1.0 - timeBrightness * 0.33 * eBS;
+	#endif
 	#endif
 
 	#if BLOOM_CONTRAST == 0

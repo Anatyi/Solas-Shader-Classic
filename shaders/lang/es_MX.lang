@@ -1,17 +1,24 @@
 #shaders/lang/es_MX.lang
 
 option.SOLAS_BY_SEPTONIOUS=§6Solas Shader
-value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.2
-option.SOLAS_BY_SEPTONIOUS.comment=Autor original: Septonious (Solas Shader)\nDesarrollador: Anatyi\nRepositorio: https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\nRegistro de cambios:\n- Portado desde 3.7: Destello de Lente, DOF (enfoque manual), Vanilla Water, Nubes Cúbicas de doble capa, Pórtico del End 3D\n- Mejorado: Sol y Luna Vanilla, Estrellas, Luz volumétrica, Estilos de Destello, Destello del End\n- Eliminación de Nubes: modos de oclusión entre capas (sin / sombras / mutua)\n- Revolución del End: el agujero negro, estrellas y dirección de luz giran con el tiempo, resplandor y lente gravitacional\n- Destello por dimensión: interruptores independientes del End / Nether, intensidad y estilo de recubrimiento\n- Nuevos menús de Mejoras y Rendimiento\n- Corregido: SSR, reflejos en charcos de redstone, follaje rápido
+value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.3
+option.SOLAS_BY_SEPTONIOUS.comment=Autor original: Septonious (Solas Shader)\nDesarrollador: Anatyi\nRepositorio: https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\nRegistro de cambios (V2.3.3):\n- Portadas Nubes Volumétricas 3.7 (VC_3_7) y Nubes Planas (PLANAR_CLOUDS_3_7)\n- Portado Cielo del Mundo Superior 3.7 (SKY_3_7), Estrellas (STARS_3_7) y nebulosa nocturna generada\n- Portado del End 3.7: Nebulosa (END_NEBULA_3_7), Agujero Negro (lente + vórtice), Campo Estelar, Disco Protoplanetario / Nubes del End\n- Portado del Nether 3.7: Humo (NETHER_SMOKE_3_7) y Ruido de Niebla Luminosa (LPV_FOG_NOISE)\n- Controles de vórtice gravitacional: fuerza / alcance, negativos; densidad del campo estelar independiente de la nebulosa del End\n- Eliminación de vidrio por nubes del End, reflexión del End reparada, distancia de desvanecimiento de las nubes del End\n- Menús de Cielo y Atmósfera reorganizados (diseño de dos columnas interruptor + config)\n- Corregido: visibilidad del campo estelar, energía del ruido de niebla, controles de vórtice / alcance
 
 #ATMOSPHERICS
 
 screen.ATMOSPHERICS=Atmosféricos
 
-screen.SUN_MOON_CONFIG=Config Sol & Luna
+screen.SKYBOX_CONFIG=Config Cielo del Pack de Recursos
 
-option.VANILLA_SUN_MOON=Sol & Luna Vanilla
-option.VANILLA_SUN_MOON.comment=Renderiza los sprites vanilla del sol y la luna en el cielo del shader (en lugar del sol/luna procedural)
+option.SKYBOX=Cielo del Pack de Recursos
+
+screen.VANILLA_SUN_MOON_CONFIG=Config Sol & Luna Vanilla
+
+option.SUN_MOON_STYLE=Estilo Sol y Luna
+option.SUN_MOON_STYLE.0=Clásico
+option.SUN_MOON_STYLE.1=Sprites Vanilla
+option.SUN_MOON_STYLE.2=Estilo V3.x
+option.SUN_MOON_STYLE.comment=Clásico: el sol/luna procedural 2.3. Vanilla: los sprites vanilla del sol/luna (con brillo). V3.x: el disco 3.7 (transición espacial, destello 3.7 y fases lunares).
 option.VANILLA_SUN_BRIGHTNESS=Brillo del Sol
 option.VANILLA_MOON_BRIGHTNESS=Brillo de la Luna
 option.END_PORTAL_3D=Pórtico del End 3D
@@ -47,6 +54,12 @@ option.BLOCKY_CLOUDS_CULLING.comment=Cómo las dos capas de nubes cúbicas se oc
 option.BLOCKY_CLOUDS_CULLING.0=Sin Eliminación
 option.BLOCKY_CLOUDS_CULLING.1=Eliminar Sombras
 option.BLOCKY_CLOUDS_CULLING.2=Eliminación Mutua
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION=Nubes Cúbicas Ocultan Aurora
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION.comment=Las nubes cúbicas ocultan la aurora detrás de ellas. Al activar, la aurora se elimina detrás de las nubes.
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH=Intensidad de Ocultación de Aurora
+option.BLOCKY_CLOUDS_WORLD_TIME=El Flujo de Nubes Sigue el Tiempo Mundial
+option.BLOCKY_CLOUDS_WORLD_TIME.comment=El flujo de las nubes cúbicas sigue el reloj mundial en lugar del contador en tiempo real. FLOW se aplica como multiplicador. Apagado = tiempo de fotograma integrado. Predeterminado: Activado.
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH.comment=Intensidad de ocultación de la aurora. 0 = sin eliminación extra; 1 = eliminación fuerte.
 option.VC_DISTANT_FADE=Desvanecimiento Distante de las Nubes
 option.VC_AMOUNT=Cantidad
 value.VC_AMOUNT.0.90=Muy Baja
@@ -59,6 +72,13 @@ option.VC_STRETCHING=Estirar
 option.VC_SAMPLES=Pasadas
 option.VC_DISTANCE=Distancia de Renderizado
 option.VC_OPACITY=Opacidad
+option.VC_3_7=Nubes Estilo 3.7
+option.VC_3_7.comment=Reemplaza las nubes por el sistema volumétrico 3.7 de alta versión (clima dinámico, iluminación lineal/espacial, aspecto de espacio profundo). Desactivado por defecto.
+screen.VC_3_7_CONFIG=Config Nubes 3.7
+option.VC_DYNAMIC_WEATHER=Clima Dinámico
+option.VC_DYNAMIC_WEATHER.comment=Las nubes evolucionan día a día según el día del mundo.
+option.VC_SCALE=Escala de Nubes
+option.VC_SCALE.comment=Escala de las características de la capa de nubes.
 
 
 screen.VL_CONFIG=Configuración de Luz Volumétrica
@@ -69,6 +89,32 @@ option.VL_NOISE=Ruido del rayo de luz
 option.VL_STRENGTH=Opacidad
 option.VL_SAMPLES=Pasadas
 
+
+screen.VF_NETHER_CONFIG=Config Niebla Nubosa del Nether
+
+option.NETHER_CLOUDY_FOG=Niebla Nubosa del Nether
+option.VF_NETHER_STRENGTH=Intensidad
+option.VF_NETHER_SPEED=Velocidad
+option.VF_NETHER_FREQUENCY=Frecuencia
+
+screen.NETHER_SMOKE_3_7_CONFIG=Configuración de Humo del Nether 3.7
+
+option.NETHER_SMOKE_3_7=Humo del Nether 3.7
+option.NETHER_SMOKE_3_7_STRENGTH=Intensidad
+option.NETHER_SMOKE_3_7_SPEED=Velocidad
+option.NETHER_SMOKE_3_7_FREQUENCY=Frecuencia
+
+option.LPV_FOG_NOISE=Ruido de Niebla Luminosa
+option.LPV_FOG_NOISE.comment=Aplica ruido nublado 3D a la niebla de luz (estilo 3.7). Desactiva los arreglos de sobreexposición mientras está activo para no debilitar la niebla.
+option.LPV_FOG_NOISE_STRENGTH=Fuerza del Ruido
+screen.VF_END_CONFIG=Config Niebla Nubosa del End
+
+option.END_CLOUDY_FOG=Niebla Nubosa del End
+option.VF_END_HEIGHT=Altura
+option.VF_END_OPACITY=Opacidad
+option.VF_END_AMOUNT=Cantidad
+option.VF_END_THICKNESS=Grosor
+option.VF_END_FADE_DISTANCE=Distancia de Desvanecimiento
 
 screen.FOG_CONFIG=Configuración de Niebla
 
@@ -84,6 +130,7 @@ option.BLOOMY_FOG_DENSITY=Densidad de Niebla Luminosa
 option.BLOOMY_FOG.comment=Habilita niebla coloreada por la luminosidad de los bloques. ¡Requiere que la Luminosidad e Iluminación de Colores en base de Luminosidad esten habilitados!
 
 screen.SKY_CONFIG=Configuración de el Cielo
+screen.SKY_PORT_CONFIG=Mejoras del Cielo (Port)
 
 option.STARS=Estrellas
 option.END_STARS=Estrellas en el End
@@ -93,9 +140,58 @@ option.END_STAR_BRIGHTNESS=Brillo de estrellas del End
 option.END_STAR_SIZE=Tamaño de estrellas del End
 option.STAR_DENSITY=Densidad de estrellas
 option.STAR_SIZE=Tamaño de estrellas
+screen.STARS_3_7_CONFIG=Config Estrellas 3.7
+option.STARS_3_7=Estilo de Estrellas 3.7
+option.STARS_3_7.comment=Reemplaza el campo estelar con el estilo 3.7. Requiere visibilidad lunar 3.7. Desactivado por defecto.
+option.SHOOTING_STARS=Estrellas Fugaces / Meteoros
+option.SHOOTING_STARS.comment=Añade meteoros cruzando el cielo nocturno (3.7). Requiere Estilo de Estrellas 3.7. Desactivado por defecto.
+option.SHOOTING_STARS_SIZE=Tamaño de Meteoros
+option.SHOOTING_STARS_SPEED=Velocidad de Meteoros
+option.SHOOTING_STARS_CHANCE=Probabilidad de Meteoros
+option.SHOOTING_STARS_COUNT=Cantidad de Meteoros
+option.SHOOTING_STARS_LINE_THICKNESS=Grosor de Estela
+option.SHOOTING_STARS_TRAIL_LENGTH=Longitud de Estela
 option.MILKY_WAY=Vía Láctea
 option.MILKY_WAY_BRIGHTNESS=Brillo de la Vía Láctea
+option.MILKY_WAY_3_7=Estilo Vía Láctea 3.7
+option.MILKY_WAY_3_7.comment=Vía Láctea 3.7 donde la luna ilumina la banda (brillo por visibilidad lunar en vez de profundidad nocturna), con visibilidad y tinte de transición espacial. Desactivado por defecto.
+option.GENERATED_NIGHT_NEBULA=Nebulosa Nocturna Generada
+option.GENERATED_NIGHT_NEBULA.comment=Capa de nubes de ruido 3.7 que se desplaza con el cielo estrellado y se mezcla con la aurora. Requiere el cielo 3.7.
+option.GENERATED_NIGHT_NEBULA_BRIGHTNESS=Brillo de la Nebulosa
 option.END_NEBULA=Nebulosa en el End
+option.END_STARS_3_7=Estrellas del End Estilo 3.7
+option.END_STARS_3_7.comment=Campo estelar del End 3.7: puntos brillantes aleatorios que se agrupan en patrones tipo constelación, mezclados como en 3.7. Reemplaza las estrellas del End 2.3. Desactivado por defecto.
+option.END_STARS_3_7_NOISE=Intensidad del Ruido de las Estrellas
+option.END_STARS_3_7_AMOUNT=Cantidad de Estrellas
+option.END_STARS_3_7_BRIGHTNESS=Brillo de las Estrellas
+option.END_STARS_3_7_SIZE=Tamaño de las Estrellas
+screen.END_BLACK_HOLE_3_7_CONFIG=Config Agujero Negro del End 3.7
+option.END_BLACK_HOLE_3_7=Agujero Negro del End
+option.END_BLACK_HOLE_3_7.comment=Agujero negro 3.7 en el cielo del End: deforma la nebulosa del End alrededor de la dirección del sol con un anillo de fotones y brillo de acreción. Desactivado por defecto.
+option.END_BLACK_HOLE_SIZE_3_7=Tamaño del Agujero Negro
+value.END_BLACK_HOLE_SIZE_3_7.3.0=Muy Pequeño
+value.END_BLACK_HOLE_SIZE_3_7.2.5=Pequeño
+value.END_BLACK_HOLE_SIZE_3_7.2.0=Normal
+value.END_BLACK_HOLE_SIZE_3_7.1.5=Grande
+value.END_BLACK_HOLE_SIZE_3_7.1.0=Muy Grande
+value.END_BLACK_HOLE_SIZE_3_7.0.5=Enorme
+value.END_BLACK_HOLE_SIZE_3_7.0.25=Extremo
+option.END_ANGLE_3_7=Ángulo de Inclinación
+screen.END_VORTEX=Config Agujero Negro del End
+option.END_VORTEX=Agujero Negro del End
+option.END_VORTEX.comment=Activa el Agujero Negro del End
+option.END_VORTEX_LENS=Lente Gravitacional del Vórtice del End
+option.END_VORTEX_LENS_GRAVITY=Distorsión Gravitacional
+option.END_VORTEX_LENS_GRAVITY_RANGE=Alcance de Distorsión Gravitacional
+option.END_VORTEX_LENS.comment=Curva las estrellas cercanas en un vórtice en espiral alrededor del agujero negro del End 2.3 (lente estilo 3.7). Desactivado por defecto.
+screen.END_DISK_3_7_CONFIG=Config Disco Planetario del End
+option.END_DISK_3_7=Nubes del Disco Planetario del End
+option.END_DISK_3_7.comment=Un enorme disco de nubes cósmicas que gira alrededor de la isla central del End (3.7). Reemplaza la niebla nubosa del End 2.3. Desactivado por defecto.
+option.END_DISK_HEIGHT_3_7=Altura del Disco
+option.END_DISK_AMOUNT_3_7=Cantidad del Disco
+option.END_DISK_THICKNESS_3_7=Grosor del Disco
+option.END_DISK_OPACITY_3_7=Opacidad del Disco
+option.END_DISK_FADE_DISTANCE_3_7=Distancia de Desvanecimiento del Disco
 screen.ENH_END_CONFIG=Revolución del End
 option.ENH_END_REVOLUTION=Revolución del End
 option.ENH_END_REVOLUTION.comment=rota el agujero negro del End, las estrellas y la dirección de la luz con el tiempo.
@@ -119,11 +215,47 @@ option.ENH_END_LENS.comment=Curva las estrellas cerca del agujero negro con un v
 option.ENH_END_LENS_STRENGTH=Intensidad del Lente
 option.ENH_END_LENS_STRENGTH.comment=Qué tanto se curvan las estrellas cercanas alrededor del agujero negro.
 option.RAINBOW=Arcoíris
+screen.PLANAR_CLOUDS_3_7_CONFIG=Config Nubes Planas 3.7
+option.PLANAR_CLOUDS_3_7=Nubes Planas Estilo 3.7
+option.PLANAR_CLOUDS_3_7.comment=Reemplaza las nubes planas con el estilo 3.7 (muestrea la textura de ruido 3.7 noise3_7). Requiere visibilidad lunar 3.7. Desactivado por defecto.
+option.PLANAR_CLOUDS_3_7_AMOUNT=Cantidad
+option.PLANAR_CLOUDS_3_7_HEIGHT=Altitud
+option.PLANAR_CLOUDS_3_7_BRIGHTNESS=Luminosidad
+option.PLANAR_CLOUDS_3_7_OPACITY=Opacidad
 option.AURORA=Aurora Borealis
 option.AURORA_COLD_BIOME_VISIBILITY=Visibilidad de Aurora en Biomas Fríos 
 option.AURORA_COLD_BIOME_VISIBILITY.comment=Habilita la aurora solo si el jugador esta en un bioma frío.
 option.AURORA_FULL_MOON_VISIBILITY=Visbilidad de Aurora con Luna Llena
 option.AURORA_FULL_MOON_VISIBILITY.comment=Habilita la Aurora solo si la luna es llena.
+screen.AURORA_CONFIG=Config de Aurora
+option.AURORA_3_7=Estilo Aurora 3.7
+option.AURORA_3_7.comment=Reemplaza la aurora con el sistema volumétrico 3.7 (actividad geomagnética, altitud, influencia de luz). Desactivado por defecto.
+option.SKY_3_7=Estilo Cielo 3.7
+option.SKY_3_7.comment=Reemplaza el cielo con el cielo global 3.7 (factor espacial, tinte por bioma, banda verde). Desactivado por defecto.
+option.SUN_MOON_3_7=Estilo Sol y Luna 3.7
+option.SUN_MOON_3_7.comment=Reemplaza el disco del sol/luna con el estilo 3.7 (transición espacial por altura, destello 3.7 y fases lunares). Desactivado por defecto.
+option.SUNRISE_SUNSET_INTENSITY=Intensidad Amanecer/Atardecer
+option.SUNRISE_SUNSET_INTENSITY.comment=Intensidad de la banda de dispersión del amanecer/atardecer en el cielo 3.7.
+option.AURORA_ALTITUDE=Altitud de la Aurora
+option.AURORA_ALTITUDE.comment=Altitud del volumen de aurora en bloques.
+option.AURORA_LIGHTING_INFLUENCE=Contribución de Luz
+option.AURORA_LIGHTING_INFLUENCE.comment=Permite que las auroras potentes iluminen ligeramente las nubes y el suelo.
+option.AURORA_ALWAYS_VISIBLE=Visibilidad Constante
+option.AURORA_ALWAYS_VISIBLE.comment=Hace que la aurora aparezca cada noche.
+option.AURORA_SOFTEN=Suavizado de Aurora
+option.AURORA_SOFTEN.comment=Suaviza los brillos de la aurora para que no se quemen a blanco y reduce el ruido visible (aspecto 3.7).
+option.AURORA_BLOOM=Resplandor Aurora
+option.AURORA_BLOOM.comment=Depuración: intensidad del resplandor (bloom) de la aurora en el cielo nocturno (0 = ninguno, mayor = más fuerte).
+option.AURORA_EXPOSURE=Exposición Aurora
+option.AURORA_EXPOSURE.comment=Depuración: brillo general de la aurora (multiplicador).
+option.AURORA_CONTRAST=Contraste Aurora
+option.AURORA_CONTRAST.comment=Depuración: contraste de la aurora (curva pow).
+option.AURORA_SCALE=Escala Aurora
+option.AURORA_SCALE.comment=Depuración: escala de las bandas (mayor = bandas más anchas).
+option.AURORA_OFFSET=Desplazamiento Aurora
+option.AURORA_OFFSET.comment=Depuración: desplazamiento del ruido de la aurora.
+option.AURORA_RADIAL=Profundidad Radial
+option.AURORA_RADIAL.comment=Depuración: profundidad de atenuación vertical de las bandas.
 
 
 #WATER
@@ -179,6 +311,16 @@ option.AO_STRENGTH=Intensidad de AO
 option.GLOBAL_ILLUMINATION=Iluminación Global (GI)
 option.GLOBAL_ILLUMINATION_STRENGTH=Intensidad de GI
 option.DYNAMIC_HANDLIGHT=Iluminacón Dinámica en la Mano
+
+
+#PBR
+
+screen.PBR=PBR de Recursos
+
+option.PBR_SCHEME=Esquema PBR
+option.PBR_SCHEME.comment=Selecciona la implementación PBR. Classic es el pipeline 2.3 original. V2.4b es el pipeline 2.4b (manejo de especulares/reflejos diferente). Por defecto Classic.
+value.PBR_SCHEME.0=Clásico (2.3)
+value.PBR_SCHEME.1=V2.4b
 
 
 #IPBR
@@ -584,3 +726,27 @@ option.WAVING_PLANTS=Plantas Ondeantes
 option.WAVING_LEAVES=Hojas Ondeantes
 option.WAVING_SPEED=Velocidad de Onda
 option.WAVING_AMPLITUDE=Amplitud de Onda
+
+#CORRECCIONES
+
+screen.FIXES=Correcciones
+
+option.FIXES=Habilitar Correcciones
+option.FIXES.comment=Estas son correcciones para problemas identificados como errores introducidos involuntariamente por el shader o por actualizaciones desde este lanzamiento. Excepto los errores críticos que debían eliminarse (no listados), las correcciones opcionales restantes están habilitadas por defecto para mejores resultados esperados. Si crees que algunas correcciones de la lista son en realidad características, desactívalas. Las correcciones que algunas versiones principales consideraron por debajo de lo esperado están desactivadas por defecto.
+
+option.LPV_FOG_FIX_GLOBAL=Arreglo Niebla: Global
+option.LPV_FOG_FIX_GLOBAL.comment=Suprime la sobreexposición de la niebla de luz (LPV) en todas partes. Desactivado, solo el interruptor de alta frecuencia limita la sobreexposición donde se acumulan muchas luces. Predeterminado: Apagado.
+option.LPV_FOG_FIX_HIGH_FREQ=Arreglo Niebla: Solo Alta Frecuencia
+option.LPV_FOG_FIX_HIGH_FREQ.comment=Suprime la sobreexposición de la niebla solo donde se acumulan muchas luces, manteniendo las fuentes individuales/pocas con intensidad original. Predeterminado: Activado.
+option.LPV_FOG_HF_THRESHOLD=Umbral de Alta Frecuencia
+option.LPV_FOG_HF_THRESHOLD.comment=Brillo de floodfill por encima del cual una muestra se considera "muchas fuentes de luz". Mayor = menos muestras suprimidas.
+option.LPV_FOG_HF_BANDWIDTH=Ancho de Banda
+option.LPV_FOG_HF_BANDWIDTH.comment=Rango de transición suave alrededor del umbral.
+option.LPV_FOG_HF_SUPPRESS=Supresión de Alta Frecuencia
+option.LPV_FOG_HF_SUPPRESS.comment=Cuánto se reduce la niebla donde se acumulan muchas luces. 0 = eliminada, 1 = original.
+option.LPV_FOG_DARK_VISIBILITY=Visibilidad de Niebla en Espacios Oscuros
+option.LPV_FOG_DARK_VISIBILITY.comment=Cuánto se aumenta la visibilidad de la niebla de luz en espacios oscuros/cerrados. 0 = predeterminado 3.7 (sin aumento); 1 = aumento original (puede sobreexponer).
+option.LPV_FOG_BRIGHT_FADE=Atenuación en Entornos Brillantes
+option.LPV_FOG_BRIGHT_FADE.comment=Qué tanto se desvanece la niebla de luz en entornos brillantes (predeterminado 3.7 = 3.0). Valores mayores suprimen más la niebla.
+option.LPV_FOG_DARK_DENSITY=Densidad de Niebla en Espacios Oscuros
+option.LPV_FOG_DARK_DENSITY.comment=Cuánto se aumenta la densidad de la niebla de luz en espacios oscuros/cerrados. 0 = predeterminado 3.7 (sin aumento); 1 = densidad original 40 (puede sobreexponer).

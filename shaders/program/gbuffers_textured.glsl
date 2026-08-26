@@ -121,7 +121,7 @@ void main() {
 		vec3 worldPos = ToWorld(viewPos);
 		vec2 lightmap = clamp(lmCoord, 0.0, 1.0);
 
-		#ifdef VC
+		#if defined VC || defined END_CLOUDY_FOG || defined END_DISK_3_7
 		float cloudDepth = texture2D(gaux1, screenPos.xy).g * (far * 2.0);
 
 		float viewLength = length(viewPos);
@@ -171,7 +171,7 @@ void main() {
 		#endif
 
 		vec3 shadow = vec3(0.0);
-		gbuffersLighting(albedo, screenPos, viewPos, worldPos, shadow, lightmap, NoU, NoL, NoE, 0.1, 0.0, emission * 2.0, 0.0);
+		gbuffersLighting(albedo, screenPos, viewPos, worldPos, newNormal, shadow, lightmap, NoU, NoL, NoE, 0.1, 0.0, emission * 2.0, 0.0);
 
 		#ifndef END
 		Fog(albedo.rgb, viewPos, worldPos, skyColor);

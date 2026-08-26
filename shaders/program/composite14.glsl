@@ -37,6 +37,11 @@ uniform float shadowFade;
 #endif
 #endif
 
+#if defined BLOOM && defined AURORA_3_7 && defined OVERWORLD && !defined LENS_FLARE_ANY
+uniform vec3 cameraPosition, sunPosition;
+uniform mat4 gbufferModelView;
+#endif
+
 #if defined LENS_FLARE_ANY || defined DOF
 uniform mat4 gbufferProjection;
 uniform sampler2D depthtex1;
@@ -92,6 +97,12 @@ vec3 sunVec = normalize(sunPosition);
 vec3 upVec = normalize(gbufferModelView[1].xyz);
 float caveFactor = mix(clamp((cameraPosition.y - 56.0) / 16.0, float(sign(isEyeInWater)), 1.0), 1.0, sqrt(eBS));
 float sunVisibility = clamp((dot( sunVec, upVec) + 0.15) * 3.0, 0.0, 1.0);
+float moonVisibility = clamp((dot(-sunVec, upVec) + 0.15) * 3.0, 0.0, 1.0);
+#endif
+
+#if defined BLOOM && defined AURORA_3_7 && defined OVERWORLD && !defined LENS_FLARE_ANY
+vec3 sunVec = normalize(sunPosition);
+vec3 upVec = normalize(gbufferModelView[1].xyz);
 float moonVisibility = clamp((dot(-sunVec, upVec) + 0.15) * 3.0, 0.0, 1.0);
 #endif
 

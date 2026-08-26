@@ -21,11 +21,25 @@ void computeLPVFog(inout vec3 fog, in vec3 translucent, in float dither) {
 	vec3 viewPos = ToView(vec3(texCoord.xy, z0));
 
 	//Total LPV Fog Visibility
-    float visibility = int(z0 > 0.56);
+	float visibility = int(z0 > 0.56);
 
 	#ifdef OVERWORLD
 	visibility *= 1.0 - timeBrightness * 0.5;
+	#ifdef LPV_FOG_FIX_GLOBAL
+	#ifndef LPV_FOG_NOISE
+	//Global fix: dark-space visibility boost removed + bright-environment fade
+	visibility = mix(visibility, mix(1.0, visibility, caveFactor), LPV_FOG_DARK_VISIBILITY);
+	float lpvFogIntensity = LPV_FOG_BRIGHT_FADE - eBS * sqrt(timeBrightness) - caveFactor * 2.0 + 2.0 * wetness * eBS;
+	visibility *= clamp(lpvFogIntensity, 0.0, LPV_FOG_BRIGHT_FADE) / LPV_FOG_BRIGHT_FADE;
+	#else
+	//Noise active: skip the global overexposure fix so it cannot weaken the fog further.
 	visibility = mix(1.0, visibility, caveFactor);
+	#endif
+	#else
+	//Vanilla (High-freq only / Off): dark/enclosed spaces keep the visibility boost so
+	//single/few light sources keep the vanilla light-fog strength.
+	visibility = mix(1.0, visibility, caveFactor);
+	#endif
 	#endif
 
 	#if MC_VERSION >= 11900
@@ -37,7 +51,18 @@ void computeLPVFog(inout vec3 fog, in vec3 translucent, in float dither) {
 	float density = 25.0 * (0.6 + eBS * eBS * 0.4);
 	#ifdef OVERWORLD
 		  density = mix(density, 35.0, wetness * eBS);
+		#ifdef LPV_FOG_FIX_GLOBAL
+		#ifndef LPV_FOG_NOISE
+		  //Global fix: dark-space density boost removed
+		  density = mix(density, mix(40.0, density, caveFactor), LPV_FOG_DARK_DENSITY);
+		#else
+		  //Noise active: skip the global overexposure fix so it cannot weaken the fog further.
 		  density = mix(40.0, density, caveFactor);
+		#endif
+		#else
+		  //Vanilla (High-freq only / Off): dark spaces keep the density boost
+		  density = mix(40.0, density, caveFactor);
+		#endif
 	#endif
 	#ifdef NETHER
 		  density = 25.0;
@@ -82,6 +107,34 @@ void computeLPVFog(inout vec3 fog, in vec3 translucent, in float dither) {
                 vec3 voxelLighting = pow(floodfillData, vec3(1.0 / FLOODFILL_RADIUS));
 					 voxelLighting *= 0.5 + 0.5 * length(voxelLighting);
 				vec3 lpvFog = mix(voxelLighting * density * LPV_FOG_STRENGTH, vec3(0.0), floodfillFade);
+				#ifdef OVERWORLD
+				#ifdef LPV_FOG_FIX_HIGH_FREQ
+				#ifndef LPV_FOG_NOISE
+				//High-freq only: suppress overexposure ONLY where many light sources stack up
+				//(floodfill brightness above the threshold); single/few-light samples keep vanilla.
+				float highFreqFactor = smoothstep(LPV_FOG_HF_THRESHOLD, LPV_FOG_HF_THRESHOLD + LPV_FOG_HF_BANDWIDTH, length(floodfillData));
+				lpvFog *= mix(1.0, LPV_FOG_HF_SUPPRESS, highFreqFactor);
+				#endif
+				#endif
+				#endif
+
+				#ifdef LPV_FOG_NOISE
+				//3.7-style cloudy noise on light fog (ported from 3.7 LPV_CLOUDY_FOG): a 3D noise
+				//modulates the fog density. worldPos is camera-relative, add cameraPosition to get
+				//the world position (matching 3.7's rayPos). Variable names carry a 37 suffix so
+				//they cannot collide with NETHER_CLOUDY_FOG's (both may be on at once in the Nether).
+				//Energy-preserving modulation: the 0..1 noise is remapped to swing around 1.0 so
+				//the fog's average intensity is unchanged (a raw multiply would darken the fog
+				//heavily). STRENGTH controls how far the noise swings (0 = no noise, 1 = full).
+				vec3 noisePos37 = (worldPos + cameraPosition) * 3.0;
+				float n3da37 = texture2D(noisetex, noisePos37.xz * 0.0025 + floor(noisePos37.y * 0.25) * 0.25).r;
+				float n3db37 = texture2D(noisetex, noisePos37.xz * 0.0025 + floor(noisePos37.y * 0.25 + 1.0) * 0.25).r;
+
+				float cloudyNoise37 = fmix(n3da37, n3db37, fract(noisePos37.y * 0.25));
+				      cloudyNoise37 = max(cloudyNoise37 * cloudyNoise37 * cloudyNoise37, 0.0);
+				      cloudyNoise37 = 1.0 + (cloudyNoise37 - 0.5) * 2.0 * LPV_FOG_NOISE_STRENGTH;
+				lpvFog *= cloudyNoise37;
+				#endif
 
 				#ifdef NETHER_CLOUDY_FOG
 				vec3 npos = (worldPos + cameraPosition) * VF_NETHER_FREQUENCY + vec3(frameTimeCounter * VF_NETHER_SPEED, 0.0, 0.0);

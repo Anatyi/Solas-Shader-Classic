@@ -11,6 +11,7 @@ in vec2 texCoord;
 uniform float viewHeight, viewWidth;
 
 uniform sampler2D colortex1;
+uniform sampler2D depthtex0;
 #endif
 
 uniform sampler2D colortex0;

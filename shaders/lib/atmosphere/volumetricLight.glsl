@@ -70,8 +70,7 @@ void computeVL(inout vec3 vl, in vec3 translucent, in float dither) {
 
 			if (length(shadowPos.xy * 2.0 - 1.0) < 1.0) {
                 float currentSampleIntensity = (currentDist / maxDist) / sampleCount;
-                      currentSampleIntensity = pow(currentSampleIntensity, 1.0 - min(indoorFactor + timeBrightness, 1.0) * 0.5);
-
+				      currentSampleIntensity = pow(currentSampleIntensity, 1.0 - min(indoorFactor + timeBrightness, 1.0) * 0.5);
 				float shadow0 = texture2DShadow(shadowtex0, shadowPos);
 				float shadow1 = 0.0;
 

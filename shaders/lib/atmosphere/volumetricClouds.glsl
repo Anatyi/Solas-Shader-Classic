@@ -96,7 +96,34 @@ void computeVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, float z1, f
 
 			vec2 wind = vec2(frameTimeCounter * VC_SPEED * 0.0005, sin(frameTimeCounter * VC_SPEED * 0.001) * 0.005) * cloudHeight * 0.005;
 
-			#ifdef AURORA
+			#if defined AURORA && defined AURORA_3_7
+			//3.7 aurora on volumetric clouds (kpIndex, AURORA_BRIGHTNESS*10)
+			float kpIndex = abs(worldDay % 9 - worldDay % 4);
+			      kpIndex = kpIndex - int(kpIndex == 1) + int(kpIndex > 7 && worldDay % 10 == 0);
+			      kpIndex = min(max(kpIndex, 0) + isSnowy * 4, 9);
+			#ifdef AURORA_ALWAYS_VISIBLE
+			      kpIndex = 7;
+			#endif
+			float moonVisibility = clamp((dot(-sunVec, upVec) + 0.1) * 4.0, 0.0, 1.0);
+			float auroraVisibility = pow6(moonVisibility) * (1.0 - wetness) * caveFactor;
+			float pulse = 0.5 + 0.5 * sin(frameTimeCounter * 0.08 + sin(frameTimeCounter * 0.013) * 0.6);
+			      pulse = smoothstep(0.15, 0.85, pulse);
+			float longPulse = sin(frameTimeCounter * 0.025 + sin(frameTimeCounter * 0.004) * 0.8);
+			      longPulse = longPulse * (1.0 - 0.15 * abs(longPulse));
+			kpIndex *= 1.0 + longPulse * 0.25;
+			kpIndex /= 9.0;
+			float redPhase = pow3(kpIndex) * (1.0 - pulse);
+			float westEast = clamp(1.0 - abs(nWorldPos.x * 0.05) + kpIndex * kpIndex, 0.0, 1.0);
+			float north = clamp(10.0 * kpIndex * kpIndex * kpIndex - nWorldPos.z, 0.0, 1.0);
+			float auroraDistanceFactor = clamp(1.0 - length(nWorldPos.xz) * 0.02, 0.0, 1.0);
+			auroraVisibility *= kpIndex * (1.0 + max(longPulse * 0.5, 0.0));
+			auroraVisibility = min(auroraVisibility, 2.0) * AURORA_BRIGHTNESS * 10;
+			auroraVisibility *= auroraDistanceFactor * auroraDistanceFactor * north * westEast;
+			float colorMixer = 0.65 + pow3(kpIndex) * pulse * 0.1;
+			vec3 lowColor = vec3(0.45, 1.55 - redPhase * 0.5, 0.0);
+			vec3 upColor = vec3(0.95 + redPhase * 5.0, 0.10, 0.0);
+			vec3 auroraColor = fmix(lowColor, upColor, colorMixer);
+			#elif defined AURORA
 			float visibilityMultiplier = pow8(1.0 - sunVisibility) * (1.0 - wetness) * caveFactor * AURORA_BRIGHTNESS;
 			float auroraVisibility = 0.0;
 
@@ -176,9 +203,16 @@ void computeVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, float z1, f
                  cloudAmbientColor *= 0.35 + sunVisibility * sunVisibility * (0.2 - wetness * 0.2);
 			vec3 cloudLightColor = mix(lightCol, mix(lightCol, atmosphereColor * 2.0, 0.3 * (sunVisibility + timeBrightness)) * atmosphereColor * 2.0, sunVisibility);
                  cloudLightColor *= (1.25 + scattering) * morningEveningFactor;
+
+			#if defined AURORA && defined AURORA_3_7 && defined AURORA_LIGHTING_INFLUENCE
+			//3.7: aurora tints the cloud lighting in linear space, scaled for the 2.3 exposure
+			cloudLightColor *= 1.0 + auroraColor * auroraVisibility * 2.6;
+			cloudLightColor /= 1.0 + auroraVisibility * 1.3;
+			#endif
+
 			vec3 cloudColor = mix(cloudAmbientColor, cloudLightColor, cloudLighting);
 
-			#ifdef AURORA
+			#if defined AURORA && !defined AURORA_3_7
 			cloudColor = mix(cloudColor, vec3(0.4, 2.5, 0.9) * auroraVisibility, pow2(cloudLighting) * auroraVisibility * 0.125);
 			#endif
 
@@ -281,7 +315,7 @@ void computeEndVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, float z1
 				cloudLighting = mix(cloudLighting, sampleLighting, noise * (1.0 - cloud * cloud));
 				if (rayDistance < shadowDistance * 0.1) noise *= shadow1;
 				cloud = mix(cloud, 1.0, noise);
-				noise *= pow24(smoothstep(386.0, 8.0, rayDistance)); //Fog
+				noise *= pow24(smoothstep(VF_END_FADE_DISTANCE, 8.0, rayDistance)); //Fog
 				cloudAlpha = mix(cloudAlpha, 1.0, noise);
 
 				//gbuffers_water cloud discard check

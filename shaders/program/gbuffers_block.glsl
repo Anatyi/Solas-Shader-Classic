@@ -86,6 +86,9 @@ const vec3[8] endPortalColors = vec3[8](
 #include "/lib/color/netherColor.glsl"
 #include "/lib/vx/blocklightColor.glsl"
 #include "/lib/vx/voxelization.glsl"
+#if PBR_SCHEME == 1
+#include "/lib/pbr/ggx.glsl"
+#endif
 #include "/lib/lighting/shadows.glsl"
 #include "/lib/lighting/gbuffersLighting.glsl"
 
@@ -181,7 +184,7 @@ void main() {
 		#endif
 		emission = length(albedo.rgb) * 8.0;
     } else {
-        gbuffersLighting(albedo, screenPos, viewPos, worldPos, shadow, lightmap, NoU, NoL, NoE, 0.0, 0.0, emission, 0.0);
+        gbuffersLighting(albedo, screenPos, viewPos, worldPos, newNormal, shadow, lightmap, NoU, NoL, NoE, 0.0, 0.0, emission, 0.0);
     }
 
 	/* DRAWBUFFERS:03 */

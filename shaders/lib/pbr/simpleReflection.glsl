@@ -30,6 +30,11 @@ void getReflection(inout vec4 color, in vec3 viewPos, in vec3 normal, in float f
 	#endif
 
 	falloff *= 1.0 - blindFactor;
+	#elif defined END
+	//End: reflect the ender sky color so reflections still get a sky falloff in the End
+	vec3 skyRefPos = reflect(normalize(viewPos), normal);
+	falloff = endLightCol * (0.35 + 0.65 * pow2(clamp(-skyRefPos.y, 0.0, 1.0)));
+	falloff *= falloff;
 	#endif
 
 	#ifdef PBR

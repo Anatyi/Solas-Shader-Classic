@@ -30,7 +30,7 @@ float getNoise(vec2 pos) {
 	return fract(sin(dot(pos, vec2(12.9898, 4.1414))) * 43758.5453);
 }
 
-void drawStars(inout vec3 color, in vec3 worldPos, inout vec3 stars, in float VoU, in float caveFactor, in float nebulaFactor, in float volumetricClouds, float size) {
+void drawStars(inout vec3 color, in vec3 worldPos, inout vec3 stars, in float VoU, in float caveFactor, in float nebulaFactor, in float volumetricClouds, float size, in float blackHoleDim, in float bhLensRing, in float bhLensSize) {
 	#ifdef OVERWORLD
 	float visibility = mix(0.5, 0.5 - timeBrightnessSqrt * 0.5, sunVisibility) * (1.0 - wetness) * (1.0 - volumetricClouds) * pow(VoU, 0.5) * caveFactor;
 	float starQuantity = STAR_AMOUNT;
@@ -43,11 +43,40 @@ void drawStars(inout vec3 color, in vec3 worldPos, inout vec3 stars, in float Vo
 	float starDensity = END_STAR_DENSITY;
 	float starBrightness = END_STAR_BRIGHTNESS;
 	float starSize = END_STAR_SIZE;
+	visibility *= blackHoleDim; //3.7 black hole: caller dims the stars around the hole (sun direction)
 	#endif
 
 	if (visibility > 0.0) {
 		vec2 planeCoord = worldPos.xz / (length(worldPos.y) + length(worldPos.xz));
 			 planeCoord *= size;
+			 #if defined END_BLACK_HOLE_3_7 || defined END_VORTEX_LENS
+			 //3.7 black hole gravitational lensing: Einstein ring push + vortex spiral shear so
+			 //nearby stars swirl inward around the hole (3.7 hole or the 2.3 vortex lens).
+			 planeCoord *= clamp(1.0 - bhLensRing * 4.0, 0.0, 1.0);
+			 planeCoord += bhLensRing;
+			 vec2 bhCenter = vec2(bhLensRing);
+			 vec2 bhRel = planeCoord - bhCenter;
+			 float bhR = length(bhRel);
+			 //Vortex radius follows the black hole size control (3.7 concept: small size value =
+			 //big hole = wider vortex). bhR lives on the star-plane scale (roughly 0..0.3 after
+			 //the *size projection), so map the radius into that range for a visible falloff.
+			 float bhVortexRange = mix(0.08, 0.45, (3.0 - bhLensSize) / 2.75);
+			 #ifdef END_VORTEX_LENS
+			 //Gravitational distortion range: radius uses the absolute value so the falloff always
+			 //decays outward; the sign flips the rotation direction (kept separate from strength).
+			 float bhGravityRange = END_VORTEX_LENS_GRAVITY_RANGE;
+			 bhVortexRange *= abs(bhGravityRange);
+			 #endif
+			 float bhShear = bhLensRing * 6.0 * pow2(clamp(1.0 - bhR / bhVortexRange, 0.0, 1.0));
+			 #ifdef END_VORTEX_LENS
+			 //2.3 gravitational distortion strength: scales the shear directly; negative values
+			 //reverse the vortex rotation direction.
+			 bhShear *= END_VORTEX_LENS_GRAVITY * sign(bhGravityRange);
+			 #endif
+			 float bhCos = cos(bhShear);
+			 float bhSin = sin(bhShear);
+			 planeCoord = bhCenter + mat2(bhCos, bhSin, -bhSin, bhCos) * bhRel;
+			 #endif
 			 planeCoord += cameraPosition.xz * 0.00001;
 			 planeCoord += frameTimeCounter * 0.001;
 			 planeCoord = floor(planeCoord * 1024.0 * starQuantity) / (1024.0 * starQuantity);
@@ -77,7 +106,80 @@ void drawStars(inout vec3 color, in vec3 worldPos, inout vec3 stars, in float Vo
 #endif
 
 #ifdef MILKY_WAY
-void drawMilkyWay(inout vec3 color, in vec3 worldPos, in float VoU, in float caveFactor, inout float nebulaFactor, in float volumetricClouds) {
+//Generated night nebula (3.7 noise cloud layer that drifts with the starfield and blends with the
+//aurora). Independent of SKY_3_7 so it can be toggled on its own.
+#ifdef GENERATED_NIGHT_NEBULA
+void drawGeneratedNightNebula(inout vec3 color, in vec3 worldPos, in float caveFactor, in float auroraOcclusion) {
+	vec3 nWorldPos = normalize(worldPos);
+	float VoM = clamp(dot(normalize(worldPos), -sunVec), 0.0, 1.0);
+	float VoMClamped = clamp(VoM, 0.0, 1.0);
+	float spaceFactor = min(max(cameraPosition.y, 0.0) / KARMAN_LINE, 1.0);
+	//3.7 moon visibility saturates at the horizon (moon up = 1.0): moonlight lights up the nebula
+	//with a pale blue glow, matching the 3.7 look even when the nebula runs on its own.
+	float nebulaMoonVis = clamp(dot(-sunVec, upVec) + 0.0625, 0.0, 0.125) / 0.125;
+	vec2 nebulaPlaneCoord = worldPos.xz / (length(worldPos.y) + length(vec3(worldPos.x, worldPos.y, worldPos.z)));
+	        nebulaPlaneCoord += frameTimeCounter * 0.001;
+	        nebulaPlaneCoord += cameraPosition.xz * 0.00001;
+	float nebulaHeightFactor = max(1.0 - sqrt(nWorldPos.y), 0.0);
+	//3.7 generated night nebula samples the independent 3.7 noise (noise3_7)
+	float baseOctave = texture2D(noise3_7, nebulaPlaneCoord * 0.125).g;
+	        baseOctave = max(baseOctave - 0.2, 0.0);
+	float midOctave = texture2D(noise3_7, nebulaPlaneCoord * 0.25).r;
+	        midOctave = max(midOctave - 0.175, nebulaHeightFactor * 0.25);
+	float detailOctave = texture2D(noise3_7, nebulaPlaneCoord).r;
+	        detailOctave = max(detailOctave - 0.075, nebulaHeightFactor * 0.25);
+	float nebulaNoise = (0.25 + 0.75 * baseOctave) * midOctave * (0.25 + 0.75 * detailOctave) * 6.0;
+	vec3 nebulaColor = vec3(0.3, 0.5 + midOctave * midOctave * midOctave * 3.0, 1.0);
+	        nebulaNoise = max(nebulaNoise * nWorldPos.y * pow(1.0 - nWorldPos.y, 1.5 - VoMClamped * 0.5), 0.0);
+	float nebulaVis = (0.5 + VoMClamped * 0.5) * (1.0 - nebulaHeightFactor) * (nebulaNoise + pow3(nebulaNoise) * 9.0) * nebulaMoonVis * (1.0 - wetness) * (1.0 - pow(spaceFactor, 0.25)) * caveFactor;
+	vec3 nebula = nebulaColor * nebulaVis;
+	color.rgb += GENERATED_NIGHT_NEBULA_BRIGHTNESS * nebula * (1.0 - auroraOcclusion);
+}
+#endif
+
+void drawMilkyWay(inout vec3 color, in vec3 worldPos, in float VoU, in float caveFactor, inout float nebulaFactor, in float volumetricClouds, in float auroraOcclusion) {
+	#ifdef GENERATED_NIGHT_NEBULA
+	drawGeneratedNightNebula(color, worldPos, caveFactor, auroraOcclusion);
+	#endif
+
+	#if defined SKY_3_7 || defined MILKY_WAY_3_7
+	//3.7 full milky way: different plane mapping, space-factor visibility and deep-space tint.
+	//The moon lights up the milky way (pow4 of moon visibility), so it is brightest under a full moon.
+	//The 3.7 moon visibility saturates right at the horizon (moon up = 1.0) so the band stays evenly
+	//bright across the sky (including the zenith), which keeps the moon/milky-way interaction visible.
+	//This keeps the milky way continuous with the 3.7 sky (no visible seam at the horizon).
+	float spaceFactor = min(max(cameraPosition.y, 0.0) / KARMAN_LINE, 1.0);
+	float VoUFactor = mix(sqrt(max(VoU, 0.0)), VoU * 0.5 + 0.5, spaceFactor);
+	float nebulaMoonVis = clamp(dot(-sunVec, upVec) + 0.0625, 0.0, 0.125) / 0.125;
+	//rainStrength is not available in the water reflection programs, use wetness there
+	#ifdef GBUFFERS_WATER
+	float milkyRain = wetness;
+	#else
+	float milkyRain = rainStrength;
+	#endif
+	float visibility = mix(pow4(nebulaMoonVis) * (1.0 - milkyRain), 1.0, spaceFactor) * VoUFactor * MILKY_WAY_BRIGHTNESS * caveFactor;
+
+	if (visibility > 0.1) {
+		vec2 planeCoord = worldPos.zx / (length(worldPos.y) + length(worldPos.zyx));
+		        planeCoord += frameTimeCounter * 0.0001;
+		        planeCoord *= 0.75;
+		        planeCoord.x *= 2.0;
+		        planeCoord.x -= 0.2;
+		        planeCoord.y -= 0.7;
+
+		#ifdef DEFERRED
+		vec4 milkyWay = texture2D(depthtex2, planeCoord * 0.5 + 0.6);
+		#else
+		vec4 milkyWay = texture2D(gaux4, planeCoord * 0.5 + 0.6);
+		#endif
+		milkyWay.rgb = fmix(lightNight * 1.75, vec3(0.25), 0.5 + spaceFactor * 0.25) * milkyWay.rgb * pow(milkyWay.a, 6.0 - spaceFactor * 3.0) * length(milkyWay.rgb) * visibility;
+		nebulaFactor = length(milkyWay.rgb) * (5.0 - spaceFactor * 3.0);
+	#ifdef GBUFFERS_WATER
+		milkyWay.rgb *= 3.0; //brightness compensation for water reflections
+	#endif
+		color += milkyWay.rgb * (1.0 - auroraOcclusion);
+	}
+	#else
 	float visibility = (1.0 - timeBrightnessSqrt) * (1.0 - wetness) * (1.0 - volumetricClouds) * sqrt(max(VoU, 0.0)) * MILKY_WAY_BRIGHTNESS * caveFactor;
 
 	if (visibility > 0.0) {
@@ -87,9 +189,10 @@ void drawMilkyWay(inout vec3 color, in vec3 worldPos, in float VoU, in float cav
 			 planeCoord.x *= 1.9;
 		
 		vec4 milkyWay = texture2D(depthtex2, planeCoord * 0.5 + 0.6);
-		color += mix(lightNight, vec3(1.0), 0.25) * milkyWay.rgb * pow6(milkyWay.a) * length(milkyWay.rgb) * visibility;
+		color += mix(lightNight, vec3(1.0), 0.25) * milkyWay.rgb * pow6(milkyWay.a) * length(milkyWay.rgb) * visibility * (1.0 - auroraOcclusion);
 		nebulaFactor = length(milkyWay.rgb);
 	}
+	#endif
 }
 #endif
 
@@ -349,7 +452,35 @@ void drawPlanarClouds(inout vec3 color, in vec3 atmosphereColor, in vec3 worldPo
     float lightingNoise = samplePlanarCloudNoise(coord + normalize(ToWorld(lightVec * 10000.0)).xy * 0.1);
 
     //Lighting and coloring
-	#ifdef AURORA
+	#if defined AURORA && defined AURORA_3_7
+	//3.7 aurora on planar clouds (kpIndex geomagnetic activity)
+	float kpIndex = abs(worldDay % 9 - worldDay % 4);
+	      kpIndex = kpIndex - int(kpIndex == 1) + int(kpIndex > 7 && worldDay % 10 == 0);
+	      kpIndex = min(max(kpIndex, 0) + isSnowy * 3, 9);
+	#ifdef AURORA_ALWAYS_VISIBLE
+	      kpIndex = 7;
+	#endif
+	float moonVisibility = clamp((dot(-sunVec, upVec) + 0.1) * 4.0, 0.0, 1.0);
+	float auroraVisibility = pow6(moonVisibility) * (1.0 - wetness) * caveFactor;
+	float pulse = 0.5 + 0.5 * sin(frameTimeCounter * 0.08 + sin(frameTimeCounter * 0.013) * 0.6);
+	      pulse = smoothstep(0.15, 0.85, pulse);
+	float longPulse = sin(frameTimeCounter * 0.025 + sin(frameTimeCounter * 0.004) * 0.8);
+	      longPulse = longPulse * (1.0 - 0.15 * abs(longPulse));
+	kpIndex *= 1.0 + longPulse * 0.25;
+	kpIndex /= 9.0;
+	float redPhase = pow3(kpIndex) * (1.0 - pulse);
+	vec3 nWorldPos = normalize(worldPos);
+	float westEast = clamp(1.0 - abs(nWorldPos.x * 0.05) + kpIndex * kpIndex, 0.0, 1.0);
+	float north = clamp(10.0 * kpIndex * kpIndex * kpIndex - nWorldPos.z, 0.0, 1.0);
+	float auroraDistanceFactor = clamp(1.0 - length(nWorldPos.xz) * 0.02, 0.0, 1.0);
+	auroraVisibility *= kpIndex * (1.0 + max(longPulse * 0.5, 0.0));
+	auroraVisibility = min(auroraVisibility, 2.0) * AURORA_BRIGHTNESS;
+	auroraVisibility *= auroraDistanceFactor * auroraDistanceFactor * north * westEast;
+	float colorMixer = 0.65 + pow3(kpIndex) * pulse * 0.1;
+	vec3 lowColor = vec3(0.45, 1.55 - redPhase * 0.5, 0.0);
+	vec3 upColor = vec3(0.95 + redPhase * 5.0, 0.10, 0.0);
+	vec3 auroraColor = fmix(lowColor, upColor, colorMixer);
+	#elif defined AURORA
 	float visibilityMultiplier = pow8(1.0 - sunVisibility) * (1.0 - wetness) * caveFactor * AURORA_BRIGHTNESS;
 	float auroraVisibility = 0.0;
 
@@ -379,9 +510,15 @@ void drawPlanarClouds(inout vec3 color, in vec3 atmosphereColor, in vec3 worldPo
 	vec3 cloudLightColor = mix(lightCol, mix(lightCol, atmosphereColor, 0.5 * sunVisibility) * atmosphereColor * 2.0, sunVisibility * (1.0 - timeBrightness * 0.33));
          cloudLightColor *= morningEveningFactor * (2.0 + pow8(VoL) * 4.0);
 
+	#if defined AURORA && defined AURORA_3_7 && defined AURORA_LIGHTING_INFLUENCE
+	//3.7: aurora tints the cloud lighting in linear space, scaled for the 2.3 exposure
+	cloudLightColor *= 1.0 + auroraColor * auroraVisibility * 2.6;
+	cloudLightColor /= 1.0 + auroraVisibility * 1.3;
+	#endif
+
     vec3 cloudColor = mix(cloudLightColor, cloudAmbientColor, cloudLighting);
          cloudColor = pow(cloudColor, vec3(1.0 / 2.2));
-		 #ifdef AURORA
+		 #if defined AURORA && !defined AURORA_3_7
 		 cloudColor = mix(cloudColor, vec3(0.4, 2.5, 0.9) * auroraVisibility, auroraVisibility * 0.05);
 		 #endif
 

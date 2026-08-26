@@ -1,3 +1,7 @@
+#ifdef BLOCKY_CLOUDS_WORLD_TIME
+uniform int worldTime; //built-in world clock in ticks (Iris: int, 0-24000)
+#endif
+
 float getCloudNoise(vec2 pos, float amount) {
 	const float roundness = 0.2;
 	pos = pos * 0.05 + 0.5;
@@ -34,11 +38,14 @@ float getCloudNoise(vec2 pos, float amount) {
 	return shape;
 }
 
+#ifndef TEXTURE2D_SHADOW_DEFINED
+#define TEXTURE2D_SHADOW_DEFINED
 float texture2DShadow(sampler2D shadowtex, vec3 shadowPos) {
     float shadow = texture2D(shadowtex, shadowPos.xy).r;
 
     return clamp((shadow - shadowPos.z) * 65536.0, 0.0, 1.0);
 }
+#endif
 
 //Renders one blocky cloud layer with ray marching. Layers are called in ray-depth order
 //(nearer first) so cloud layers cull each other correctly without affecting depth to ground/water.
@@ -48,7 +55,7 @@ void renderCloudLayer(inout vec4 vc, inout float cloudDepth,
     in vec3 cloudLightCol, in vec3 cloudAmbientCol, in float auroraVisibility,
     in float cloudHeight, in float cloudXZStretch, in float cloudThickness,
     in float cloudAmount, in float cloudBrightness, in float cloudOpacity,
-    in vec2 cloudFlow, in vec2 cloudNoiseOffset) {
+    in vec2 cloudFlow, in vec2 cloudNoiseOffset, inout float cloudAuroraMask) {
 
 	float stretching = 8.0 * cloudThickness;
 	float lowerPlane = (cloudHeight + stretching - cameraPosition.y) / nWorldPos.y;
@@ -107,7 +114,7 @@ void renderCloudLayer(inout vec4 vc, inout float cloudDepth,
 			float cloudLighting = clamp(smoothstep(cloudHeight + stretching * noise, cloudHeight - stretching * noise, rayPos.y), 0.0, 1.0);
 
 			vec4 cloudColor = vec4(mix(mix(cloudAmbientCol, cloudLightCol, shadowSample), cloudAmbientCol, cloudLighting), cloudAlpha);
-				 #ifdef AURORA
+				 #if defined AURORA && !defined AURORA_3_7
 				 cloudColor.rgb = mix(cloudColor.rgb, vec3(0.4, 2.5, 0.9) * auroraVisibility, 0.02 - cloudLighting * auroraVisibility * 0.02);
 				 #endif
 				 //Opacity affects both the cloud color (incl. its shadow/light volume) and its alpha
@@ -121,13 +128,17 @@ void renderCloudLayer(inout vec4 vc, inout float cloudDepth,
 			#else
 			vc += cloudColor * (1.0 - vc.a) * cloudFog;
 			#endif
+			//Aurora-occlusion mask WITHOUT the cloudFog distance fade, so far clouds still cull
+			//the aurora behind them (vc.a alone fades with distance and lets far aurora through).
+			cloudAuroraMask += cloudColor.a * (1.0 - cloudAuroraMask);
 		}
 	}
 }
 
-void computeVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, in float z1, in float dither, inout float cloudDepth) {
+void computeVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, in float z1, in float dither, inout float cloudDepth, out float cloudAuroraMask) {
 	//Total visibility of clouds
 	float visibility = caveFactor * int(z1 > 0.56);
+	cloudAuroraMask = 0.0;
 
 	#if MC_VERSION >= 11900
 	visibility *= 1.0 - darknessFactor;
@@ -148,7 +159,34 @@ void computeVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, in float z1
 
 		float auroraVisibility = 0.0;
 
-		#ifdef AURORA
+		#if defined AURORA && defined AURORA_3_7
+		//3.7 aurora on blocky clouds (kpIndex)
+		float kpIndex = abs(worldDay % 9 - worldDay % 4);
+		      kpIndex = kpIndex - int(kpIndex == 1) + int(kpIndex > 7 && worldDay % 10 == 0);
+		      kpIndex = min(max(kpIndex, 0) + isSnowy * 4, 9);
+		#ifdef AURORA_ALWAYS_VISIBLE
+		      kpIndex = 7;
+		#endif
+		float moonVisibility = clamp((dot(-sunVec, upVec) + 0.1) * 4.0, 0.0, 1.0);
+		auroraVisibility = pow6(moonVisibility) * (1.0 - wetness) * caveFactor;
+		float pulse = 0.5 + 0.5 * sin(frameTimeCounter * 0.08 + sin(frameTimeCounter * 0.013) * 0.6);
+		      pulse = smoothstep(0.15, 0.85, pulse);
+		float longPulse = sin(frameTimeCounter * 0.025 + sin(frameTimeCounter * 0.004) * 0.8);
+		      longPulse = longPulse * (1.0 - 0.15 * abs(longPulse));
+		kpIndex *= 1.0 + longPulse * 0.25;
+		kpIndex /= 9.0;
+		float redPhase = pow3(kpIndex) * (1.0 - pulse);
+		float westEast = clamp(1.0 - abs(nWorldPos.x * 0.05) + kpIndex * kpIndex, 0.0, 1.0);
+		float north = clamp(10.0 * kpIndex * kpIndex * kpIndex - nWorldPos.z, 0.0, 1.0);
+		float auroraDistanceFactor = clamp(1.0 - length(nWorldPos.xz) * 0.02, 0.0, 1.0);
+		auroraVisibility *= kpIndex * (1.0 + max(longPulse * 0.5, 0.0));
+		auroraVisibility = min(auroraVisibility, 2.0) * AURORA_BRIGHTNESS * 10;
+		auroraVisibility *= auroraDistanceFactor * auroraDistanceFactor * north * westEast;
+		float colorMixer = 0.65 + pow3(kpIndex) * pulse * 0.1;
+		vec3 lowColor = vec3(0.45, 1.55 - redPhase * 0.5, 0.0);
+		vec3 upColor = vec3(0.95 + redPhase * 5.0, 0.10, 0.0);
+		vec3 auroraColor = fmix(lowColor, upColor, colorMixer);
+		#elif defined AURORA
 		float visibilityMultiplier = pow8(1.0 - sunVisibility) * (1.0 - wetness) * caveFactor * AURORA_BRIGHTNESS;
 
 		#ifdef AURORA_FULL_MOON_VISIBILITY
@@ -169,6 +207,11 @@ void computeVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, in float z1
 		//Blend colors with the sky
 		float atmosphereMixer = 0.5 * sunVisibility * sunVisibility;
 		vec3 cloudLightCol = mix(lightCol, atmosphereColor, atmosphereMixer) * (1.0 + pow8(VoL));
+		#if defined AURORA && defined AURORA_3_7 && defined AURORA_LIGHTING_INFLUENCE
+		//3.7: aurora tints the blocky cloud lighting in linear space, scaled for the 2.3 exposure
+		cloudLightCol *= 1.0 + auroraColor * auroraVisibility * 2.6;
+		cloudLightCol /= 1.0 + auroraVisibility * 1.3;
+		#endif
 		vec3 cloudAmbientCol = mix(ambientCol, atmosphereColor * 0.5, atmosphereMixer);
 
 		//Cloud layers are rendered in ray-depth order (nearer first) so the nearer layer
@@ -180,7 +223,11 @@ void computeVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, in float z1
 			float cloudAmount1 = BLOCKY_CLOUDS1_AMOUNT;
 			float cloudBrightness1 = BLOCKY_CLOUDS1_BRIGHTNESS;
 			float cloudOpacity1 = BLOCKY_CLOUDS1_OPACITY;
-			vec2 cloudFlow1 = vec2(BLOCKY_CLOUDS1_FLOW, BLOCKY_CLOUDS1_FLOW * 0.2) * frameTimeCounter;
+			float cloudFlowTime1 = frameTimeCounter;
+			#ifdef BLOCKY_CLOUDS_WORLD_TIME
+			cloudFlowTime1 = mod(worldTime, 24000.0) / 20.0; //world clock (1 day = 24000 ticks), mod for Iris absolute-tick safety
+			#endif
+			vec2 cloudFlow1 = vec2(BLOCKY_CLOUDS1_FLOW, BLOCKY_CLOUDS1_FLOW * 0.2) * cloudFlowTime1;
 
 			float stretch1 = 8.0 * cloudThickness1;
 			float minDist1 = max(min((cloudHeight1 + stretch1 - cameraPosition.y) / nWorldPos.y, (cloudHeight1 - stretch1 - cameraPosition.y) / nWorldPos.y), 0.0);
@@ -192,7 +239,11 @@ void computeVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, in float z1
 			float cloudAmount2 = BLOCKY_CLOUDS2_AMOUNT;
 			float cloudBrightness2 = BLOCKY_CLOUDS2_BRIGHTNESS;
 			float cloudOpacity2 = BLOCKY_CLOUDS2_OPACITY;
-			vec2 cloudFlow2 = vec2(BLOCKY_CLOUDS2_FLOW, BLOCKY_CLOUDS2_FLOW * 0.2) * frameTimeCounter;
+			float cloudFlowTime2 = frameTimeCounter;
+			#ifdef BLOCKY_CLOUDS_WORLD_TIME
+			cloudFlowTime2 = mod(worldTime, 24000.0) / 20.0; //world clock (1 day = 24000 ticks), mod for Iris absolute-tick safety
+			#endif
+			vec2 cloudFlow2 = vec2(BLOCKY_CLOUDS2_FLOW, BLOCKY_CLOUDS2_FLOW * 0.2) * cloudFlowTime2;
 			vec2 cloudNoiseOffset2 = vec2(BLOCKY_CLOUDS2_OFFSET) * 20.0;
 
 			float stretch2 = 8.0 * cloudThickness2;
@@ -200,22 +251,23 @@ void computeVolumetricClouds(inout vec4 vc, in vec3 atmosphereColor, in float z1
 
 			#if BLOCKY_CLOUDS_CULLING == 0
 			//No culling: fixed Layer1 -> Layer2 order (layers are independent)
-			renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight1, cloudXZStretch1, cloudThickness1, cloudAmount1, cloudBrightness1, cloudOpacity1, cloudFlow1, vec2(0.0));
-			renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight2, cloudXZStretch2, cloudThickness2, cloudAmount2, cloudBrightness2, cloudOpacity2, cloudFlow2, cloudNoiseOffset2);
+			renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight1, cloudXZStretch1, cloudThickness1, cloudAmount1, cloudBrightness1, cloudOpacity1, cloudFlow1, vec2(0.0), cloudAuroraMask);
+			renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight2, cloudXZStretch2, cloudThickness2, cloudAmount2, cloudBrightness2, cloudOpacity2, cloudFlow2, cloudNoiseOffset2, cloudAuroraMask);
 			#else
 			//Nearer layer renders first so it occludes the farther one
 			if (minDist2 < minDist1) {
-				renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight2, cloudXZStretch2, cloudThickness2, cloudAmount2, cloudBrightness2, cloudOpacity2, cloudFlow2, cloudNoiseOffset2);
-				renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight1, cloudXZStretch1, cloudThickness1, cloudAmount1, cloudBrightness1, cloudOpacity1, cloudFlow1, vec2(0.0));
+				renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight2, cloudXZStretch2, cloudThickness2, cloudAmount2, cloudBrightness2, cloudOpacity2, cloudFlow2, cloudNoiseOffset2, cloudAuroraMask);
+				renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight1, cloudXZStretch1, cloudThickness1, cloudAmount1, cloudBrightness1, cloudOpacity1, cloudFlow1, vec2(0.0), cloudAuroraMask);
 			} else {
-				renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight1, cloudXZStretch1, cloudThickness1, cloudAmount1, cloudBrightness1, cloudOpacity1, cloudFlow1, vec2(0.0));
-				renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight2, cloudXZStretch2, cloudThickness2, cloudAmount2, cloudBrightness2, cloudOpacity2, cloudFlow2, cloudNoiseOffset2);
+				renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight1, cloudXZStretch1, cloudThickness1, cloudAmount1, cloudBrightness1, cloudOpacity1, cloudFlow1, vec2(0.0), cloudAuroraMask);
+				renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight2, cloudXZStretch2, cloudThickness2, cloudAmount2, cloudBrightness2, cloudOpacity2, cloudFlow2, cloudNoiseOffset2, cloudAuroraMask);
 			}
 			#endif
 			#else
-			renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight1, cloudXZStretch1, cloudThickness1, cloudAmount1, cloudBrightness1, cloudOpacity1, cloudFlow1, vec2(0.0));
+			renderCloudLayer(vc, cloudDepth, nWorldPos, lViewPos, lViewPosFar, dither, distanceFactor, cloudLightCol, cloudAmbientCol, auroraVisibility, cloudHeight1, cloudXZStretch1, cloudThickness1, cloudAmount1, cloudBrightness1, cloudOpacity1, cloudFlow1, vec2(0.0), cloudAuroraMask);
 			#endif
 		}
 	}
 	vc *= visibility;
+	cloudAuroraMask *= visibility;
 }

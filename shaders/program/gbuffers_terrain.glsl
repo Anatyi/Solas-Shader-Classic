@@ -44,6 +44,9 @@ uniform float nightVision;
 uniform float timeBrightness, timeAngle;
 uniform float shadowFade;
 uniform float wetness;
+#if PBR_SCHEME == 1
+uniform float rainStrength;
+#endif
 #endif
 
 uniform ivec2 eyeBrightnessSmooth;
@@ -90,7 +93,7 @@ vec3 lightVec = sunVec * ((timeAngle < 0.5325 || timeAngle > 0.9675) ? 1.0 : -1.
 vec3 lightVec = sunVec;
 #endif
 
-#ifdef PBR
+#if defined PBR || (defined RAIN_PUDDLES && PBR_SCHEME == 1)
 vec2 dcdx = dFdx(texCoord);
 vec2 dcdy = dFdy(texCoord);
 #endif
@@ -120,19 +123,39 @@ vec2 dcdy = dFdy(texCoord);
 #endif
 
 #ifdef PBR
+#if PBR_SCHEME == 1
+#include "/lib/pbr_24/parallax.glsl"
+#else
 #if defined PARALLAX || defined SELF_SHADOW
 #include "/lib/pbr/parallax.glsl"
 #endif
+#endif
 
+#if PBR_SCHEME == 1
+#include "/lib/pbr_24/materialGbuffers.glsl"
+#else
 #include "/lib/pbr/materialGbuffers.glsl"
+#endif
+#endif
+
+#if defined RAIN_PUDDLES && PBR_SCHEME == 1
+#include "/lib/pbr_24/rainPuddles.glsl"
 #endif
 
 #if defined GENERATED_EMISSION || defined GENERATED_SPECULAR
+#if PBR_SCHEME == 1
+#include "/lib/pbr_24/generatedPBR.glsl"
+#else
 #include "/lib/pbr/generatedPBR.glsl"
+#endif
 #endif
 
 #ifdef GENERATED_NORMALS
+#if PBR_SCHEME == 1
+#include "/lib/pbr_24/generatedNormals.glsl"
+#else
 #include "/lib/pbr/generatedNormals.glsl"
+#endif
 #endif
 
 //Program//
@@ -149,9 +172,15 @@ void main() {
 	float subsurface = foliage + leaves * 0.5 + foliage2 * 0.3;
     float smoothness = 0.0, metalness = 0.0;
 	float emission = 0.0;
+#if PBR_SCHEME == 1
+	float porosity = 0.5;
+	vec2 newCoord = vTexCoord.st * vTexCoordAM.pq + vTexCoordAM.st;
+#endif
 
 	#ifdef PBR
+	#if PBR_SCHEME == 0
 	vec2 newCoord = vTexCoord.st * vTexCoordAM.pq + vTexCoordAM.st;
+	#endif
 	float surfaceDepth = 1.0;
 	float parallaxFade = clamp((dist - PARALLAX_DISTANCE) / 32.0, 0.0, 1.0);
 	
@@ -171,7 +200,10 @@ void main() {
 	vec2 lightmap = clamp(lmCoord, 0.0, 1.0);
 
 	#ifdef PBR
-	float f0 = 0.0, porosity = 0.5, ao = 1.0;
+	float f0 = 0.0, ao = 1.0;
+#if PBR_SCHEME == 0
+	float porosity = 0.5;
+#endif
 
 	mat3 tbnMatrix = mat3(tangent.x, binormal.x, normal.x,
 						tangent.y, binormal.y, normal.y,
@@ -196,6 +228,27 @@ void main() {
 
 	#if defined GENERATED_EMISSION || defined GENERATED_SPECULAR
 	generateIPBR(albedo, worldPos, viewPos, lightmap, emission, smoothness, metalness, subsurface);
+	#endif
+
+	#if defined RAIN_PUDDLES && PBR_SCHEME == 1
+	if (emission < 0.01 && foliage < 0.1) {
+		float puddlesNoU = dot(newNormal, upVec);
+
+		float puddles = GetPuddles(worldPos, newCoord, lmCoord.y, puddlesNoU, wetness);
+
+		ApplyPuddleToMaterial(puddles, albedo, smoothness, metalness, porosity);
+
+		if (puddles > 0.001 && rainStrength > 0.001) {
+			mat3 tbnMatrix = mat3(tangent.x, binormal.x, normal.x,
+								  tangent.y, binormal.y, normal.y,
+								  tangent.z, binormal.z, normal.z);
+
+			vec3 puddleNormal = GetPuddleNormal(worldPos, viewPos, tbnMatrix);
+			newNormal = normalize(
+				mix(newNormal, puddleNormal, puddles * sqrt(1.0 - porosity) * rainStrength)
+			);
+		}
+	}
 	#endif
 
 	float parallaxShadow = 1.0;
@@ -225,11 +278,15 @@ void main() {
 	#endif
 
 	vec3 shadow = vec3(0.0);
-	gbuffersLighting(albedo, screenPos, viewPos, worldPos, shadow, lightmap, NoU, NoL, NoE, subsurface, smoothness, emission, parallaxShadow);
+	gbuffersLighting(albedo, screenPos, viewPos, worldPos, newNormal, shadow, lightmap, NoU, NoL, NoE, subsurface, smoothness, emission, parallaxShadow);
 
 	/* DRAWBUFFERS:03 */
 	gl_FragData[0] = albedo;
+#if PBR_SCHEME == 1
+	gl_FragData[1] = vec4(encodeNormal(newNormal), emission * 0.1, clamp(smoothness, 0.0, 0.95));
+#else
 	gl_FragData[1] = vec4(encodeNormal(newNormal), emission * 0.1, clamp(smoothness * metalness, 0.0, 0.95));
+#endif
 }
 
 #endif

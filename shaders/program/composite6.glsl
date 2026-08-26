@@ -79,8 +79,13 @@ float sunVisibility = clamp(dot(sunVec, upVec) + 0.1, 0.0, 0.25) * 4.0;
 #include "/lib/atmosphere/sky.glsl"
 #endif
 
+#if PBR_SCHEME == 1
+#include "/lib/pbr_24/raytracer.glsl"
+#include "/lib/pbr_24/simpleReflection.glsl"
+#else
 #include "/lib/pbr/raytracer.glsl"
 #include "/lib/pbr/simpleReflection.glsl"
+#endif
 #endif
 
 void main() {

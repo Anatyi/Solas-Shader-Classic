@@ -4,14 +4,22 @@ uniform vec3 relativeEyePosition;
 #include "/lib/lighting/handlight.glsl"
 #endif
 
-void gbuffersLighting(inout vec4 albedo, in vec3 screenPos, in vec3 viewPos, in vec3 worldPos, inout vec3 shadow, in vec2 lightmap, 
+#ifdef AURORA_3_7
+uniform int worldDay;
+#endif
+
+void gbuffersLighting(inout vec4 albedo, in vec3 screenPos, in vec3 viewPos, in vec3 worldPos, in vec3 specNormal, inout vec3 shadow, in vec2 lightmap, 
                       in float NoU, in float NoL, in float NoE,
                       in float subsurface, in float smoothness, in float emission, in float parallaxShadow) {
     //Variables
     float originalNoL = NoL;
     float lViewPos = length(viewPos.xz);
     float ao = color.a * color.a;
+#if PBR_SCHEME == 1
+    vec3 worldNormal = normalize(ToWorld(specNormal * 100000000.0));
+#else
     vec3 worldNormal = normalize(ToWorld(normal * 100000000.0));
+#endif
 
     //Vanilla Directional Lighting
     float vanillaDiffuse = (0.25 * NoU + 0.75) + (0.667 - abs(NoE)) * (1.0 - abs(NoU)) * 0.15;
@@ -156,6 +164,22 @@ void gbuffersLighting(inout vec4 albedo, in vec3 screenPos, in vec3 viewPos, in 
     //Specular Highlight
     vec3 specularHighlight = vec3(0.0);
 
+#if PBR_SCHEME == 1
+    #if (defined GBUFFERS_TERRAIN || defined GBUFFERS_ENTITIES || defined GBUFFERS_BLOCK) && !defined NETHER
+	vec3 baseReflectance = vec3(0.1);
+
+    float smoothnessF = 0.1 + length(albedo.rgb) * 0.3 + originalNoL * 0.2;
+          smoothnessF = mix(smoothnessF, 0.95, smoothness);
+
+    #ifdef OVERWORLD
+	specularHighlight = getSpecularHighlight(specNormal, viewPos, smoothnessF, baseReflectance, lightCol, shadow * vanillaDiffuse, color.a);
+    #else
+    specularHighlight = getSpecularHighlight(specNormal, viewPos, smoothnessF, baseReflectance, endLightCol, shadow * vanillaDiffuse, color.a);
+    #endif
+
+    specularHighlight = clamp(specularHighlight, vec3(0.0), vec3(3.0));
+    #endif
+#else
     #if defined GBUFFERS_TERRAIN && !defined NETHER
 	vec3 baseReflectance = vec3(0.1);
 
@@ -176,6 +200,7 @@ void gbuffersLighting(inout vec4 albedo, in vec3 screenPos, in vec3 viewPos, in 
 
     specularHighlight = clamp(specularHighlight, vec3(0.0), vec3(3.0));
     #endif
+#endif
 
     //Minimal Lighting
     #if defined OVERWORLD || defined END
@@ -188,7 +213,32 @@ void gbuffersLighting(inout vec4 albedo, in vec3 screenPos, in vec3 viewPos, in 
     //Aurora Lighting
     vec3 auroraLighting = vec3(0.0);
 
-    #if defined AURORA && !defined GBUFFERS_TEXTURED && !defined GBUFFERS_WATER && !defined GBUFFERS_BASIC
+    #if defined AURORA && defined AURORA_3_7 && defined AURORA_LIGHTING_INFLUENCE && defined OVERWORLD && !defined GBUFFERS_TEXTURED && !defined GBUFFERS_WATER && !defined GBUFFERS_BASIC
+    //3.7 aurora lighting influence (multiplicative tint on scene lighting)
+    float caveFactor = mix(clamp((cameraPosition.y - 56.0) / 16.0, float(sign(isEyeInWater)), 1.0), 1.0, eBS);
+    float kpIndex = abs(worldDay % 9 - worldDay % 4);
+          kpIndex = kpIndex - int(kpIndex == 1) + int(kpIndex > 7 && worldDay % 10 == 0);
+          kpIndex = min(max(kpIndex, 0) + isSnowy * 3, 9);
+    #ifdef AURORA_ALWAYS_VISIBLE
+          kpIndex = 7;
+    #endif
+    float moonVisibility = clamp((dot(-sunVec, upVec) + 0.1) * 4.0, 0.0, 1.0);
+    float auroraVisibility = pow6(moonVisibility) * (1.0 - wetness) * caveFactor;
+    float pulse = 0.5 + 0.5 * sin(frameTimeCounter * 0.08 + sin(frameTimeCounter * 0.013) * 0.6);
+          pulse = smoothstep(0.15, 0.85, pulse);
+    float longPulse = sin(frameTimeCounter * 0.025 + sin(frameTimeCounter * 0.004) * 0.8);
+          longPulse = longPulse * (1.0 - 0.15 * abs(longPulse));
+    kpIndex *= 1.0 + longPulse * 0.25;
+    kpIndex /= 9.0;
+    float redPhase = pow3(kpIndex) * (1.0 - pulse);
+    auroraVisibility *= kpIndex * (1.0 + max(longPulse * 0.5, 0.0));
+    auroraVisibility = min(auroraVisibility, 2.0) * AURORA_BRIGHTNESS;
+    float colorMixer = 0.65 + pow3(kpIndex) * pulse * 0.1;
+    vec3 lowColor = vec3(0.45, 1.55 - redPhase * 0.5, 0.0);
+    vec3 upColor = vec3(0.95 + redPhase * 5.0, 0.10, 0.0);
+    vec3 auroraColor = fmix(lowColor, upColor, colorMixer);
+    sceneLighting *= (1.0 - auroraVisibility) + auroraVisibility * auroraColor;
+    #elif defined AURORA && !defined GBUFFERS_TEXTURED && !defined GBUFFERS_WATER && !defined GBUFFERS_BASIC
 	float visibilityMultiplier = pow8(1.0 - sunVisibility) * (1.0 - wetness) * pow4(lightmap.y) * AURORA_BRIGHTNESS;
 	float auroraVisibility = 0.0;
 

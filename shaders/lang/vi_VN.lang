@@ -5,17 +5,24 @@ profile.VERY_HIGH=Rất cao (Mặc định)
 profile.ULTRA=Siêu
 
 option.SOLAS_BY_SEPTONIOUS=§6Solas
-value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.2
-option.SOLAS_BY_SEPTONIOUS.comment=Tác giả gốc: Septonious (Solas Shader)\nNhà phát triển: Anatyi\nKho lưu trữ: https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\nNhật ký thay đổi:\n- Chuyển từ 3.7: Phản xạ ống kính, DOF (lấy nét thủ công), Vanilla Water, Mây khối hai lớp, Cổng End 3D\n- Nâng cấp: Mặt trời và mặt trăng Vanilla, Sao, Ánh sáng thể tích, Kiểu phản chiếu, Phản xạ The End\n- Cắt Mây: chế độ che giữa các lớp (không / bóng / lẫn nhau)\n- Quay The End: lỗ đen, sao và hướng ánh sáng quay theo thời gian, quầng sáng và thấu kính hấp dẫn\n- Phản xạ theo chiều không gian: công tắc độc lập The End / Nether, cường độ và kiểu lớp phủ\n- Menu Nâng Cấp và Hiệu Suất mới\n- Sửa: SSR, phản chiếu vũng nước đá đỏ, lá cây nhanh
+value.SOLAS_BY_SEPTONIOUS.0=§bSolas Classic V2.3.3
+option.SOLAS_BY_SEPTONIOUS.comment=Tác giả gốc: Septonious (Solas Shader)\nNhà phát triển: Anatyi\nKho lưu trữ: https://github.com/Anatyi/Solas-Shader-Classic\nDiscord: https://discord.gg/4uTAUQR2xu GitHub: https://github.com/Septonious/Solas-Shader\nNhật ký thay đổi (V2.3.3):\n- Chuyển Mây thể tích 3.7 (VC_3_7) và Mây phẳng (PLANAR_CLOUDS_3_7)\n- Chuyển Bầu trời Overworld 3.7 (SKY_3_7), Sao (STARS_3_7) và tinh vân đêm sinh ra\n- Chuyển từ End 3.7: Tinh vân (END_NEBULA_3_7), Lỗ đen (thấu kính + xoáy), Bầu trời sao, Đĩa tiền hành tinh / Mây End\n- Chuyển từ Nether 3.7: Khói (NETHER_SMOKE_3_7) và Nhiễu sương ánh sáng (LPV_FOG_NOISE)\n- Điều khiển xoáy hấp dẫn: lực / phạm vi, âm; mật độ bầu trời sao độc lập với tinh vân End\n- Che kính bằng mây End, sửa phản xạ End, khoảng cách phai mây End\n- Sắp xếp lại menu Bầu trời và Khí quyển (bố cục hai cột công tắc + cấu hình)\n- Sửa: hiển thị bầu trời sao, năng lượng nhiễu sương, điều khiển xoáy / phạm vi
 
 #KHÍ QUYỂN
 
 screen.ATMOSPHERICS=Khí quyển
 
-screen.SUN_MOON_CONFIG=Cấu hình Mặt trời & Mặt trăng
+screen.SKYBOX_CONFIG=Cấu hình Skybox
 
-option.VANILLA_SUN_MOON=Mặt trời & Mặt trăng Vanilla
-option.VANILLA_SUN_MOON.comment=Hiển thị sprite mặt trời/mặt trăng vanilla trên bầu trời shader (thay cho mặt trời/mặt trăng tạo bằng thủ tục)
+option.SKYBOX=Skybox từ Resourcepack
+
+screen.VANILLA_SUN_MOON_CONFIG=Cấu hình Mặt trời & Mặt trăng Vanilla
+
+option.SUN_MOON_STYLE=Kiểu Mặt trời & Mặt trăng
+option.SUN_MOON_STYLE.0=Cổ điển
+option.SUN_MOON_STYLE.1=Sprite Vanilla
+option.SUN_MOON_STYLE.2=Kiểu V3.x
+option.SUN_MOON_STYLE.comment=Cổ điển: mặt trời/mặt trăng thủ tục 2.3. Vanilla: sprite mặt trời/mặt trăng vanilla (có độ sáng). V3.x: đĩa 3.7 (chuyển không gian, chói 3.7 và tuần trăng).
 option.VANILLA_SUN_BRIGHTNESS=Độ sáng Mặt trời
 option.VANILLA_MOON_BRIGHTNESS=Độ sáng Mặt trăng
 option.END_PORTAL_3D=Cổng End 3D
@@ -50,6 +57,12 @@ option.BLOCKY_CLOUDS_CULLING.comment=Cách hai lớp mây khối che lẫn nhau.
 option.BLOCKY_CLOUDS_CULLING.0=Không Cắt
 option.BLOCKY_CLOUDS_CULLING.1=Cắt Bóng
 option.BLOCKY_CLOUDS_CULLING.2=Cắt Lẫn Nhau
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION=Mây ô vuông che Cực quang
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION.comment=Mây ô vuông che Cực quang phía sau chúng. Khi bật, cực quang bị che sau mây.
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH=Cường độ che Cực quang
+option.BLOCKY_CLOUDS_WORLD_TIME=Dòng mây theo thời gian thế giới
+option.BLOCKY_CLOUDS_WORLD_TIME.comment=Dòng mây khối theo đồng hồ thế giới thay vì bộ đếm thời gian thực. FLOW được áp dụng như số nhân. Tắt = thời gian khung tích hợp. Mặc định: Bật.
+option.BLOCKY_CLOUDS_AURORA_OCCLUSION_STRENGTH.comment=Cường độ che Cực quang. 0 = không che thêm; 1 = che mạnh.
 option.VC_DYNAMIC_WEATHER=Thời tiết Động
 option.VC_DYNAMIC_WEATHER.comment=Tự động điều chỉnh kích thước, chiều cao và lượng mây dựa trên các yếu tố khác nhau
 option.VC_DETAIL=Chi tiết
@@ -60,6 +73,11 @@ option.VC_THICKNESS=Độ dày
 option.VC_SPEED=Tốc độ
 option.VC_DISTANCE=Khoảng cách hiển thị
 option.VC_OPACITY=Độ mờ
+option.VC_3_7=Đám mây Kiểu 3.7
+option.VC_3_7.comment=Thay thế mây bằng hệ thống thể tích 3.7 (thời tiết động, ánh sáng tuyến tính/không gian, phong cách không gian sâu). Tắt mặc định.
+screen.VC_3_7_CONFIG=Cấu hình Mây 3.7
+option.VC_SCALE=Tỷ lệ Mây
+option.VC_SCALE.comment=Tỷ lệ các đặc điểm của lớp mây.
 
 screen.VL_CONFIG=Cấu hình Ánh sáng Thể tích
 
@@ -71,6 +89,8 @@ option.VL_SAMPLES=Mẫu
 
 option.VF_END=Sương mù 3D tại End
 option.VF_NETHER=Sương mù 3D tại Nether
+option.END_CLOUDY_FOG=Sương mây tại End
+option.NETHER_CLOUDY_FOG=Sương mây tại Nether
 screen.VF_END_CONFIG=Cấu hình Sương mù tại End
 screen.VF_NETHER_CONFIG=Cấu hình Sương mù tại Nether
 
@@ -78,6 +98,7 @@ option.VF_END_HEIGHT=Chiều cao
 option.VF_END_OPACITY=Độ mờ
 option.VF_END_AMOUNT=Số lượng
 option.VF_END_THICKNESS=Độ dày
+option.VF_END_FADE_DISTANCE=Khoảng cách Phai
 
 option.VF_NETHER_STRENGTH=Độ mạnh
 option.VF_NETHER_SAMPLES=Mẫu
@@ -85,6 +106,17 @@ option.VF_NETHER_SPEED=Tốc độ
 option.VF_NETHER_FREQUENCY=Tần số
 option.VF_NETHER_REFRACTION=Khúc xạ Nhiệt
 option.VF_NETHER_REFRACTION_STRENGTH=Độ mạnh Khúc xạ
+
+screen.NETHER_SMOKE_3_7_CONFIG=Cấu hình Khói Nether 3.7
+
+option.NETHER_SMOKE_3_7=Khói Nether 3.7
+option.NETHER_SMOKE_3_7_STRENGTH=Cường độ
+option.NETHER_SMOKE_3_7_SPEED=Tốc độ
+option.NETHER_SMOKE_3_7_FREQUENCY=Tần số
+
+option.LPV_FOG_NOISE=Nhiễu Sương Ánh Sáng
+option.LPV_FOG_NOISE.comment=Thêm nhiễu mây 3D vào sương ánh sáng (kiểu 3.7). Khi bật sẽ tắt các bản sửa quá sáng để không làm yếu sương.
+option.LPV_FOG_NOISE_STRENGTH=Độ mạnh Nhiễu
 
 screen.FOG_CONFIG=Cấu hình Sương mù
 
@@ -97,6 +129,7 @@ option.FOG_DENSITY=Mật độ Sương mù
 option.FOG_HEIGHT=Chiều cao Sương mù Mặt đất
 
 screen.SKY_CONFIG=Cấu hình Bầu trời
+screen.SKY_PORT_CONFIG=Cải tiến Bầu trời (Port)
 
 option.STARS=Ngôi sao
 option.END_STARS=Ngôi sao Ender
@@ -106,16 +139,94 @@ option.END_STAR_BRIGHTNESS=Độ sáng ngôi sao Ender
 option.END_STAR_SIZE=Kích thước ngôi sao Ender
 option.STAR_DENSITY=Mật độ ngôi sao
 option.STAR_SIZE=Kích thước ngôi sao
+screen.STARS_3_7_CONFIG=Cấu hình Sao 3.7
+option.STARS_3_7=Kiểu Sao 3.7
+option.STARS_3_7.comment=Thay thế bầu trời sao bằng kiểu 3.7. Yêu cầu độ hiển thị mặt trăng 3.7. Tắt mặc định.
+option.SHOOTING_STARS=Sao băng / Thiên thạch
+option.SHOOTING_STARS.comment=Thêm sao băng băng qua bầu trời đêm (3.7). Yêu cầu Kiểu Sao 3.7. Tắt mặc định.
+option.SHOOTING_STARS_SIZE=Kích thước sao băng
+option.SHOOTING_STARS_SPEED=Tốc độ sao băng
+option.SHOOTING_STARS_CHANCE=Xác suất sao băng
+option.SHOOTING_STARS_COUNT=Số lượng sao băng
+option.SHOOTING_STARS_LINE_THICKNESS=Độ dày vệt sao băng
+option.SHOOTING_STARS_TRAIL_LENGTH=Độ dài vệt sao băng
 option.MILKY_WAY=Dải Ngân hà
 option.MILKY_WAY_BRIGHTNESS=Độ sáng Dải Ngân hà
+option.MILKY_WAY_3_7=Kiểu Dải Ngân hà 3.7
+option.MILKY_WAY_3_7.comment=Dải Ngân hà 3.7 nơi mặt trăng chiếu sáng dải (độ sáng theo tầm nhìn mặt trăng thay vì độ sâu ban đêm), với chuyển không gian cho tầm nhìn và màu. Tắt mặc định.
+option.GENERATED_NIGHT_NEBULA=Tinh vân Đêm Tạo ra
+option.GENERATED_NIGHT_NEBULA.comment=Lớp mây nhiễu 3.7 trôi theo bầu trời sao và hòa với cực quang. Yêu cầu bầu trời 3.7.
+option.GENERATED_NIGHT_NEBULA_BRIGHTNESS=Độ sáng Tinh vân
 option.END_NEBULA=Tinh vân Ender
 option.END_NEBULA_BRIGHTNESS=Độ sáng Tinh vân
+option.END_STARS_3_7=Sao End Kiểu 3.7
+option.END_STARS_3_7.comment=Bầu trời sao End 3.7: các điểm sáng ngẫu nhiên tụ lại thành hình chòm sao, hòa trộn kiểu 3.7. Thay thế sao End 2.3. Tắt mặc định.
+option.END_STARS_3_7_NOISE=Cường độ nhiễu sao
+option.END_STARS_3_7_AMOUNT=Số lượng sao
+option.END_STARS_3_7_BRIGHTNESS=Độ sáng sao
+option.END_STARS_3_7_SIZE=Kích thước sao
+screen.END_BLACK_HOLE_3_7_CONFIG=Cấu hình Hố đen End 3.7
+option.END_BLACK_HOLE_3_7=Hố đen End
+option.END_BLACK_HOLE_3_7.comment=Hố đen 3.7 trên bầu trời End: bẻ cong tinh vân End quanh hướng mặt trời với vòng photon và quầng bồi tụ. Tắt mặc định.
+option.END_BLACK_HOLE_SIZE_3_7=Kích thước Hố đen
+value.END_BLACK_HOLE_SIZE_3_7.3.0=Rất nhỏ
+value.END_BLACK_HOLE_SIZE_3_7.2.5=Nhỏ
+value.END_BLACK_HOLE_SIZE_3_7.2.0=Bình thường
+value.END_BLACK_HOLE_SIZE_3_7.1.5=Lớn
+value.END_BLACK_HOLE_SIZE_3_7.1.0=Rất lớn
+value.END_BLACK_HOLE_SIZE_3_7.0.5=Khổng lồ
+value.END_BLACK_HOLE_SIZE_3_7.0.25=Cực đại
+option.END_ANGLE_3_7=Góc nghiêng
+screen.END_DISK_3_7_CONFIG=Cấu hình Đĩa Hành Tinh End
+option.END_DISK_3_7=Mây Đĩa Hành Tinh End
+option.END_DISK_3_7.comment=Một đĩa mây vũ trụ khổng lồ xoay quanh đảo chính End (3.7). Thay thế sương mây End 2.3. Tắt mặc định.
+option.END_DISK_HEIGHT_3_7=Chiều cao Đĩa
+option.END_DISK_AMOUNT_3_7=Số lượng Đĩa
+option.END_DISK_THICKNESS_3_7=Độ dày Đĩa
+option.END_DISK_OPACITY_3_7=Độ mờ Đĩa
+option.END_DISK_FADE_DISTANCE_3_7=Khoảng cách Phai Đĩa
 option.RAINBOW=Cầu vồng
+screen.PLANAR_CLOUDS_3_7_CONFIG=Cấu hình Mây phẳng 3.7
+option.PLANAR_CLOUDS_3_7=Mây phẳng Kiểu 3.7
+option.PLANAR_CLOUDS_3_7.comment=Thay thế mây phẳng bằng kiểu 3.7 (lấy mẫu kết cấu nhiễu 3.7 noise3_7). Yêu cầu độ hiển thị mặt trăng 3.7. Tắt mặc định.
+option.PLANAR_CLOUDS_3_7_AMOUNT=Số lượng
+option.PLANAR_CLOUDS_3_7_HEIGHT=Độ cao
+option.PLANAR_CLOUDS_3_7_BRIGHTNESS=Độ sáng
+option.PLANAR_CLOUDS_3_7_OPACITY=Độ mờ
 option.AURORA=Cực quang
 option.AURORA_COLD_BIOME_VISIBILITY=Hiển thị Cực quang tại quần xã lạnh
 option.AURORA_COLD_BIOME_VISIBILITY.comment=Hiển thị cực quang chỉ khi người chơi ở quần xã lạnh
 option.AURORA_FULL_MOON_VISIBILITY=Hiển thị Cực quang khi Trăng tròn
 option.AURORA_FULL_MOON_VISIBILITY.comment=Hiển thị cực quang chỉ khi Trăng tròn
+screen.AURORA_CONFIG=Cấu hình Cực quang
+option.AURORA_3_7=Kiểu Cực quang 3.7
+option.AURORA_3_7.comment=Thay thế cực quang bằng hệ thống thể tích 3.7 (hoạt động địa từ, độ cao, ảnh hưởng ánh sáng). Tắt mặc định.
+option.SKY_3_7=Kiểu Bầu trời 3.7
+option.SKY_3_7.comment=Thay thế bầu trời bằng bầu trời toàn cầu 3.7 (yếu tố không gian, màu theo quần xã, dải xanh). Tắt mặc định.
+option.SUN_MOON_3_7=Kiểu Mặt trời & Mặt trăng 3.7
+option.SUN_MOON_3_7.comment=Thay thế đĩa mặt trời/mặt trăng bằng kiểu 3.7 (chuyển không gian theo độ cao, chói 3.7 và tuần trăng). Tắt mặc định.
+option.SUNRISE_SUNSET_INTENSITY=Cường độ Bình minh/Hoàng hôn
+option.SUNRISE_SUNSET_INTENSITY.comment=Cường độ dải tán xạ bình minh/hoàng hôn trên bầu trời 3.7.
+option.AURORA_ALTITUDE=Độ cao Cực quang
+option.AURORA_ALTITUDE.comment=Độ cao của khối cực quang (block).
+option.AURORA_LIGHTING_INFLUENCE=Đóng góp Ánh sáng
+option.AURORA_LIGHTING_INFLUENCE.comment=Cho phép cực quang mạnh chiếu sáng nhẹ lên mây và mặt đất.
+option.AURORA_ALWAYS_VISIBLE=Hiển thị Liên tục
+option.AURORA_ALWAYS_VISIBLE.comment=Làm cực quang xuất hiện mỗi đêm.
+option.AURORA_SOFTEN=Độ mềm Cực quang
+option.AURORA_SOFTEN.comment=Làm mềm vùng sáng của cực quang để không cháy trắng và giảm nhiễu nhìn thấy (giống 3.7).
+option.AURORA_BLOOM=Rạng rỡ Cực quang
+option.AURORA_BLOOM.comment=Gỡ lỗi: độ sáng rực (bloom) của cực quang trên bầu trời đêm (0 = không, cao hơn = mạnh hơn).
+option.AURORA_EXPOSURE=Độ phơi sáng Cực quang
+option.AURORA_EXPOSURE.comment=Gỡ lỗi: độ sáng tổng thể cực quang (hệ số).
+option.AURORA_CONTRAST=Độ tương phản Cực quang
+option.AURORA_CONTRAST.comment=Gỡ lỗi: độ tương phản cực quang (đường pow).
+option.AURORA_SCALE=Tỷ lệ Cực quang
+option.AURORA_SCALE.comment=Gỡ lỗi: tỷ lệ dải cực quang (lớn hơn = dải rộng hơn).
+option.AURORA_OFFSET=Dịch chuyển Cực quang
+option.AURORA_OFFSET.comment=Gỡ lỗi: dịch chuyển nhiễu cực quang.
+option.AURORA_RADIAL=Độ sâu xuyên tâm
+option.AURORA_RADIAL.comment=Gỡ lỗi: độ sâu suy giảm dọc của các dải.
 
 screen.END_VORTEX=Cấu hình Xoáy Ender
 
@@ -125,6 +236,10 @@ option.END_VORTEX.comment=Bật/tắt một vật thể trông giống hố đen
 option.END_VORTEX_SIZE=Kích thước Xoáy
 option.END_VORTEX_WHIRL=Độ quay Xoáy
 option.END_VORTEX_ARMS=Số lượng Tay Xoáy
+option.END_VORTEX_LENS=Thấu kính hấp dẫn xoáy End
+option.END_VORTEX_LENS_GRAVITY=Biến dạng hấp dẫn
+option.END_VORTEX_LENS_GRAVITY_RANGE=Phạm vi biến dạng hấp dẫn
+option.END_VORTEX_LENS.comment=Làm cong các ngôi sao gần thành xoáy quanh hố đen End 2.3 (kiểu thấu kính 3.7). Tắt mặc định.
 
 screen.ENH_END_CONFIG=Quay The End
 option.ENH_END_REVOLUTION=Quay The End
@@ -279,6 +394,11 @@ option.NORMAL_THRESHOLD=Ngưỡng Tạo normals
 
 #PBR
 screen.PBR=Resourcepack PBR
+
+option.PBR_SCHEME=Sơ đồ PBR
+option.PBR_SCHEME.comment=Chọn triển khai PBR. Classic là pipeline 2.3 gốc. V2.4b là pipeline 2.4b (xử lý specular/phản chiếu khác). Mặc định Classic.
+value.PBR_SCHEME.0=Cổ điển (2.3)
+value.PBR_SCHEME.1=V2.4b
 
 option.MATERIAL_FORMAT=Định dạng Vật liệu*
 option.MATERIAL_FORMAT.comment=Xác định định dạng specular và normal map được sử dụng bởi resource pack. §e[*]§rCác nghệ sĩ thường nói rõ định dạng nào được sử dụng trong resource pack của họ, sử dụng sai định dạng có thể cho kết quả kỳ lạ.
@@ -645,3 +765,27 @@ option.WAVING_PLANTS=Cây Cối Lượn Sóng
 option.WAVING_LEAVES=Lá Lượn Sóng
 option.WAVING_SPEED=Tốc Độ Lượn Sóng
 option.WAVING_AMPLITUDE=Biên Độ Lượn Sóng
+
+#SỬA LỖI
+
+screen.FIXES=Sửa lỗi
+
+option.FIXES=Bật sửa lỗi
+option.FIXES.comment=Đây là các bản sửa cho các vấn đề được xác định là lỗi do shader hoặc bản cập nhật gây ra ngoài ý muốn kể từ bản phát hành này. Ngoài các lỗi nghiêm trọng phải loại bỏ (không liệt kê), các bản sửa tùy chọn còn lại được bật theo mặc định để có kết quả mong đợi tốt hơn. Nếu bạn nghĩ một số bản sửa trong danh sách thực ra là tính năng, hãy tắt chúng. Các bản sửa mà một số phiên bản chính coi là chưa đạt kỳ vọng sẽ bị tắt theo mặc định.
+
+option.LPV_FOG_FIX_GLOBAL=Sửa sương: Toàn cục
+option.LPV_FOG_FIX_GLOBAL.comment=Triệt quá sáng của sương ánh sáng (LPV) ở mọi nơi. Tắt — chỉ công tắc tần số cao giới hạn quá sáng nơi nhiều nguồn sáng. Mặc định: Tắt.
+option.LPV_FOG_FIX_HIGH_FREQ=Sửa sương: Chỉ tần số cao
+option.LPV_FOG_FIX_HIGH_FREQ.comment=Triệt quá sáng sương chỉ nơi nhiều nguồn sáng chồng lên, giữ nguồn đơn/lẻ ở cường độ gốc. Mặc định: Bật.
+option.LPV_FOG_HF_THRESHOLD=Ngưỡng tần số cao
+option.LPV_FOG_HF_THRESHOLD.comment=Độ sáng floodfill trên đó một mẫu được coi là "nhiều nguồn sáng". Cao hơn = ít mẫu bị triệt.
+option.LPV_FOG_HF_BANDWIDTH=Băng thông tần số cao
+option.LPV_FOG_HF_BANDWIDTH.comment=Phạm vi chuyển tiếp mượt quanh ngưỡng.
+option.LPV_FOG_HF_SUPPRESS=Triệt tần số cao
+option.LPV_FOG_HF_SUPPRESS.comment=Mức giảm sương nơi nhiều nguồn sáng. 0 = loại bỏ, 1 = gốc.
+option.LPV_FOG_DARK_VISIBILITY=Độ hiển thị sương ở nơi tối
+option.LPV_FOG_DARK_VISIBILITY.comment=Mức tăng độ hiển thị của sương ánh sáng ở không gian tối/kín. 0 = mặc định 3.7 (không tăng); 1 = tăng gốc (có thể quá sáng).
+option.LPV_FOG_BRIGHT_FADE=Giảm dần ở môi trường sáng
+option.LPV_FOG_BRIGHT_FADE.comment=Mức độ sương ánh sáng mờ dần ở môi trường sáng (mặc định 3.7 = 3.0). Giá trị cao hơn sẽ triệt sương nhiều hơn.
+option.LPV_FOG_DARK_DENSITY=Mật độ sương ở nơi tối
+option.LPV_FOG_DARK_DENSITY.comment=Mức tăng mật độ của sương ánh sáng ở không gian tối/kín. 0 = mặc định 3.7 (không tăng); 1 = mật độ gốc 40 (có thể quá sáng).
