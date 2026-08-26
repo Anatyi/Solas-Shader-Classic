@@ -1,0 +1,10 @@
+Solas Shader is a Minecraft shaderpack created by Septonious
+Solas Shader:https://github.com/Septonious/Solas-Shader
+
+Classic ver forked @Anatyi
+This is an unofficial fork and is not affiliated with the original author Septonious.
+Please do not report any issues encountered with this fork to the original Solas Shader repository or its author.
+Solas Classic:https://github.com/Anatyi/Solas-Shader-Classic
+
+Original Solas Shader – all rights and credits belong to Septonious.
+This fork is non‑commercial and provided “as is”.
